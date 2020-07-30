@@ -1,0 +1,8 @@
+{
+    "name": "team_generator",
+    "type": "helper",
+    "tags": [
+        "python"
+    ],
+    "date_added": "2020-07-29"
+}
