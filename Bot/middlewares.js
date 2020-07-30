@@ -1,23 +1,25 @@
-const discord = require("discord.js");
+function getEntityFromText(msg, client, mention) {
+  const userMatch = mention.match(/^<@!?(\d+)>$/);
+  if (userMatch) return msg.mentions.users.get(userMatch[1]);
 
-function getUserFromMention(client, mention) {
-  const matches = mention.match(/^<@!?(\d+)>$/);
-  if (!matches) return null;
+  const roleMatch = mention.match(/^<@&(\d+)>$/);
+  if (roleMatch) return msg.mentions.roles.get(roleMatch[1]);
 
-  const id = matches[1];
-  console.log("id", id);
-  return client.users.cache.get(id);
+  const channelMatch = mention.match(/^<@#(\d+)>$/);
+  if(channelMatch) return client.channels.cache.get(channelMatch[1]);
+
+  return null;
 }
 
-const parseMentions = (msg, client, params, next) => {
-  params.mentions = {};
+const parseIdsToObjects = (msg, client, params, next) => {
+  params.entities = {};
   const args = params.args || [];
   args.forEach((arg, idx) => {
-    const u = getUserFromMention(client, arg);
-    console.log(u);
-    if (u) params.mentions[idx] = u;
+    const u = getEntityFromText(msg, client, arg);
+    if (u) {
+      params.args[idx] = params.entities[idx] = u;
+    }
   });
-  console.log(params.mentions);
   next();
 };
 
@@ -27,4 +29,12 @@ const parseNumbers = (msg, client, params, next) => {
   });
   next();
 };
-module.exports = { parseMentions, parseNumbers };
+
+const randomChance = (chance) =>{
+    return (msg, client, params, next)=>{
+        if(Math.random()<=chance){
+            next()
+        }
+    }
+}
+module.exports = { parseIdsToObjects, parseNumbers, randomChance };

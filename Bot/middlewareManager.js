@@ -3,19 +3,27 @@ module.exports = class MiddlewareManager {
         this.stack=[]
     }
 
-    use(middlewareFunction) {
+    use(middlewareFunction, numParams=null) {
         if (typeof middlewareFunction !== 'function') throw new Error('Middleware must be a function!');
+        if (numParams && middlewareFunction.length != numParams) throw new Error('Middleware arguments don\'t match!');
         this.stack.push(middlewareFunction);
     }
 
     handle(msg, client, params, callback) {
+        const errCallback = (err, ...othr) => {
+            if(err){
+                throw err;
+            }
+            return callback(...othr)
+        }
+
         let idx = 0;
         const next = (err) => {
             if (err != null) {
-                return setImmediate(() => callback(err));
+                return setImmediate(() => errCallback(err));
             }
             if (idx >= this.stack.length) {
-                return setImmediate(() => callback(msg,client,params));
+                return setImmediate(() => errCallback(null, msg, client, params));
             }
             const nextMiddleware = this.stack[idx++];
             setImmediate(() => {

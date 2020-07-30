@@ -1,19 +1,31 @@
-const Discord = require('discord.js');
-
-const bot = new Discord.Client();
-
-if(process.env.NODE_ENV == 'development'){
-    require('dotenv').config();
+const Bot = require("./Bot");
+const {
+  parseIdsToObjects,
+  parseNumbers,
+  randomChance,
+} = require("./Bot/middlewares");
+if (process.env.NODE_ENV == "development") {
+  require("dotenv").config();
 }
 
-const {DISCORD_TOKEN} = process.env;
+const { DISCORD_TOKEN } = process.env;
 
-bot.on('message', (message)=>{
-    console.log(message)
-})
+const bot = new Bot("?");
 
-bot.on('ready', () => {
-    console.info(`Logged in as ${bot.user.tag}!`);
-  });
+bot.onReady(() => {
+  console.info(`Logged in as ${bot.user.tag}!`);
+});
 
-bot.login(DISCORD_TOKEN);
+bot.use(randomChance(0.5), (msg, client, params, next) => {
+  console.log("RANDOMMM");
+  next();
+});
+
+bot.register("greet", (msg, client, params) => {
+  console.log("PARAMS", params);
+  msg.reply("Hi!");
+});
+
+bot.registerDirectory("./commands");
+
+bot.start(DISCORD_TOKEN);
