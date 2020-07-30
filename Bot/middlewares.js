@@ -2,10 +2,10 @@ const discord = require("discord.js");
 
 function getUserFromMention(client, mention) {
   const matches = mention.match(/^<@!?(\d+)>$/);
-  if (!matches) return;
+  if (!matches) return null;
 
   const id = matches[1];
-    console.log("id", id);
+  console.log("id", id);
   return client.users.cache.get(id);
 }
 
@@ -15,8 +15,9 @@ const parseMentions = (msg, client, params, next) => {
   args.forEach((arg, idx) => {
     const u = getUserFromMention(client, arg);
     console.log(u);
-    if (u) params.mention[idx] = u;
+    if (u) params.mentions[idx] = u;
   });
+  console.log(params.mentions);
   next();
 };
 
