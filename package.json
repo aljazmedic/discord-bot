@@ -4,7 +4,7 @@
   "description": "Team generator bot ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cross-env NODE_ENV=development nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/aljazmedic/discord-bot/issues"
   },
-  "homepage": "https://github.com/aljazmedic/discord-bot#readme"
+  "homepage": "https://github.com/aljazmedic/discord-bot#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "discord": "^0.8.2",
+    "discord.js": "^12.2.0"
+  }
 }
