@@ -1,13 +1,20 @@
 module.exports = class MiddlewareManager {
-    constructor(){
+    constructor(fnArgs=null){
         this.stack=[]
+        this.numArgs=fnArgs;
     }
 
-    use(middlewareFunction, numParams=null) {
-        if (typeof middlewareFunction !== 'function') throw new Error('Middleware must be a function!');
-        if (numParams && middlewareFunction.length != numParams) throw new Error('Middleware arguments don\'t match!');
-        this.stack.push(middlewareFunction);
+    setNumParams(numArgs){
+        this.numArgs = numArgs;
     }
+
+    use(...middlewareFunctions) {
+        middlewareFunctions.forEach((middlewareFunction, idx)=>{
+            if (typeof middlewareFunction !== 'function') throw new Error('Middleware must be a function!');
+            if (this.numArgs && middlewareFunction.length != this.numArgs) throw new Error('Middleware arguments don\'t match!');
+            this.stack.push(middlewareFunction);
+        })
+    };
 
     handle(msg, client, params, callback) {
         const errCallback = (err, ...othr) => {

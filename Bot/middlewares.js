@@ -11,7 +11,7 @@ function getEntityFromText(msg, client, mention) {
   return null;
 }
 
-const parseIdsToObjects = (msg, client, params, next) => {
+const parseIdsToObjects = (msg, client, params, next) => {// Middleware that parses args with cache
   params.entities = {};
   const args = params.args || [];
   args.forEach((arg, idx) => {
@@ -23,14 +23,14 @@ const parseIdsToObjects = (msg, client, params, next) => {
   next();
 };
 
-const parseNumbers = (msg, client, params, next) => {
+const parseNumbers = (msg, client, params, next) => {// Middleware that parses args 
   params.args = params.args.map((part, idx) => {
     return isNaN(part) ? part : parseFloat(part);
   });
   next();
 };
 
-const randomChance = (chance) =>{
+const randomChance = (chance) =>{ // Function that returns middleware that has random chance of passing
     return (msg, client, params, next)=>{
         if(Math.random()<=chance){
             next()

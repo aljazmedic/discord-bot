@@ -28,10 +28,9 @@ module.exports = class Bot {
   };
 
   use = (...callbacks) => {
-    callbacks.forEach((callback, idx) => {
-      this.mm.use(callback, 4);
-    });
+    this.mm.use(...callbacks);
   };
+
   _addCommand = (c) => {
     if (c.name in this.commands) throw new Error("Duplicate command");
     this.commands[c.name] = c;
@@ -52,6 +51,10 @@ module.exports = class Bot {
   onReady = (callback) => {
     return this.client.on("ready", callback);
   };
+
+  createInvite = () => {
+    return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1945619521&scope=bot`;
+  }
 
   start = (token) => {
     this.client.on("message", (msg) => {

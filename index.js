@@ -14,6 +14,7 @@ const bot = new Bot("?");
 
 bot.onReady(() => {
   console.info(`Logged in as ${bot.user.tag}!`);
+  console.info(`Url invite: ${bot.createInvite()}`)
 });
 
 bot.use(randomChance(0.5), (msg, client, params, next) => {
@@ -22,7 +23,7 @@ bot.use(randomChance(0.5), (msg, client, params, next) => {
 });
 
 bot.register("greet", (msg, client, params) => {
-  console.log("PARAMS", params);
+  console.log("PARAMS", client);
   msg.reply("Hi!");
 });
 

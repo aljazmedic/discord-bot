@@ -5,7 +5,11 @@ module.exports = class Command {
     this.mm = new MiddlewareManager();
     this.name = name.toLowerCase();
     this.runFunction = middleware.pop();
-    middleware.forEach((mw, idx) => this.mm.use(mw, 4));
+    this.mm.use(...middleware);
+  }
+
+  use = (...middlewares) => {
+    return this.mm.use(...middlewares);
   }
 
   run = (msg, client, params) => { //Leave arrow so this is bind
