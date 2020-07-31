@@ -1,9 +1,15 @@
-const Ping = (msg, client, params) => {
+
+
+
+const Ping = (msg, client, params) => { //final function
+    console.log(params)
     msg.reply("pong")
 }
 
-Ping.name = "ping"
+Ping.name = "ping" //name of the command
 
-Ping.before = [] // middleware
+Ping.before = [] // middleware functions
+
+Ping.aliases = ['testp']
 
 module.exports = Ping
