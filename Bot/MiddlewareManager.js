@@ -3,7 +3,7 @@ module.exports = class MiddlewareManager {
         this.stack=[]
         this.numArgs=fnArgs;
     }
-
+    
     setNumParams(numArgs){
         this.numArgs = numArgs;
     }
@@ -19,7 +19,13 @@ module.exports = class MiddlewareManager {
     handle(msg, client, params, callback) {
         const errCallback = (err, ...othr) => {
             if(err){
-                throw err;
+                console.log(err)
+                if(err.sendDiscord){
+                    msg.reply(err.sendDiscord)
+                }
+                params.isError=true;
+                return
+                //TODO insert error handlers
             }
             return callback(...othr)
         }

@@ -15,15 +15,15 @@ module.exports = class Bot {
     this.client = new discord.Client();
     this.mm = new MiddlewareManager();
     this.em = new ErrorManager();
-    this.commands = {};
+    this._commands = [];
+    this._commandNames = [];
     this.client.on("ready", () => {
       Object.assign(this, this.client);
     });
     this.use(parseIdsToObjects);
   }
 
-  handleMessage = (msg, client, params, commandName) => {
-    const command = this.commands[commandName];
+  handleMessage = (msg, client, params, command) => {
     if (command) this.mm.handle(msg, client, params, command.run);
   };
 
@@ -32,16 +32,21 @@ module.exports = class Bot {
   };
 
   _addCommand = (c) => {
-    if (c.name in this.commands) throw new Error("Duplicate command");
-    this.commands[c.name] = c;
+    if (c.name in this._commandNames) throw new Error("Duplicate command");
+    if (c.aliases && Array.isArray(c.aliases)) {
+      c.aliases.forEach(a => {
+        if(a in this._commandNames)
+        throw new Error(`Duplicate command alias: ${a}`);
+      })}
+    this._commands.push(c);
   };
 
   register = (commandName, ...callbacks) => {
     this._addCommand(new Command(commandName, ...callbacks));
   };
 
-  registerDirectory = (dir) => {
-    const newCommands = registerDir(dir);
+  registerDirectory = (dir, options) => {
+    const newCommands = registerDir(dir, options);
     /* console.log(newCommands) */
     for (const [key, value] of Object.entries(newCommands)) {
       this._addCommand(value);
@@ -54,7 +59,7 @@ module.exports = class Bot {
 
   createInvite = () => {
     return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1945619521&scope=bot`;
-  }
+  };
 
   start = (token) => {
     this.client.on("message", (msg) => {
@@ -63,9 +68,21 @@ module.exports = class Bot {
         //Do parsing
         const args = content.substr(this.prefix.length || 0).split(" ");
         const commandName = args.shift();
-        this.handleMessage(msg, this.client, { args }, commandName);
+        for (let i = 0; i < this._commands.length; i++) {
+          const command = this._commands[i];
+          const commandInit = command.matches(commandName);
+          if (commandInit)
+            return this.handleMessage(msg, this.client, { args,call:commandInit }, command);
+        }
       }
     });
     return this.client.login(token);
   };
+
+  get commands() {
+    return this._commands.map((c) => {
+      const {name, description, aliases, mm:{stack}} = c;
+      return {name, description, aliases, 'mw#':stack.length}
+    });
+  }
 };

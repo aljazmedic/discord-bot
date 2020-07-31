@@ -5,7 +5,7 @@ function getEntityFromText(msg, client, mention) {
   const roleMatch = mention.match(/^<@&(\d+)>$/);
   if (roleMatch) return msg.mentions.roles.get(roleMatch[1]);
 
-  const channelMatch = mention.match(/^<@#(\d+)>$/);
+  const channelMatch = mention.match(/^<#(\d+)>$/);
   if(channelMatch) return client.channels.cache.get(channelMatch[1]);
 
   return null;
@@ -25,7 +25,7 @@ const parseIdsToObjects = (msg, client, params, next) => {// Middleware that par
 
 const parseNumbers = (msg, client, params, next) => {// Middleware that parses args 
   params.args = params.args.map((part, idx) => {
-    return isNaN(part) ? part : parseFloat(part);
+    return isNaN(part) || typeof part == 'object' ? part : parseFloat(part);
   });
   next();
 };
@@ -35,6 +35,7 @@ const randomChance = (chance) =>{ // Function that returns middleware that has r
         if(Math.random()<=chance){
             next()
         }
+        console.log(`${chance*100}% too low!`)
     }
 }
 module.exports = { parseIdsToObjects, parseNumbers, randomChance };
