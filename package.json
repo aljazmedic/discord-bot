@@ -4,7 +4,7 @@
   "description": "Team generator bot ",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon index.js"
+    "start": "cross-env NODE_ENV=development nodemon --exec babel-node index.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,13 @@
   },
   "homepage": "https://github.com/aljazmedic/discord-bot#readme",
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.0",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.11.0",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
+    "eslint": "^7.6.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
