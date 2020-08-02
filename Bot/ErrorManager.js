@@ -1,10 +1,11 @@
-module.exports = class ErrorManager {
-    constructor(){
-        this.stack=[]
+export default class ErrorManager {
+    constructor() {
+        this.stack = [];
     }
 
     use(ehHandler) {
-        if (typeof ehHandler !== 'function') throw new Error('Error handler must be a function!');
+        if (typeof ehHandler !== 'function')
+            throw new Error('Error handler must be a function!');
         this.stack.push(ehHandler);
     }
 
@@ -18,7 +19,7 @@ module.exports = class ErrorManager {
             setImmediate(() => {
                 nextMiddleware(initialError, msg, client, params, next);
             });
-        };    
+        };
         next();
     }
 }
