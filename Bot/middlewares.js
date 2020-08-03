@@ -26,7 +26,7 @@ export function parseIdsToObjects(msg, client, params, next) {
 
 export function parseNumbers(msg, client, params, next) {
   // Middleware that parses args
-  params.args = params.args.map((part, idx) => {
+  params.args = params.args.map((part) => {
     return isNaN(part) || typeof part == "object" ? part : parseFloat(part);
   });
   next();

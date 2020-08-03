@@ -1,6 +1,5 @@
-import { parseNumbers } from './middlewares';
 
-export default ({ args = [], minNum = 0, maxNum = Infinity }) => {
+export default ({ args = [], minNum = 0, maxNum = Infinity }) => { //TODO Verificators
     minNum = Math.max(minNum, args.length);
     return (msg, client, params, next) => {
         if (params.args.length < minNum) {
