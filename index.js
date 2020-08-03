@@ -3,6 +3,7 @@ import {
     parseIdsToObjects,
     parseNumbers,
     randomChance,
+    only
 } from './Bot/middlewares';
 if (process.env.NODE_ENV == 'development') {
     require('dotenv').config();
@@ -24,13 +25,14 @@ bot.register(
         console.log('RANDOMMM');
         next();
     },
-    (msg, client, params) => {
+    (msg, client) => {
         console.log('PARAMS', client);
         msg.reply('Hi!');
     }
 );
 
-bot.registerDirectory('./commands', { skip: true });
+bot.registerDirectory('./commands', { skipErrors: true });
+bot.registerDirectory('./commands-dev', { skipErrors: true }, only({channel:'494617599859228683'}));
 
 console.log(bot.commands);
 bot.start(DISCORD_TOKEN);
