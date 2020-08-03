@@ -1,56 +1,54 @@
 export default class MiddlewareManager {
-    constructor(fnArgs = null) {
-        this.stack = [];
-        this.numArgs = fnArgs;
-    }
+	constructor(fnArgs = null) {
+		this.stack = [];
+		this.numArgs = fnArgs;
+	}
 
-    setNumParams(numArgs) {
-        this.numArgs = numArgs;
-    }
+	setNumParams(numArgs) {
+		this.numArgs = numArgs;
+	}
 
-    use(...middlewareFunctions) {
-        middlewareFunctions.forEach((middlewareFunction, idx) => {
-            if (typeof middlewareFunction !== 'function')
-                throw new Error('Middleware must be a function!');
-            if (this.numArgs && middlewareFunction.length != this.numArgs)
-                throw new Error("Middleware arguments don't match!");
-            this.stack.push(middlewareFunction);
-        });
-    }
+	use(...middlewareFunctions) {
+		middlewareFunctions.forEach((middlewareFunction) => {
+			if (typeof middlewareFunction !== "function")
+				throw new Error("Middleware must be a function!");
+			if (this.numArgs && middlewareFunction.length != this.numArgs)
+				throw new Error("Middleware arguments don't match!");
+			this.stack.push(middlewareFunction);
+		});
+	}
 
-    handle(msg, client, params, callback) {
-        const errCallback = (err, ...othr) => {
-            if (err) {
-                console.log(err);
-                if (err.sendDiscord) {
-                    msg.reply(err.sendDiscord);
-                }
-                params.isError = true;
-                return;
-                //TODO insert error handlers
-            }
-            return callback(...othr);
-        };
+	handle(msg, client, params, callback) {
+		const errCallback = (err, ...othr) => {
+			if (err) {
+				console.log(err);
+				if (err.sendDiscord) {
+					msg.reply(err.sendDiscord);
+				}
+				params.isError = true;
+				//TODO insert error handlers
+			} else {
+				return callback(...othr);
+			}
+		};
 
-        let idx = 0;
-        const next = (err) => {
-            if (err != null) {
-                return setImmediate(() => errCallback(err));
-            }
-            if (idx >= this.stack.length) {
-                return setImmediate(() =>
-                    errCallback(null, msg, client, params)
-                );
-            }
-            const nextMiddleware = this.stack[idx++];
-            setImmediate(() => {
-                try {
-                    nextMiddleware(msg, client, params, next);
-                } catch (error) {
-                    next(error);
-                }
-            });
-        };
-        next();
-    }
+		let idx = 0;
+		const next = (err) => {
+			if (err != null) {
+				return setImmediate(() => errCallback(err));
+			}
+			if (idx >= this.stack.length) {
+				return setImmediate(() => errCallback(null, msg, client, params));
+			}
+			const nextMiddleware = this.stack[idx++];
+			setImmediate(() => {
+				try {
+					nextMiddleware(msg, client, params, next);
+				} catch (error) {
+					next(error);
+				}
+			});
+		};
+		next();
+	}
 }

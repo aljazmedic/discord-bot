@@ -19,15 +19,15 @@ export default class Bot {
         this.use(parseIdsToObjects);
     }
 
-    handleMessage = (msg, client, params, command) => {
+    handleMessage(msg, client, params, command) {
         if (command) this.mm.handle(msg, client, params, command.run);
-    };
+    }
 
-    use = (...callbacks) => {
+    use(...callbacks){
         this.mm.use(...callbacks);
-    };
+    }
 
-    _addCommand = (c) => {
+    _addCommand (c) {
         if (c.name in this._commandNames) throw new Error('Duplicate command');
         if (c.aliases && Array.isArray(c.aliases)) {
             c.aliases.forEach((a) => {
@@ -36,29 +36,29 @@ export default class Bot {
             });
         }
         this._commands.push(c);
-    };
+    }
 
-    register = (commandName, ...callbacks) => {
+    register (commandName, ...callbacks) {
         this._addCommand(new Command(commandName, ...callbacks));
-    };
+    }
 
-    registerDirectory = (dir, options) => {
-        const newCommands = registerDir(dir, options);
+    registerDirectory (dir, options, ...middleware) {
+        const newCommands = registerDir(dir, options, middleware);
         /* console.log(newCommands) */
         for (const [key, value] of Object.entries(newCommands)) {
             this._addCommand(value);
         }
-    };
+    }
 
-    onReady = (callback) => {
+    onReady (callback)  {
         return this.client.on('ready', callback);
-    };
+    }
 
-    createInvite = () => {
+    createInvite () {
         return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1945619521&scope=bot`;
-    };
+    }
 
-    start = (token) => {
+    start (token) {
         this.client.on('message', (msg) => {
             const { content } = msg;
             if (content.startsWith(this.prefix)) {
@@ -79,7 +79,7 @@ export default class Bot {
             }
         });
         return this.client.login(token);
-    };
+    }
 
     get commands() {
         return this._commands.map((c) => {
