@@ -1,4 +1,5 @@
-import { parseNumbers } from "../Bot/middlewares";
+import { parseNumbers } from "../../Bot/middlewares";
+import teamEmbed from './teamEmbed'
 
 function shuffle(a) {
 	var j, x, i;
@@ -40,16 +41,16 @@ export default {
 		const shuffled = shuffle(params.args);
 		const ret = {};
 		shuffled.forEach((e, idx) => {
-			const teamNo = `Team no. ${(idx % n) + 1}:`;
+			const teamNo = `Team no. ${(idx % n) + 1}`;
 			if (!(teamNo in ret)) ret[teamNo] = [];
 			ret[teamNo].push(e);
 		});
-		const retMessage = Object.entries(ret)
-			.map(([teamName, team]) => {
-				return `${teamName}\n${team.join("\n")}`;
+		Object.entries(ret)
+			.forEach(([teamName, team]) => {
+				msg.channel.send(teamEmbed(
+					{name: teamName, team}
+				));
 			})
-			.join("\n\n");
 
-		msg.channel.send(retMessage);
 	},
 };
