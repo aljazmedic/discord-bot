@@ -4,7 +4,13 @@
   "description": "Team generator bot ",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon --exec babel-node index.js"
+    "start": "cross-env NODE_ENV=development nodemon --exec babel-node index.js",
+    "lint": "npm run lint:js",
+    "lint:css": "stylelint app/**/*.js",
+    "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts",
+    "lint:eslint:fix": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts --fix",
+    "lint:js": "npm run lint:eslint -- . ",
+    "lint:staged": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -21,11 +27,26 @@
     "url": "https://github.com/aljazmedic/discord-bot/issues"
   },
   "homepage": "https://github.com/aljazmedic/discord-bot#readme",
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:eslint:fix",
+      "git add --force"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add --force"
+    ]
+  },
+  "pre-commit": "lint:staged",
+  "resolutions": {
+    "babel-core": "7.0.0-bridge.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.0",
     "@babel/node": "^7.10.5",
     "@babel/plugin-syntax-class-properties": "^7.10.4",
+    "@babel/plugin-syntax-export-default-from": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
     "babel-eslint": "^8.2.6",
     "babel-plugin-dynamic-import-node-sync": "^2.0.1",
@@ -33,7 +54,8 @@
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "eslint": "^4.19.1",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "prettier": "2.0.5"
   },
   "dependencies": {
     "discord": "^0.8.2",

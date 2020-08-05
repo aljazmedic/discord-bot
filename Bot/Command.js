@@ -1,5 +1,5 @@
 import MiddlewareManager from "./MiddlewareManager";
-class Command {
+export default class Command {
 	constructor(name, ...middleware) {
 		this.mm = new MiddlewareManager();
 		if (!Array.isArray(name)) {
@@ -59,5 +59,3 @@ class Command {
 		})`;
 	};
 }
-
-export default Command;

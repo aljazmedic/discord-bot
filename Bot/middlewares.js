@@ -32,23 +32,3 @@ export function parseNumbers(msg, client, params, next) {
   next();
 }
 
-export function randomChance(chance) {
-  // Function that returns middleware that has random chance of passing
-  return (msg, client, params, next) => {
-    if (Math.random() <= chance) {
-      next();
-    }
-    console.log(`${chance * 100}% too low!`);
-  };
-}
-
-export function only(dict = {}){
-  return (msg, client, params, next) => {
-    Object.entries(dict).forEach(([k,v]) => {
-      if(msg[k].id !== v){
-        next({message:`Attempt to call ${params.call.fn.name} with ${k} = ${msg[k].id} (not ${v})`})
-      }
-    })
-    next();
-  }; 
-}

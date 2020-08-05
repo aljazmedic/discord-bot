@@ -60,11 +60,11 @@ export default (dir, options = { skipErrors: false }, prependMiddlewares) => {
 			return (
 				file.indexOf('.') !== 0 &&
 				file !== 'index.js' &&
-				file.slice(-3) === '.js'
+				(file.slice(-3) === '.js' || file.indexOf('command') !== -1)
 			);
 		})
 		.forEach(function (file) {
-			const commandSchema = require(path.join(__dirname, '..', dir, file));
+			const commandSchema = require(path.resolve(process.cwd(), dir, file));
 			if (tryCheck(commandSchema.default, { ...options, fileName: file })) {
 				const command = createCommand(commandSchema.default, prependMiddlewares);
 				commands[command.name] = command;

@@ -12,6 +12,7 @@ module.exports = {
     "styled-components",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-syntax-dynamic-import",
-    "dynamic-import-node-sync"
+    "dynamic-import-node-sync",
+    "@babel/plugin-syntax-export-default-from"
   ]
 }
