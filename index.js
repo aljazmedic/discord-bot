@@ -1,10 +1,9 @@
 import Bot from './Bot';
 import {
-    parseIdsToObjects,
-    parseNumbers,
     randomChance,
     only
-} from './Bot/middlewares';
+} from './middleware';
+
 if (process.env.NODE_ENV == 'development') {
     require('dotenv').config();
 }
@@ -21,17 +20,23 @@ bot.onReady(() => {
 bot.register(
     'greet',
     randomChance(0.5),
-    (msg, client, params, next) => {
-        console.log('RANDOMMM');
-        next();
-    },
     (msg, client) => {
+        console.log('RANDOMMM');
         console.log('PARAMS', client);
         msg.reply('Hi!');
     }
 );
 
-bot.registerDirectory('./commands', { skipErrors: true });
+
+bot.register('test',
+
+(msg, client, params) => {
+    console.log(params)
+    msg.reply('Hi!');
+})
+
+
+bot.registerDirectory('./commands', { skipErrors: false });
 bot.registerDirectory('./commands-dev', { skipErrors: true }, only({channel:'494617599859228683'}));
 
 console.log(bot.commands);
