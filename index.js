@@ -14,7 +14,7 @@ bot.onReady(() => {
 	console.info(`Logged in as ${bot.user.tag}!`);
 	console.info(`Url invite: ${bot.createInvite()}`);
 });
-
+/* 
 bot.onReady(() => {
 	setInterval(
 		(client, channelId) => {
@@ -36,7 +36,7 @@ bot.onReady(() => {
 	);
 	//695356911427780690
 	//358966701548765185
-});
+}); */
 
 bot.register('greet', randomChance(0.5), (msg, client) => {
 	console.log('RANDOMMM');
