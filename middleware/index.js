@@ -1,6 +1,7 @@
-
-export {only} from './only';
-export {randomChance} from './randomChance';
+export { only } from './only';
+export { randomChance } from './randomChance';
+export { parseArgs } from './parseArgs';
+export { onlyIf } from './onlyIf';
 
 /* import fs from 'fs';
 import path from 'path';
@@ -22,4 +23,3 @@ fs.readdirSync(__dirname)
 	});
 
 export default middleware; */
-
