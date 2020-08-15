@@ -5,15 +5,10 @@ import Command from './Command';
 import createMiddleware from './createMiddleware';
 
 const check = (f, fileName) => {
-	console.log(f);
 	if (!f.name) throw new Error(`No command name in ${fileName}`);
 	if (!f.run) throw new Error(`No command run in ${fileName}`);
 	if (f.run.length != 3) throw new Error(`Invalid command length ${f.name}`);
-	if (
-		f.before &&
-		(typeof f.before != 'object' || typeof f.before.length == 'undefined')
-	)
-		//check if f.before is an array
+	if (f.before && !Array.isArray(f.before))
 		throw new Error(`Invalid command middleware (${f.name})`);
 	return true;
 };
@@ -32,11 +27,11 @@ const tryCheck = (command, { skipErrors, fileName }) => {
 function createCommand(commandSchema, prependMiddlewares) {
 	var {
 		name: inputName,
-		aliases,
+		aliases = [],
 		check = {},
 		before = [],
-        run,
-        description = ''
+		run,
+		description = '',
 	} = commandSchema;
 	let name;
 	if (Array.isArray(inputName)) {
@@ -49,8 +44,8 @@ function createCommand(commandSchema, prependMiddlewares) {
 		[name, ...aliases],
 		...[...prependMiddlewares, ...before, createMiddleware(check), run],
 	); //before is user specified, check is constrains
-    c.setDescription(description);
-    return c;
+	c.setDescription(description);
+	return c;
 }
 
 export default (dir, options = { skipErrors: false }, prependMiddlewares) => {
@@ -64,9 +59,18 @@ export default (dir, options = { skipErrors: false }, prependMiddlewares) => {
 			);
 		})
 		.forEach(function (file) {
-			const commandSchema = require(path.resolve(process.cwd(), dir, file));
-			if (tryCheck(commandSchema.default, { ...options, fileName: file })) {
-				const command = createCommand(commandSchema.default, prependMiddlewares);
+			const commandSchema = require(path.resolve(
+				process.cwd(),
+				dir,
+				file,
+			));
+			if (
+				tryCheck(commandSchema.default, { ...options, fileName: file })
+			) {
+				const command = createCommand(
+					commandSchema.default,
+					prependMiddlewares,
+				);
 				commands[command.name] = command;
 			}
 		});

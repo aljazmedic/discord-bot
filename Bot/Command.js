@@ -1,4 +1,4 @@
-import MiddlewareManager from "./MiddlewareManager";
+import MiddlewareManager from './MiddlewareManager';
 export default class Command {
 	constructor(name, ...middleware) {
 		this.mm = new MiddlewareManager();
@@ -8,14 +8,14 @@ export default class Command {
 		} else {
 			this.name = name.shift().toLowerCase();
 			this.aliases = name;
-        }
-        const f = middleware.pop();
+		}
+		const f = middleware.pop();
 		this.runFunction = (msg, client, params) => {
 			if (params.isError) return; //TODO fix; middleware flags commmand error. Implement error handler middleware
 			return f(msg, client, params);
 		};
 		this.mm.use(...middleware);
-		this.description = "";
+		this.description = '';
 	}
 
 	setDescription = (description) => {
@@ -52,10 +52,9 @@ export default class Command {
 		//Leave arrow so this is bind
 		return this.mm.handle(msg, client, params, this.runFunction);
 	};
-
-	toString = () => {
-		return `Command(${this.name} [${this.aliases.join(", ")}], mw: ${
+	toString() {
+		return `Command(${this.name} [${this.aliases.join(', ')}], mw: ${
 			this.mm.stack.length
 		})`;
-	};
+	}
 }

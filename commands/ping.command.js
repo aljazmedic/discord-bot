@@ -1,13 +1,15 @@
 export default {
 	name: "ping", //name of the command
 
-	before: [], // middleware functions
-
 	aliases: ["testp"],
 
 	run: (msg, client, params) => {
 		//final function
-		console.log(params);
+		
+
+		
+        console.log(msg)
+		console.log(params.contextManager.getContext(msg, 'ram-id:5'))
 		msg.reply("pong");
 	},
 };

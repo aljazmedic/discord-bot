@@ -1,6 +1,6 @@
-export function onlyIf(conditionFn) {
+export function onlyIf(conditionFn, ...args) {
 	return (msg, client, params, next) => {
-		if (conditionFn()) {
+		if (conditionFn(...args)) {
 			next();
 		}
 	};

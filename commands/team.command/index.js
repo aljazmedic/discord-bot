@@ -1,56 +1,43 @@
-import { parseNumbers } from "../../Bot/middlewares";
-import teamEmbed from './teamEmbed'
+import { parseNumbers } from '../../Bot/middlewares';
+import teamEmbed from './teamEmbed';
+import { parseArgs } from '../../middleware';
+import { ArgumentParser } from 'argparse';
 
 function shuffle(a) {
 	var j, x, i;
 	for (i = a.length - 1; i > 0; i--) {
 		j = Math.floor(Math.random() * (i + 1));
 		x = a[i];
-		a[i] = a[j];
+		a[i] = a[j]; //[a[i], a[j]] = [a[j], a[i]]
 		a[j] = x;
 	}
 	return a;
 }
 
+const commandParser = new ArgumentParser();
+commandParser.addArgument(['-n', '--numTeams']);
+commandParser.addArgument('--players', { nargs: '+' });
+
 export default {
-	name: "team", //name of the command
+	name: 'team', //name of the command
 
-	before: [parseNumbers], // middleware functions
+	before: [parseArgs(commandParser)], // middleware functions
 
-	aliases: ["teams", "ekipe", "ekipa"],
-
-	check: {
-		minNum: 3,
-
-		args: [
-			(first) => {
-				if (isNaN(first)) {
-					return "must be a number";
-				}
-				if (first < 2) {
-					return "must be greater than 1";
-				}
-			},
-		],
-	},
+	aliases: ['teams', 'ekipe', 'ekipa'],
 
 	run: (msg, client, params) => {
 		//final function
 
 		const n = params.args.shift();
-		const shuffled = shuffle(params.args);
+		const shuffled = shuffle(params.args.filter(e=>e!="" && e != undefined && e).toArray());
 		const ret = {};
 		shuffled.forEach((e, idx) => {
 			const teamNo = `Team no. ${(idx % n) + 1}`;
 			if (!(teamNo in ret)) ret[teamNo] = [];
 			ret[teamNo].push(e);
 		});
-		Object.entries(ret)
-			.forEach(([teamName, team]) => {
-				msg.channel.send(teamEmbed(
-					{name: teamName, team}
-				));
-			})
-
+		Object.entries(ret).forEach(([teamName, team]) => {
+			msg.channel.send(teamEmbed({ name: teamName, team }));
+		});
 	},
 };

@@ -2,24 +2,27 @@ import { Client } from 'discord.js';
 import MiddlewareManager from './MiddlewareManager';
 import ErrorManager from './ErrorManager';
 import Command from './Command';
+import ContextManager from './ContextManager';
 import { parseIdsToObjects } from './middlewares';
 import registerDir from './registerDirectory';
 
-
-
-export {Command};
+export { Command, ContextManager, MiddlewareManager };
 
 export default class Bot {
 	constructor(prefix = '!') {
 		this.prefix = prefix;
 		this.client = new Client();
+		this.client.bot = this;
 		this.mm = new MiddlewareManager();
 		this.em = new ErrorManager();
+		this.cm = new ContextManager();
+
 		this._commands = [];
 		this._commandNames = [];
 		this.client.on('ready', () => {
 			Object.assign(this, this.client);
 		});
+		this.cm.retrieveContexts();
 		this.use(parseIdsToObjects);
 	}
 
@@ -62,6 +65,19 @@ export default class Bot {
 		return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1945619521&scope=bot`;
 	}
 
+	/**
+	 * 
+	 * @param {int} t ms of the time
+	 * @param {function} callback <client, params> Callback to be called every t-milliseconds
+	 * @param {object} params Object to assign params to
+	 */
+	addRepeatingEvent(t, callback, params) {
+		//this callback has to have client and params
+		this.onReady(() => {
+			setInterval(callback, t, this.client, params);
+		});
+	}
+
 	start(token) {
 		this.client.on('message', (msg) => {
 			const { content } = msg;
@@ -76,7 +92,11 @@ export default class Bot {
 						return this.handleMessage(
 							msg,
 							this.client,
-							{ args, call: commandInit },
+							{
+								args,
+								call: commandInit,
+								contextManager: this.cm,
+							},
 							command.run,
 						);
 				}
@@ -97,4 +117,3 @@ export default class Bot {
 		});
 	}
 }
-
