@@ -8,16 +8,15 @@ export default {
 	before: [parseNumbers],
 	description: 'Returns a random value',
 	run: function (msg, client, params) {
-		console.log(params);
 		let message = (n) => `picked a randum number ${n} out of a ${m}`;
 		let m = params.args[0];
-		if (!params.call.alias) {
+		if (!params.trigger.alias) {
             //The command was not called with an alias
 			if (isNaN(m)) {
 				m = 100;
 			}
 		} else {
-			switch (params.call.call) {
+			switch (params.trigger.call) {
                 //aliases define its own max numbers
 				case 'dice':
 					m = 6;
@@ -30,7 +29,7 @@ export default {
 				case 'coin':
 				case 'coinflip':
 					m = 2;
-					message = (n) => `flipped a ${n ? 'heads' : 'tails'}`;
+					message = (n) => `flipped ${n==1 ? 'heads' : 'tails'}`;
 					break;
 			}
 		}

@@ -94,7 +94,7 @@ export default class Bot {
 							this.client,
 							{
 								args,
-								call: commandInit,
+								trigger: commandInit,
 								contextManager: this.cm,
 							},
 							command.run,

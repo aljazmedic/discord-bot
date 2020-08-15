@@ -3,6 +3,7 @@ export default {
 
 	aliases: ['remove'],
 
+	// eslint-disable-next-line no-unused-vars
 	run: (msg, client, params) => {
 		const { channel } = msg;
 		channel.messages

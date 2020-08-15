@@ -15,7 +15,7 @@ function shuffle(a) {
 }
 
 const commandParser = new ArgumentParser();
-commandParser.addArgument(['-n', '--numTeams']);
+commandParser.addArgument(['-n', '--numTeams'], {type:'int'});
 commandParser.addArgument('--players', { nargs: '+' });
 
 export default {
@@ -36,8 +36,8 @@ export default {
 			if (!(teamNo in ret)) ret[teamNo] = [];
 			ret[teamNo].push(e);
 		});
-		Object.entries(ret).forEach(([teamName, team]) => {
-			msg.channel.send(teamEmbed({ name: teamName, team }));
+		Object.entries(ret).forEach(([name, team]) => {
+			msg.channel.send(teamEmbed({ name, team }));
 		});
 	},
 };

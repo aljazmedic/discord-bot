@@ -4,7 +4,7 @@ export function only(dict = {}) {
 			if (msg[k].id !== v) {
 				console.log('Only not passing');
 				next({
-					message: `Attempt to call ${params.call.fn.name} with ${k} = ${msg[k].id} (not ${v})`,
+					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msg[k].id} (not ${v})`,
 				});
 			}
 		});

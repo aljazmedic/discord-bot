@@ -2,6 +2,7 @@ export { only } from './only';
 export { randomChance } from './randomChance';
 export { parseArgs } from './parseArgs';
 export { onlyIf } from './onlyIf';
+export { voice } from './voice';
 
 /* import fs from 'fs';
 import path from 'path';
