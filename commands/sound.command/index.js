@@ -7,6 +7,7 @@ console.log(typeof voice);
 const playFiles = {
 	fart: 'W_FRPoJIrlI',
 	pog: 'FZUcpVmEHuk',
+	elbow: 'pr_kkWVnHoo',
 };
 
 function playAndExit(voiceChannel, src) {
@@ -17,7 +18,7 @@ function playAndExit(voiceChannel, src) {
 				vconnection.disconnect();
 			}
 		});
-	});
+	}).catch(console.error);
 }
 const sm = new SoundManager();
 
@@ -36,6 +37,6 @@ export default {
 		sm.get(playFiles[params.trigger.call])
 		.then((uri) =>
 			playAndExit(voiceChannel, uri),
-		);
+		).catch(console.error)
 	},
 };

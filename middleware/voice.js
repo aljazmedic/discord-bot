@@ -9,25 +9,23 @@ export function voice({ join } = { join: false }) {
 			};
 			next();
 		}
-		const voiceChannel = client.channels.cache.get(cid);
-		console.log('Author in voice: ', voiceChannel.id);
-		const clientIn =
-			voiceChannel.members.find(
-				(guildMember) => {
-                    return guildMember.user.id == client.user.id
-                }
-            )
-            
-		params.voiceChannelInfo = {
-			authorIn: true,
-			channelID: cid,
-			clientIn,
-			channel: voiceChannel,
-		};
+		client.channels.fetch(cid).then((voiceChannel) => {
+			console.log('Author in voice: ', voiceChannel.id);
+			const clientIn = voiceChannel.members.find((guildMember) => {
+				return guildMember.user.id == client.user.id;
+			});
 
-		if (join && !clientIn) {
-			voiceChannel.join();
-        }
-        next();
+			params.voiceChannelInfo = {
+				authorIn: true,
+				channelID: cid,
+				clientIn,
+				channel: voiceChannel,
+			};
+
+			if (join && !clientIn) {
+				voiceChannel.join();
+			}
+			next();
+		});
 	};
 }
