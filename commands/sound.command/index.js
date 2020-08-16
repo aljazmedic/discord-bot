@@ -7,15 +7,7 @@ console.log(typeof voice);
 const optionsForSrc = {
 	meme: { volume: 0.3 },
 };
-
-const playFiles = {
-	fart: { q: 'W_FRPoJIrlI', src: 'yt' },
-	pog: { q: 'FZUcpVmEHuk', src: 'yt' },
-	elbow: { q: 'pr_kkWVnHoo', src: 'yt' },
-	mission: { q: '1Mission Failed.0013', src: 'meme' }, //https://www.memesoundboard.com
-	tbc: { q: '1To%20Be%20Continued.0038', src: 'meme' },
-	gay: { q: '1Im%20G*y.0072', src: 'meme' },
-};
+import playFiles from './data'
 
 function playAndExit(voiceChannel, src, { volume } = { volume: 0.8 }) {
 	voiceChannel
