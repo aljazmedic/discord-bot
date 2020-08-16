@@ -23,7 +23,7 @@ export default class Command {
 	};
 
 	matches = (token) => {
-		if (this.name.startsWith(token))
+		if (this.name == token)
 			return {
 				call: this.name,
 				alias: false,

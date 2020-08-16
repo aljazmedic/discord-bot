@@ -1,51 +1,61 @@
 import ytdl from 'ytdl-core';
 import fs from 'fs';
 import path from 'path';
+import request from 'request';
 
 const storage = path.join(__dirname, `cache`);
 
-const getWriteStreamFormp3 = (filename) =>
+const getWriteStreamFormp3 = (filename, finishResolve) =>
 	new Promise((resolve, reject) => {
 		if (!filename.endsWith('.mp3')) filename = filename + '.mp3';
 		fs.promises
 			.mkdir(path.dirname(filename), { recursive: true }) //naredi folder
 			.then(() => {
-				resolve(
-					fs.createWriteStream(filename, {
-						highWaterMark: 1 << 25,
-					}),
-				); //write stream za mp3
+				const writeStream = fs.createWriteStream(filename, {
+					highWaterMark: 1 << 25,
+				}); //write stream za mp3
+
+				writeStream.on('finish', () => {
+					//ko se zapiše resolva
+					console.log(`finished writing ${filename}`);
+					return finishResolve(filename);
+				});
+
+				return resolve(writeStream);
 			})
 			.catch(reject);
 	});
+
 const sources = {
 	yt: (filename, q) =>
 		//Definiran protokol za pridobivanje videov iz youtuba
 		new Promise((resolve, reject) => {
 			const query = `https://www.youtube.com/watch?v=${q}`;
-			getWriteStreamFormp3(filename)
+			getWriteStreamFormp3(filename, resolve)
 				.then((writeStream) => {
 					ytdl(query, {
 						quality: 'highestaudio',
-                        highWaterMark: 1 << 25,
-                        filter: 'audioonly' 
+						highWaterMark: 1 << 25,
+						filter: 'audioonly',
 					})
 						.pipe(writeStream) //preusmeri v file
 						.on('error', reject);
-					writeStream.on('finish', () => {
-						//ko se zapiše resolva
-						console.log(`finished writing ${filename}`);
-						return resolve(filename);
-					});
 				})
 				.catch(reject);
+		}),
+	meme: (filename, q) =>
+		new Promise((resolve, reject) => {
+			const url = `https://www.memesoundboard.com/sounds/${q}.mp3`;
+			getWriteStreamFormp3(filename, resolve).then((writeStream) => {
+				request.get(url).pipe(writeStream).on('error', reject);
+			});
 		}),
 };
 
 export default class SoundManager {
 	consturctor() {}
 
-	get(q, { src } = { src: 'yt' }) {
+	get({ q,src } = { src: 'yt' }) {
 		return new Promise((resolve, reject) => {
 			if (!Object.keys(sources).includes(src)) {
 				return reject(new Error('invalid source: ' + src));
