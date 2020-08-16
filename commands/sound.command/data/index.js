@@ -6,7 +6,15 @@ const meme = {
 	gay: '1Im%20G*y.0072',
 	nokia: '1Nokia Ringtone.0546',
 	why:'1Why.0065',
-	nice:'1Noice.0084'
+	nice:'1Noice.0084',
+	wasted:'1GTA V Wasted.0224',
+	random:'1Fortnite Default Dance (Ear Rape).0464',
+	enemy:'1Enemy Spotted.0511',
+	psy:'1Psy - Gangnam Style.0627',
+	corona:'1Its Corona Time.0644',
+	call:'1Discord Call.0628',
+	notify:'1Discord Notification.0583'
+
 };
 
 const yt = {
