@@ -5,6 +5,12 @@ import request from 'request';
 
 const storage = path.join(__dirname, `cache`);
 
+const createValidFilename = (src, q)=>{
+    const _q = q.replace(/[*\\/."'&$!() ]/gi, '_a')
+    return path.join(storage, src, _q + '.mp3');
+}
+
+
 const getWriteStreamFormp3 = (filename, finishResolve) =>
 	new Promise((resolve, reject) => {
 		if (!filename.endsWith('.mp3')) filename = filename + '.mp3';
@@ -57,10 +63,11 @@ export default class SoundManager {
 
 	get({ q,src } = { src: 'yt' }) {
 		return new Promise((resolve, reject) => {
+            console.log(`Getting ${q} from ${src}`)
 			if (!Object.keys(sources).includes(src)) {
 				return reject(new Error('invalid source: ' + src));
 			}
-			const filename = path.join(storage, src, q + '.mp3');
+			const filename = createValidFilename(src, q)
 			fs.exists(filename, (exists) => {
 				if (!exists) {
 					sources[src](filename, q).then(resolve).catch(reject);
