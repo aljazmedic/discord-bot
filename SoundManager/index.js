@@ -2,7 +2,7 @@ import ytdl from 'ytdl-core';
 import fs from 'fs';
 import path from 'path';
 
-const storage = path.resolve(`${__dirname}/cache`);
+const storage = path.join(__dirname, `cache`);
 const sources = {
 	yt: (filename, q) =>
 		new Promise((resolve, reject) => {
@@ -26,9 +26,10 @@ export default class SoundManager {
 			if (!Object.keys(sources).includes(src)) {
 				return reject(new Error('invalid source: ' + src));
 			}
-			const filename = path.join(storage, 'yt', q);
-			fs.readFile(path.join(storage, src, q), (err, data) => {
+			const filename = path.join(storage, src, q);
+			fs.readFile(filename, (err, data) => {
 				if (err && err.errno != -4058) {
+                    console.log(err)
 					return reject(err);
 				}
 				if (!data || (err && err.errno == -4058)) {
