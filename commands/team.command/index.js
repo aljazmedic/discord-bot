@@ -29,7 +29,7 @@ export default {
 		//final function
 
 		const n = params.args.shift();
-		const shuffled = shuffle(params.args.filter(e=>e!="" && e != undefined && e).toArray());
+		const shuffled = shuffle(params.args.filter(e=>e!="" && e != undefined && e));
 		const ret = {};
 		shuffled.forEach((e, idx) => {
 			const teamNo = `Team no. ${(idx % n) + 1}`;

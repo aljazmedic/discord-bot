@@ -14,7 +14,6 @@ export function voice({ join } = { join: false }) {
 		const clientIn =
 			voiceChannel.members.find(
 				(guildMember) => {
-                    console.log(guildMember)
                     return guildMember.user.id == client.user.id
                 }
             )
