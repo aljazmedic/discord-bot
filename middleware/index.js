@@ -1,4 +1,4 @@
-export { only } from './only';
+export { only,onlyNot } from './only';
 export { randomChance } from './randomChance';
 export { parseArgs } from './parseArgs';
 export { onlyIf } from './onlyIf';
