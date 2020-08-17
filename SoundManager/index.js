@@ -11,6 +11,11 @@ const createValidFilename = (src, q)=>{
 }
 
 
+/**
+ * 
+ * @param {String} filename Filename for stream
+ * @param {Resolve} finishResolve Final resolve to end parent promise
+ */
 const getWriteStreamFormp3 = (filename, finishResolve) =>
 	new Promise((resolve, reject) => {
 		if (!filename.endsWith('.mp3')) filename = filename + '.mp3';

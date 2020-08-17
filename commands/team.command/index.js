@@ -1,42 +1,47 @@
-import { parseNumbers } from '../../Bot/middlewares';
 import teamEmbed from './teamEmbed';
 import { parseArgs } from '../../middleware';
 import { ArgumentParser } from 'argparse';
-
-function shuffle(a) {
-	var j, x, i;
-	for (i = a.length - 1; i > 0; i--) {
-		j = Math.floor(Math.random() * (i + 1));
-		x = a[i];
-		a[i] = a[j]; //[a[i], a[j]] = [a[j], a[i]]
-		a[j] = x;
-	}
-	return a;
-}
+import toTeams from './toTeams';
+import { voice } from '../../middleware';
 
 const commandParser = new ArgumentParser();
-commandParser.addArgument(['-n', '--numTeams'], {type:'int'});
-commandParser.addArgument('--players', { nargs: '+' });
+commandParser.addArgument(['-n', '--numTeams'], {
+	type: 'int',
+	defaultValue: 2,
+	dest:'n'
+});
+commandParser.addArgument('players', { nargs: '*', defaultValue: [] });
 
 export default {
 	name: 'team', //name of the command
 
-	before: [parseArgs(commandParser)], // middleware functions
+	before: [parseArgs(commandParser), voice()], // middleware functions
 
 	aliases: ['teams', 'ekipe', 'ekipa'],
 
 	run: (msg, client, params) => {
 		//final function
-
-		const n = params.args.shift();
-		const shuffled = shuffle(params.args.filter(e=>e!="" && e != undefined && e));
-		const ret = {};
+		console.log(params.parsed);
+		let { n, players } = params.parsed;
+		players = players.filter((e) => e != '' && e != undefined && e);
+		const teams = {};
+		if (players.length == 0) {
+			// grab from voice
+			const { authorIn, channel } = params.voiceChannelInfo;
+			if (!authorIn) {
+				return msg.reply(`you must be in a voice channel :loud_sound:`);
+			}
+			players = channel.members.map((gm) => gm.user);
+			//console.log("Voice channel:", players)
+		}
+		//use arguments		
+		const shuffled = toTeams(players);
 		shuffled.forEach((e, idx) => {
-			const teamNo = `Team no. ${(idx % n) + 1}`;
-			if (!(teamNo in ret)) ret[teamNo] = [];
-			ret[teamNo].push(e);
+			const teamIdx = `Team no. ${(idx % n) + 1}`;
+			if (!(teamIdx in teams)) teams[teamIdx] = [];
+			teams[teamIdx].push(e);
 		});
-		Object.entries(ret).forEach(([name, team]) => {
+		Object.entries(teams).forEach(([name, team]) => {
 			msg.channel.send(teamEmbed({ name, team }));
 		});
 	},

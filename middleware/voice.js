@@ -5,7 +5,7 @@ export function voice({ join } = { join: false }) {
 			params.voiceChannelInfo = {
 				authorIn: false,
 				channelID: null,
-				voiceChannel: null,
+				channel: null,
 			};
 			next();
 		}
