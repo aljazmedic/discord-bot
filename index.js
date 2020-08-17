@@ -1,6 +1,6 @@
 import Bot from './Bot';
 import { Message } from 'discord.js';
-import { randomChance, only, onlyIf } from './middleware';
+import { randomChance, only, onlyNot, onlyIf } from './middleware';
 
 if (process.env.NODE_ENV == 'development') {
 	require('dotenv').config();
@@ -53,7 +53,11 @@ bot.register(
 	},
 );
 
-bot.registerDirectory('./commands', { skipErrors: false });
+bot.registerDirectory(
+	'./commands',
+	{ skipErrors: false },
+	onlyNot({ guild: '494617599322095637' }, {isDev:process.env.ONLY_DEBUG}),
+);
 bot.registerDirectory(
 	'./commands-dev',
 	{ skipErrors: true },
