@@ -145,7 +145,7 @@ export function renamePlayers(guild, client, team) {
 								oldNick: displayName,
 								thisNick: newName,
 							};
-							return member.setNickname(newName);
+							return member.setNickname(newName).catch(e=>e)
 						}),
 				);
 			})
