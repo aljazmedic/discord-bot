@@ -39,7 +39,6 @@ bot.onReady(() => {
 }); */
 
 bot.register('greet', randomChance(0.5), (msg, client) => {
-	console.log('RANDOMMM');
 	console.log('PARAMS', client);
 	msg.reply('Hi!');
 });

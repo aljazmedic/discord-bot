@@ -3,7 +3,7 @@ import MiddlewareManager from './MiddlewareManager';
 import ErrorManager from './ErrorManager';
 import Command from './Command';
 import ContextManager from './ContextManager';
-import { parseIdsToObjects } from './middlewares';
+import { parseIdsToObjects, withContext } from './middlewares';
 import registerDir from './registerDirectory';
 
 export { Command, ContextManager, MiddlewareManager };
@@ -23,7 +23,7 @@ export default class Bot {
 			Object.assign(this, this.client);
 		});
 		this.cm.retrieveContexts();
-		this.use(parseIdsToObjects);
+		this.use(parseIdsToObjects, withContext(this.cm));
 	}
 
 	handleMessage(msg, client, params, callback) {
@@ -62,15 +62,16 @@ export default class Bot {
 	}
 
 	createInvite() {
-		return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1945619521&scope=bot`;
+		return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1610087760&scope=bot`;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param {int} t ms of the time
 	 * @param {function} callback <client, params> Callback to be called every t-milliseconds
 	 * @param {object} params Object to assign params to
 	 */
+
 	addRepeatingEvent(t, callback, params) {
 		//this callback has to have client and params
 		this.onReady(() => {
@@ -80,6 +81,7 @@ export default class Bot {
 
 	start(token) {
 		this.client.on('message', (msg) => {
+			if (!msg.guild) return; //Only work in guild texts
 			const { content } = msg;
 			if (content.startsWith(this.prefix)) {
 				//Do parsing
@@ -94,8 +96,7 @@ export default class Bot {
 							this.client,
 							{
 								args,
-								trigger: commandInit,
-								contextManager: this.cm,
+								trigger: commandInit
 							},
 							command.run,
 						);

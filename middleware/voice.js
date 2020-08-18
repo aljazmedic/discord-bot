@@ -1,4 +1,5 @@
 export function voice({ join } = { join: false }) {
+	//middleware that gets authors channel and appends it to params, some misc info also
 	return function (msg, client, params, next) {
 		const cid = msg.member.voice.channelID;
 		if (!cid) {

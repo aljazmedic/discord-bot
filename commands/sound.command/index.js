@@ -1,13 +1,11 @@
 import { voice } from '../../middleware';
 import ytdl from 'ytdl-core';
 import SoundManager from '../../SoundManager';
-
-console.log(typeof voice);
+import playFiles from './data'
 
 const optionsForSrc = {
 	meme: { volume: 0.3 },
 };
-import playFiles from './data'
 
 function playAndExit(voiceChannel, src, { volume } = { volume: 0.8 }) {
 	voiceChannel

@@ -14,9 +14,9 @@ const createValidFilename = (src, q)=>{
 /**
  * 
  * @param {String} filename Filename for stream
- * @param {Resolve} finishResolve Final resolve to end parent promise
+ * @param {Resolve} parentResolve Final resolve to end parent promise
  */
-const getWriteStreamFormp3 = (filename, finishResolve) =>
+const getWriteStreamFormp3 = (filename, parentResolve) =>
 	new Promise((resolve, reject) => {
 		if (!filename.endsWith('.mp3')) filename = filename + '.mp3';
 		fs.promises
@@ -29,7 +29,7 @@ const getWriteStreamFormp3 = (filename, finishResolve) =>
 				writeStream.on('finish', () => {
 					//ko se zapiše resolva
 					console.log(`finished writing ${filename}`);
-					return finishResolve(filename);
+					return parentResolve(filename);
 				});
 
 				return resolve(writeStream);

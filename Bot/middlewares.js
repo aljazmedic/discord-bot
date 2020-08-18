@@ -33,3 +33,11 @@ export function parseNumbers(msg, client, params, next) {
 	});
 	next();
 }
+
+export function withContext(contextMgr) {
+	return (msg, client, params, next) => {
+		params.context = contextMgr.forMessage(msg);
+		console.log(params.context)
+		next();
+	};
+}

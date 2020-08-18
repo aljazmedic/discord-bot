@@ -9,7 +9,7 @@ export default {
 
 		
         console.log(msg)
-		console.log(params.contextManager.getContext(msg, 'ram-id:5'))
+		console.log(params.context.get('ram-id:5'))
 		msg.reply("pong");
 	},
 };
