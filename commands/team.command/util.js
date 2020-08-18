@@ -139,18 +139,19 @@ export function renamePlayers(guild, client, team) {
 							const displayName =
 								member.nickname || member.user.username;
 							const newName = `${team.prefix} ${displayName}`;
-							console.log('MEMBER ');
 							const memberId = `${member.id}`;
 							renames[memberId] = {
 								oldNick: displayName,
 								thisNick: newName,
 							};
-							return member.setNickname(newName).catch(e=>e)
+							return member.setNickname(newName).catch((e) => e);
 						}),
 				);
 			})
 			.then((renamedMembers) => {
-				console.log('RESOLVE ', renames);
+				renamedMembers
+					.filter((member) => member instanceof Error)
+					.forEach((e) => console.error(e));
 				return resolve(renames);
 			})
 			.catch(reject);
