@@ -73,7 +73,35 @@ export function createEmbed({ indexName, name, team, color }) {
  * @param {object} team
  */
 
-export function createTeamChannel(guild, client, team) {
+export function createServerTeams(guild, client, teams) {
+	const changes = {
+		roles: [],
+		channels: [],
+		renames: {},
+	};
+
+	return new Promise((resolve, reject) => {
+		Promise.all(
+			teams.map((team) =>
+				Promise.all([
+					createTeamChannel(guild, client, team, changes),
+					renamePlayers(guild, client, team, changes),
+				]),
+			),
+		)
+			.then(() => {
+				resolve(changes);
+			})
+			.catch((e) => reject(e, changes));
+	});
+}
+
+export function createTeamChannel(
+	guild,
+	client,
+	team,
+	chgs = { roles: [], channels: [], renames: {} },
+) {
 	const channelName = `${team.name}'s camp`;
 	const roleName = `${team.prefix}`;
 	const everyOne = guild.roles.everyone;
@@ -87,13 +115,14 @@ export function createTeamChannel(guild, client, team) {
 	const othPerms = PermissionOverwrites.resolveOverwriteOptions({
 		// Disallow Everyone to see, join, invite, or speak
 		CREATE_INSTANT_INVITE: false,
-		VIEW_CHANNEL: false,
+		VIEW_CHANNEL: true,
 		CONNECT: false,
 		SPEAK: false,
 	});
 
+
 	return new Promise((resolve, reject) => {
-		let role;
+		let role, categoryChannel;
 		guild.roles
 			.create({
 				data: {
@@ -103,33 +132,61 @@ export function createTeamChannel(guild, client, team) {
 			})
 			.then((r) => {
 				role = r;
+				chgs.roles.push(role.id);
 				return Promise.all(
 					team.players.map((p) => {
 						guild.member(p).roles.add(role);
 					}),
 				);
 			})
-			.then(() => {
-				return guild.channels.create(channelName, {
-					type: 'voice',
+			.then(()=>{
+				return guild.channels.create(team.prefix, {
+					type:'category',
 					userLimit: team.players.length,
-					permissionOverwrites: [
-						{ id: everyOne, ...othPerms, type: 'role' },
-						{ id: role, ...rolePerms, type: 'role' },
-					],
-					position: 0,
-				});
+					nsfw:true
+				})
 			})
-			.then((channel) => {
-				return resolve([[role.id], [channel.id]]);
+			.then((parent) => {
+				categoryChannel = parent.id;
+				return Promise.all([
+					guild.channels.create(channelName, {
+						type: 'voice',
+						parent,
+						userLimit: team.players.length,
+						permissionOverwrites: [
+							{ id: everyOne, ...othPerms, type: 'role' },
+							{ id: role, ...rolePerms, type: 'role' },
+						],
+						position: 0,
+					}),
+					guild.channels.create(channelName, {
+						type: 'text',
+						parent,
+						userLimit: team.players.length,
+						permissionOverwrites: [
+							{ id: everyOne, ...othPerms, type: 'role' },
+							{ id: role, ...rolePerms, type: 'role' },
+						],
+						position: 0,
+					}),
+				]);
+			})
+			.then((channels) => {
+				chgs.channels.push(categoryChannel, ...channels.map((channel) => channel.id));
+				console.log(chgs);
+				return resolve(chgs);
 			})
 			.catch(reject);
 	});
 }
 
-export function renamePlayers(guild, client, team) {
+export function renamePlayers(
+	guild,
+	client,
+	team,
+	chgs = { roles: [], channels: [], renames: {} },
+) {
 	return new Promise((resolve, reject) => {
-		const renames = {};
 		Promise.all(team.players.map((p) => guild.member(p)))
 			.then((members) => {
 				return Promise.all(
@@ -139,20 +196,38 @@ export function renamePlayers(guild, client, team) {
 							const displayName =
 								member.nickname || member.user.username;
 							const newName = `${team.prefix} ${displayName}`;
-							const memberId = `${member.id}`;
-							renames[memberId] = {
-								oldNick: displayName,
-								thisNick: newName,
-							};
-							return member.setNickname(newName).catch((e) => e);
+							console.log(
+								'ACTION: rename ',
+								displayName,
+								'->',
+								newName,
+							);
+							return new Promise((resolve, reject) => {
+								member
+									.setNickname(newName)
+									.then((m) =>
+										resolve({
+											memberId: m.id,
+											oldNick: displayName,
+											thisNick: newName,
+										}),
+									)
+									.catch((e) => {
+										console.error('Renaming: ', e);
+										return resolve(false);
+									});
+							});
 						}),
 				);
 			})
 			.then((renamedMembers) => {
+				console.log('RM', renamedMembers);
 				renamedMembers
-					.filter((member) => member instanceof Error)
-					.forEach((e) => console.error(e));
-				return resolve(renames);
+					.filter((member) => member != false)
+					.forEach(({ memberId, oldNick, thisNick }) => {
+						chgs.renames[memberId] = { oldNick, thisNick };
+					});
+				return resolve(chgs);
 			})
 			.catch(reject);
 	});

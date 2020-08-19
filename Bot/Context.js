@@ -11,4 +11,8 @@ export default class Context {
 	async create(name, data, options={}) {
 		return this.cm.createContext(this.msg, name, data, options);
 	}
+
+	async set(name, key, value, options={}) {
+		return this.cm.set(this.msg, name, key, value, options);
+	}
 }

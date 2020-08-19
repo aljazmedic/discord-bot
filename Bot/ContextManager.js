@@ -66,11 +66,16 @@ export default class ContextManager {
 		this.contexts = {};
 	}
 
-	createContext = async (msg, name, obj, {iA,iC,iG}={iA:false,iC:false,iG:false}) => {
+	createContext = async (
+		msg,
+		name,
+		obj,
+		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+	) => {
 		return new Promise((resolve, reject) => {
-			const guildId = iG?'_':msg.channel.guild.id,
-				channelId = iC?'_':msg.channel.id,
-				userId = iA?'_':msg.author.id;
+			const guildId = iG ? '_' : msg.channel.guild.id,
+				channelId = iC ? '_' : msg.channel.id,
+				userId = iA ? '_' : msg.author.id;
 
 			deepInsert(this.contexts, obj, guildId, channelId, userId, name);
 
@@ -82,10 +87,42 @@ export default class ContextManager {
 		});
 	};
 
-	getContext(msg, name, {iA,iC,iG}={iA:false,iC:false,iG:false}) {
-		const guildId = iG?'_':msg.channel.guild.id,
-				channelId = iC?'_':msg.channel.id,
-				userId = iA?'_':msg.author.id;
+	async set(
+		msg,
+		name,
+		key,
+		value,
+		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+	) {
+		return new Promise((resolve, reject) => {
+			const guildId = iG ? '_' : msg.channel.guild.id,
+				channelId = iC ? '_' : msg.channel.id,
+				userId = iA ? '_' : msg.author.id;
+			deepInsert(
+				this.contexts,
+				value,
+				guildId,
+				channelId,
+				userId,
+				name,
+				...key.split('.').filter((e) => !!e),
+			);
+			this._save()
+				.then(() => {
+					resolve(this.getContext(msg, name, { iA, iC, iG }));
+				})
+				.catch(reject);
+		});
+	}
+
+	getContext(
+		msg,
+		name,
+		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+	) {
+		const guildId = iG ? '_' : msg.channel.guild.id,
+			channelId = iC ? '_' : msg.channel.id,
+			userId = iA ? '_' : msg.author.id;
 		return deepGet(this.contexts, guildId, channelId, userId, name);
 	}
 
@@ -109,14 +146,12 @@ export default class ContextManager {
 		});
 	};
 
-	forMessage = (msg) =>{
+	forMessage = (msg) => {
 		return new Context(msg, this);
-	}
+	};
 
 	_save = async () => {
 		return new Promise((resolve, reject) => {
-			console.log('Saving');
-
 			fs.writeFile(storage, JSON.stringify(this.contexts), (err) => {
 				if (err) reject(err);
 				resolve();

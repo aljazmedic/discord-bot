@@ -1,4 +1,9 @@
-import { toTeams, createTeamChannel, renamePlayers } from './util';
+import {
+	toTeams,
+	createTeamChannel,
+	renamePlayers,
+	createServerTeams,
+} from './util';
 import { parseArgs } from '../../middleware';
 import { ArgumentParser } from 'argparse';
 import { voice } from '../../middleware';
@@ -22,7 +27,7 @@ export default {
 
 	run: (msg, client, params) => {
 		const lastGame = params.context.get('gameTeams', {
-			iA: true,
+			iA: true,iC:true
 		});
 		console.log(lastGame);
 		if (lastGame)
@@ -54,38 +59,19 @@ export default {
 			msg.channel.send(team.embed);
 		});
 		if (allUsers) {
-			const builtContext = {
-				channels: [],
-				roles: [],
-				renames: {},
-			}; //Saved for later clear
-			Promise.all(
-				teams.map((team) => createTeamChannel(msg.guild, client, team)),
-			)
-				.then((createdRolesAndChannels) => {
-					console.log('CRAC', createdRolesAndChannels);
-					createdRolesAndChannels.forEach(([roles, channels]) => {
-						builtContext.roles.push(...roles);
-						builtContext.channels.push(...channels);
+			createServerTeams(msg.guild, client, teams)
+				.then((changes) => {
+					return params.context.create('gameTeams', changes, {
+						iA: true,iC:true
 					});
-					return Promise.all(
-						teams.map((team) =>
-							renamePlayers(msg.guild, client, team),
-						),
-					);
 				})
-				.then((teamRenames = []) => {
-					console.log('THEN renames', teamRenames);
-					teamRenames.forEach((rename) => {
-						Object.entries(rename).forEach(([k, v]) => {
-							builtContext.renames[k] = v;
-						});
-					});
-					return params.context.create('gameTeams', builtContext, {
+				.catch((e, changes) => {
+					params.context.create('gameTeams', changes, {
 						iA: true,
+						iC:true
 					});
-				})
-				.catch(console.error);
+					console.error(e);
+				});
 		}
 	},
 };
