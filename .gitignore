@@ -108,3 +108,7 @@ dist
 player.txt
 program.py
 proj_info.txt
+
+# .DS_Store because MacOS
+.DS_Store
+
