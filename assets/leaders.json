@@ -1,0 +1,338 @@
+[
+  {
+    "id": "l0",
+    "leader": "Alexander",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/3/33/Alexander_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180216210702",
+    "civilization": "Macedonian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/ca/Macedonian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216092204"
+  },
+  {
+    "id": "l1",
+    "leader": "Amanitore",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b8/Amanitore_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20171027193933",
+    "civilization": "Nubian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/1/10/Nubian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216113720"
+  },
+  {
+    "id": "l2",
+    "leader": "Catherine de Medici",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/06/Catherine_de_Medici_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012602",
+    "civilization": "French",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/fb/French_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216090814"
+  },
+  {
+    "id": "l3",
+    "leader": "Chandragupta",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/e2/Chandragupta_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190710113442",
+    "civilization": "Indian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/5b/Indian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091120"
+  },
+  {
+    "id": "l4",
+    "leader": "Cleopatra",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/98/Cleopatra_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012603",
+    "civilization": "Egyptian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/7b/Egyptian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085750"
+  },
+  {
+    "id": "l5",
+    "leader": "Cyrus",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/1/14/Cyrus_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180227022814",
+    "civilization": "Persian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/cf/Persian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216113709"
+  },
+  {
+    "id": "l6",
+    "leader": "Dido",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/cb/Dido_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219134030",
+    "civilization": "Phoenician",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/1/1d/Phoenician_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190308195812"
+  },
+  {
+    "id": "l7",
+    "leader": "Eleanor of Aquitaine",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/9d/Eleanor_of_Aquitaine_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190622074203",
+    "civilization": "English",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/7e/English_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085802"
+  },
+  {
+    "id": "l8",
+    "leader": "Frederick Barbarossa",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/44/Frederick_Barbarossa_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012603",
+    "civilization": "German",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/ed/German_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216090729"
+  },
+  {
+    "id": "l9",
+    "leader": "Gandhi",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/2/29/Gandhi_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012604",
+    "civilization": "Indian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/5b/Indian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091120"
+  },
+  {
+    "id": "l10",
+    "leader": "Genghis Khan",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/53/Genghis_Khan_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180702224451",
+    "civilization": "Mongolian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/6f/Mongolian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190402205300"
+  },
+  {
+    "id": "l11",
+    "leader": "Gilgamesh",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/ff/Gilgamesh_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012604",
+    "civilization": "Sumerian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/3/3f/Sumerian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216114538"
+  },
+  {
+    "id": "l12",
+    "leader": "Gitarja",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/e8/Gitarja_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20171110022129",
+    "civilization": "Indonesian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/69/Indonesian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091131"
+  },
+  {
+    "id": "l13",
+    "leader": "Gorgo",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/68/Gorgo_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012605",
+    "civilization": "Greek",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/4d/Greek_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216090749"
+  },
+  {
+    "id": "l14",
+    "leader": "Harald Hardrada",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/77/Harald_Hardrada_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012605",
+    "civilization": "Norwegian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/2/28/Norwegian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180804061719"
+  },
+  {
+    "id": "l15",
+    "leader": "Hojo Tokimune",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/07/Hojo_Tokimune_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012605",
+    "civilization": "Japanese",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/5d/Japanese_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091901"
+  },
+  {
+    "id": "l16",
+    "leader": "Jadwiga",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/f6/Jadwiga_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180225192412",
+    "civilization": "Polish",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/2/29/Polish_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135550"
+  },
+  {
+    "id": "l17",
+    "leader": "Jayavarman VII",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/77/Jayavarman_VII_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20171104052227",
+    "civilization": "Khmer",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/a/a0/Khmer_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135747"
+  },
+  {
+    "id": "l18",
+    "leader": "John Curtin",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b9/John_Curtin_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180227141017",
+    "civilization": "Australian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/cf/Australian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403140252"
+  },
+  {
+    "id": "l19",
+    "leader": "Kristina",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/3/32/Kristina_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219134312",
+    "civilization": "Swedish",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/03/Swedish_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219185310"
+  },
+  {
+    "id": "l20",
+    "leader": "Kupe",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/42/Kupe_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219133902",
+    "civilization": "Māori",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/01/M%C4%81ori_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190221162051"
+  },
+  {
+    "id": "l21",
+    "leader": "Lady Six Sky",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/77/Lady_Six_Sky_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200523012819",
+    "civilization": "Mayan",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/2/22/Mayan_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200529130912"
+  },
+  {
+    "id": "l22",
+    "leader": "Lautaro",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/e0/Lautaro_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180312165146",
+    "civilization": "Mapuche",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/ea/Mapuche_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216092228"
+  },
+  {
+    "id": "l23",
+    "leader": "Mansa Musa",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/70/Mansa_Musa_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219134056",
+    "civilization": "Malian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/d/d0/Malian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135627"
+  },
+  {
+    "id": "l24",
+    "leader": "Matthias Corvinus",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/2/25/Matthias_Corvinus_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190218164623",
+    "civilization": "Hungarian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/3/35/Hungarian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135651"
+  },
+  {
+    "id": "l25",
+    "leader": "Menelik II",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/97/Menelik_II_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200723182638",
+    "civilization": "Ethiopian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/78/Ethiopian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200723193253"
+  },
+  {
+    "id": "l26",
+    "leader": "Montezuma",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/1/1e/Montezuma_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012606",
+    "civilization": "Aztec",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b6/Aztec_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216084915"
+  },
+  {
+    "id": "l27",
+    "leader": "Mvemba a Nzinga",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/68/Mvemba_a_Nzinga_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012606",
+    "civilization": "Kongolese",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/d/d6/Kongolese_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091824"
+  },
+  {
+    "id": "l28",
+    "leader": "Pachacuti",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/f2/Pachacuti_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219134237",
+    "civilization": "Incan",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/8/85/Incan_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219141935"
+  },
+  {
+    "id": "l29",
+    "leader": "Pedro II",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/7c/Pedro_II_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012606",
+    "civilization": "Brazilian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/6d/Brazilian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085326"
+  },
+  {
+    "id": "l30",
+    "leader": "Pericles",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/40/Pericles_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012608",
+    "civilization": "Greek",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/4d/Greek_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216090749"
+  },
+  {
+    "id": "l31",
+    "leader": "Peter",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/8/80/Peter_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012608",
+    "civilization": "Russian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/0a/Russian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216114221"
+  },
+  {
+    "id": "l32",
+    "leader": "Philip II",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/59/Philip_II_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012609",
+    "civilization": "Spanish",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/8/80/Spanish_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216114552"
+  },
+  {
+    "id": "l33",
+    "leader": "Poundmaker",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/3/3b/Poundmaker_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180218220056",
+    "civilization": "Cree",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/79/Cree_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085257"
+  },
+  {
+    "id": "l34",
+    "leader": "Qin Shi Huang",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/c3/Qin_Shi_Huang_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012609",
+    "civilization": "Chinese",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/be/Chinese_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403140335"
+  },
+  {
+    "id": "l35",
+    "leader": "Robert the Bruce",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/c4/Robert_the_Bruce_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180305152044",
+    "civilization": "Scottish",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/9f/Scottish_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216114204"
+  },
+  {
+    "id": "l36",
+    "leader": "Saladin",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/57/Saladin_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012610",
+    "civilization": "Arabian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/58/Arabian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135815"
+  },
+  {
+    "id": "l37",
+    "leader": "Seondeok",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/9c/Seondeok_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180215141306",
+    "civilization": "Korean",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/ff/Korean_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216091811"
+  },
+  {
+    "id": "l38",
+    "leader": "Shaka",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/e/eb/Shaka_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180513132001",
+    "civilization": "Zulu",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/0/06/Zulu_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190402205354"
+  },
+  {
+    "id": "l39",
+    "leader": "Simón Bolívar",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/9d/Sim%C3%B3n_Bol%C3%ADvar_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200523004935",
+    "civilization": "Gran Colombian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/d/d6/Gran_Colombian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20200529130453"
+  },
+  {
+    "id": "l40",
+    "leader": "Suleiman",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/8/85/Suleiman_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190218163009",
+    "civilization": "Ottoman",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/7d/Ottoman_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403140350"
+  },
+  {
+    "id": "l41",
+    "leader": "Tamar",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b0/Tamar_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180707181802",
+    "civilization": "Georgian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/c2/Georgian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216090712"
+  },
+  {
+    "id": "l42",
+    "leader": "Teddy Roosevelt",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/70/Teddy_Roosevelt_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190131023159",
+    "civilization": "American",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/9/90/American_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190622074626"
+  },
+  {
+    "id": "l43",
+    "leader": "Tomyris",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/6/6a/Tomyris_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012639",
+    "civilization": "Scythian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/4d/Scythian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190403135721"
+  },
+  {
+    "id": "l44",
+    "leader": "Trajan",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/d/d5/Trajan_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012640",
+    "civilization": "Roman",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/f/f6/Roman_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216114236"
+  },
+  {
+    "id": "l45",
+    "leader": "Victoria",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/53/Victoria_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012640",
+    "civilization": "English",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/7e/English_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085802"
+  },
+  {
+    "id": "l46",
+    "leader": "Wilfrid Laurier",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b0/Wilfrid_Laurier_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190219135026",
+    "civilization": "Canadian",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/c/c2/Canadian_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190308195608"
+  },
+  {
+    "id": "l47",
+    "leader": "Wilhelmina",
+    "imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/4/44/Wilhelmina_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180522204054",
+    "civilization": "Dutch",
+    "civImgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b0/Dutch_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190216085740"
+  }
+]

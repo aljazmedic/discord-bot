@@ -1,0 +1,52 @@
+{
+	"dlcs": [
+		{
+			"id": "d10",
+			"name": "Gathering Storm",
+			"aliases": ["gathering storm", "gs", "GS"]
+		},
+		{
+			"id": "d20",
+			"name": "New Frontier",
+			"aliases": ["new frontier", "nf", "NF"]
+		},
+		{
+			"id": "d30",
+			"name": "Default",
+			"aliases": ["def", "normal"]
+		}
+	],
+	"leaders": [
+		{
+			"id": "01",
+			"name": "Teddy Roosevelt",
+			"aliases": ["teddy roosevelt", "ted", "roosevelt"],
+			"imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/7/70/Teddy_Roosevelt_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20190131023159",
+			"civ": "c10"
+		},
+		{
+			"id": "02",
+			"name": "Saladin",
+			"imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/5/57/Saladin_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20161022012610",
+			"civ": "c20"
+		},
+		{
+			"id": "03",
+			"name": "John Curtin",
+			"imgUrl": "https://vignette.wikia.nocookie.net/civilization/images/b/b9/John_Curtin_%28Civ6%29.png/revision/latest/scale-to-width-down/44?cb=20180227141017",
+			"civ": "c40"
+		}
+	],
+	"civilizations": [
+		{
+			"id": "c10",
+			"name": "America",
+			"alias": ["murica", "america", "amerika"]
+		},
+		{
+			"id": "c20",
+			"name": "Arabia",
+			"alias": ["arabian", "arab", "arabija"]
+		}
+	]
+}
