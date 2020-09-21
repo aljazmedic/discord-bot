@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, MessageEmbed } from 'discord.js';
 import MiddlewareManager from './MiddlewareManager';
 import ErrorManager from './ErrorManager';
 import Command from './Command';
@@ -18,7 +18,7 @@ export default class Bot {
 		this.cm = new ContextManager();
 
 		this._commands = [];
-		this._commandNames = [];
+		this._commandNames = ['help'];
 		this.client.on('ready', () => {
 			Object.assign(this, this.client);
 		});
@@ -80,6 +80,7 @@ export default class Bot {
 	}
 
 	start(token) {
+		this._createHelpCommand();
 		this.client.on('message', (msg) => {
 			if (!msg.guild) return; //Only work in guild texts
 			const { content } = msg;
@@ -96,7 +97,7 @@ export default class Bot {
 							this.client,
 							{
 								args,
-								trigger: commandInit
+								trigger: commandInit,
 							},
 							command.run,
 						);
@@ -116,5 +117,18 @@ export default class Bot {
 			} = c;
 			return { name, description, aliases, 'mw#': stack.length };
 		});
+	}
+
+	_createHelpCommand() {
+		const helpEmbed = new MessageEmbed()
+			.setTitle('Help')
+			.addFields(this._commands.map((command) => command.getHelpField()))
+			.setFooter('aljazmedic | davidbes');
+
+		this._commands.push(
+			new Command('help', (msg) => {
+				msg.reply(helpEmbed);
+			}),
+		);
 	}
 }

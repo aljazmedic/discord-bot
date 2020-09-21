@@ -57,4 +57,10 @@ export default class Command {
 			this.mm.stack.length
 		})`;
 	}
+	getHelpField(){
+		return { 
+			name:`${this.name}`,
+			value:`Also: (${this.aliases.join('|')})${this.description && ("\n"+this.description)}`
+		}
+	}
 }

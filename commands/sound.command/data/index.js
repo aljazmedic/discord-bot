@@ -10,7 +10,7 @@ const meme = {
 	wasted:'1GTA V Wasted.0224',
 	random:'1Fortnite Default Dance (Ear Rape).0464',
 	enemy:'1Enemy Spotted.0511',
-	psy:'1Psy - Gangnam Style.0627',
+	//psy:'1Psy - Gangnam Style.0627',
 	corona:'1Its Corona Time.0644',
 	call:'1Discord Call.0628',
 	notify:'1Discord Notification.0583'

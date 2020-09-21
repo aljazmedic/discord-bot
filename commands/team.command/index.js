@@ -42,7 +42,7 @@ export default {
 		);
 		if (players.length == 0) {
 			// grab from voice
-			const { authorIn, channel } = params.voiceChannelInfo;
+			const { authorIn, channel } = params.voice.dict();
 			if (!authorIn) {
 				return msg.reply(`you must be in a voice channel :loud_sound:`);
 			}

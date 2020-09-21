@@ -1,32 +1,22 @@
-export function voice({ join } = { join: false }) {
+import SoundManager from '../SoundManager';
+
+export function voice({ voice_channel_id } = { voice_channel_id: null }) {
 	//middleware that gets authors channel and appends it to params, some misc info also
 	return function (msg, client, params, next) {
-		const cid = msg.member.voice.channelID;
+		const cid = voice_channel_id || msg.member.voice.channelID;
+		console.log('voice CID ' + cid);
 		if (!cid) {
-			params.voiceChannelInfo = {
-				authorIn: false,
-				channelID: null,
-				channel: null,
-			};
+			params.voice = new SoundManager(client, undefined);
 			next();
+			return;
 		}
-		client.channels.fetch(cid).then((voiceChannel) => {
-			console.log('Author in voice: ', voiceChannel.id);
-			const clientIn = voiceChannel.members.find((guildMember) => {
-				return guildMember.user.id == client.user.id;
-			});
-
-			params.voiceChannelInfo = {
-				authorIn: true,
-				channelID: cid,
-				clientIn,
-				channel: voiceChannel,
-			};
-
-			if (join && !clientIn) {
-				voiceChannel.join();
-			}
-			next();
-		});
+		client.channels
+			.fetch(cid)
+			.then((voiceChannel) => {
+				console.log('Author in voice: ', voiceChannel.id);
+				params.voice = new SoundManager(client, voiceChannel);
+				next();
+			})
+			.catch((err) => next(err));
 	};
 }
