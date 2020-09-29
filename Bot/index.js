@@ -1,12 +1,15 @@
 import { Client, MessageEmbed } from 'discord.js';
+import { createHelpCommand } from './help.command';
+import { createSettingsCommand } from './settings.command';
 import MiddlewareManager from './MiddlewareManager';
 import ErrorManager from './ErrorManager';
+import {msgCtrl} from './messageControls'
 import Command from './Command';
 import ContextManager from './ContextManager';
 import { parseIdsToObjects, withContext } from './middlewares';
 import registerDir from './registerDirectory';
 
-export { Command, ContextManager, MiddlewareManager };
+export { Command, ContextManager, MiddlewareManager,msgCtrl };
 
 export default class Bot {
 	constructor(prefix = '!') {
@@ -18,12 +21,16 @@ export default class Bot {
 		this.cm = new ContextManager();
 
 		this._commands = [];
-		this._commandNames = ['help'];
+		this._commandNames = ['help','settings'];
+		
 		this.client.on('ready', () => {
 			Object.assign(this, this.client);
 		});
 		this.cm.retrieveContexts();
 		this.use(parseIdsToObjects, withContext(this.cm));
+		this.settings = {
+			memeChannel: null,
+		};
 	}
 
 	handleMessage(msg, client, params, callback) {
@@ -80,7 +87,11 @@ export default class Bot {
 	}
 
 	start(token) {
-		this._createHelpCommand();
+		this._commands
+		.push(
+			createHelpCommand(this._commands),
+			createSettingsCommand()
+			);
 		this.client.on('message', (msg) => {
 			if (!msg.guild) return; //Only work in guild texts
 			const { content } = msg;
@@ -98,8 +109,9 @@ export default class Bot {
 							{
 								args,
 								trigger: commandInit,
+								settings: this.settings
 							},
-							command.run,
+							command.run
 						);
 				}
 			}
@@ -117,18 +129,5 @@ export default class Bot {
 			} = c;
 			return { name, description, aliases, 'mw#': stack.length };
 		});
-	}
-
-	_createHelpCommand() {
-		const helpEmbed = new MessageEmbed()
-			.setTitle('Help')
-			.addFields(this._commands.map((command) => command.getHelpField()))
-			.setFooter('aljazmedic | davidbes');
-
-		this._commands.push(
-			new Command('help', (msg) => {
-				msg.reply(helpEmbed);
-			}),
-		);
 	}
 }
