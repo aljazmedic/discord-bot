@@ -13,7 +13,7 @@ export default {
 					messages.filter(
 						(m) =>
 							m.author.id == client.user.id ||
-							m.content.startsWith(client.bot.prefix),
+							client.bot.isBotCommand(m.content),
 					),
 				);
 			})

@@ -5,7 +5,8 @@ export function msgCtrl(msg, client, emojiFnDict) {
 			Object.keys(emojiFnDict).includes(reaction.emoji.name),
 		{ max: 1, time: 30000 },
 	).then((collected) => {
-		const emojiName = collected.first().emoji.name;
+        const {emoji:{name:emojiName = false}} = collected.first();
+        if(!emojiName) return;
 		emojiFnDict[emojiName](msg, client, {
 			trigger: { reaction: emojiName, collected },
 		});

@@ -1,6 +1,5 @@
-
 import Bot, { msgCtrl } from './Bot';
-import {selfDeleteMW} from './Bot/messageControls'
+import { selfDeleteMW } from './Bot/messageControls';
 import { Message } from 'discord.js';
 import { randomChance, only, onlyNot, onlyIf } from './middleware';
 
@@ -45,22 +44,21 @@ bot.register('greet', randomChance(0.5), (msg, client) => {
 	msg.reply('Hi!');
 });
 //358966701548765185
-bot.register(
-	'em',
-	selfDeleteMW,
-	(msg, client, params) => {
-		msg.awaitReactions(() => 1, { max: 1, time: 30000 }).then(
-			(collected) => {
-				console.log('COLLECTED:', collected);
-			},
-		);
-		msgCtrl(msg, client, {
-			'💪': (msg, client, par) => {
-				msg.reply('Reacted with :muscle:');
-			},
-		});
-	},
-);
+bot.register('em', selfDeleteMW, (msg, client, params) => {
+	msg.awaitReactions(() => 1, { max: 1, time: 30000 }).then((collected) => {
+		console.log('COLLECTED:', collected);
+	});
+	msgCtrl(msg, client, {
+		'💪': (msg, client, par) => {
+			msg.reply('Reacted with :muscle:');
+		},
+		'❤': (msg, client, par) => {
+			msg.reply(' I love you too!').then((message) => 
+				message.delete({ timeout: 5000 })
+			).then(()=>msg.delete());
+		},
+	});
+});
 
 bot.registerDirectory(
 	'./commands',

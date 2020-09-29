@@ -3,13 +3,13 @@ import { createHelpCommand } from './help.command';
 import { createSettingsCommand } from './settings.command';
 import MiddlewareManager from './MiddlewareManager';
 import ErrorManager from './ErrorManager';
-import {msgCtrl} from './messageControls'
+import { msgCtrl } from './messageControls';
 import Command from './Command';
 import ContextManager from './ContextManager';
 import { parseIdsToObjects, withContext } from './middlewares';
 import registerDir from './registerDirectory';
 
-export { Command, ContextManager, MiddlewareManager,msgCtrl };
+export { Command, ContextManager, MiddlewareManager, msgCtrl };
 
 export default class Bot {
 	constructor(prefix = '!') {
@@ -21,8 +21,8 @@ export default class Bot {
 		this.cm = new ContextManager();
 
 		this._commands = [];
-		this._commandNames = ['help','settings'];
-		
+		this._commandNames = ['help', 'settings'];
+
 		this.client.on('ready', () => {
 			Object.assign(this, this.client);
 		});
@@ -86,12 +86,21 @@ export default class Bot {
 		});
 	}
 
+	isBotCommand(content) {
+		if (!content.startsWith(this.prefix)) return false;
+		const args = content.substr(this.prefix.length || 0).split(' ');
+		const commandName = args.shift();
+		for (let i = 0; i < this._commands.length; i++) {
+			if (this._commands[i].matches(commandName)) return true;
+		}
+		return false;
+	}
+
 	start(token) {
-		this._commands
-		.push(
+		this._commands.push(
 			createHelpCommand(this._commands),
-			createSettingsCommand()
-			);
+			createSettingsCommand(),
+		);
 		this.client.on('message', (msg) => {
 			if (!msg.guild) return; //Only work in guild texts
 			const { content } = msg;
@@ -109,9 +118,9 @@ export default class Bot {
 							{
 								args,
 								trigger: commandInit,
-								settings: this.settings
+								settings: this.settings,
 							},
-							command.run
+							command.run,
 						);
 				}
 			}
