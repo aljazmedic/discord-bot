@@ -25,7 +25,8 @@ const yt = {
 	imposter:'uG45me0ekts',
 	vent:'fqueLrX1JhA',
 	flash:'cW2v3CfvTPQ',
-	ss:'0guRGN9o0Qg'
+	ss:'0guRGN9o0Qg',
+	slain:'EYO2bSrrLpk'
 };
 
 Object.entries(meme).forEach(([k, v]) => {
