@@ -1,16 +1,21 @@
 export function msgCtrl(msg, client, emojiFnDict) {
-	msg.awaitReactions(
-		(reaction, user) =>
-			user.id == msg.author.id &&
-			Object.keys(emojiFnDict).includes(reaction.emoji.name),
-		{ max: 1, time: 30000 },
-	).then((collected) => {
-        const {emoji:{name:emojiName = false}} = collected.first();
-        if(!emojiName) return;
-		emojiFnDict[emojiName](msg, client, {
-			trigger: { reaction: emojiName, collected },
-		});
-	});
+	Object.entries(emojiFnDict).forEach(([emoji, emojiFn]) =>
+		msg
+			.awaitReactions(
+				(reaction, user) =>
+					user.id == msg.author.id && reaction.emoji.name == emoji,
+				{ max: 1, time: 30000 },
+			)
+			.then((collected) => {
+				const {
+					emoji: { name = false },
+				} = collected.first();
+				if (!name) return;
+				emojiFn(msg, client, {
+					trigger: { reaction: name, collected },
+				});
+			}),
+	);
 
 	return Promise.all(
 		Object.keys(emojiFnDict).map((emoji) =>

@@ -21,6 +21,9 @@ const yt = {
 	fart: 'W_FRPoJIrlI',
 	pog: 'FZUcpVmEHuk',
 	elbow: 'pr_kkWVnHoo',
+	meet:'Pdgam-JtQKo',
+	imposter:'uG45me0ekts',
+	vent:'fqueLrX1JhA',
 };
 
 Object.entries(meme).forEach(([k, v]) => {
