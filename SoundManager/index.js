@@ -73,14 +73,17 @@ const sources = {
 };
 
 export default class SoundManager {
+	STAY_IN_VOICE_TIME = 3 * 1000;
 	constructor(client, voiceChannel) {
 		this.channel = voiceChannel;
+		this.client = client;
 		this.authorIn = voiceChannel != undefined;
 		this.botIn =
 			voiceChannel &&
 			voiceChannel.members.find((guildMember) => {
 				return guildMember.user.id == client.user.id;
 			});
+		this.dcTimeoutId = undefined;
 	}
 
 	get({ q, src, ext = 'mp3' } = { src: 'yt' }) {
@@ -103,13 +106,29 @@ export default class SoundManager {
 
 	say(uri, { volume } = { volume: 0.8 }) {
 		console.log('Saying: ' + uri);
+		this.client.clearTimeout(this.dcTimeoutId);
+		this.dcTimeoutId = undefined;
 		return this.channel
 			.join()
 			.then((vconnection) => {
 				const dispatcher = vconnection.play(uri, { volume });
 				dispatcher.on('speaking', (spk) => {
 					if (!spk) {
-						vconnection.disconnect();
+						this.dcTimeoutId = this.client.setTimeout(
+							(channel,client) => {
+								let { id:channelID } = channel; // Get the user's voice channel I
+								if (channelID) {
+									// Find an existing connection to that channel
+									let connection = client.voice.connections.find(
+										(conn) => conn.channel.id == channelID,
+									);
+									if (connection)
+										// If you find one, use .disconnect()
+										connection.disconnect();
+								}
+							},
+							this.STAY_IN_VOICE_TIME,this.channel,this.client
+						);
 					}
 				});
 			})
@@ -121,7 +140,7 @@ export default class SoundManager {
 			channel: this.channel,
 			authorIn: this.authorIn,
 			say: this.say,
-			botIn:this.botIn
+			botIn: this.botIn,
 		};
 	}
 }

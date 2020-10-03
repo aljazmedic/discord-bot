@@ -1,26 +1,9 @@
 import { voice } from '../../middleware';
-import ytdl from 'ytdl-core';
-import SoundManager from '../../SoundManager';
 import playFiles from './data';
 
 const optionsForSrc = {
 	meme: { volume: 0.3 },
 };
-
-function playAndExit(voiceChannel, src, { volume } = { volume: 0.8 }) {
-	voiceChannel
-		.join()
-		.then((vconnection) => {
-			const dispatcher = vconnection.play(src, { volume });
-			dispatcher.on('speaking', (spk) => {
-				if (!spk) {
-					vconnection.disconnect();
-				}
-			});
-		})
-		.catch(console.error);
-}
-const sm = new SoundManager();
 
 export default {
 	name: ['p', 'play', 'dc'], //name of the command
@@ -39,8 +22,7 @@ export default {
 				`pick a sound! (${Object.keys(playFiles).join(' | ')} )`,
 			);
 		}
-
-		console.log(`${authorIn} ${voiceChannel}`);
+		
 		if (!authorIn) {
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
