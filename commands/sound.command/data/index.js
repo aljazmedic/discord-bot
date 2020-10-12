@@ -14,7 +14,6 @@ const meme = {
 	corona:'1Its Corona Time.0644',
 	call:'1Discord Call.0628',
 	notify:'1Discord Notification.0583'
-
 };
 
 const yt = {
@@ -26,7 +25,9 @@ const yt = {
 	vent:'fqueLrX1JhA',
 	flash:'cW2v3CfvTPQ',
 	ss:'0guRGN9o0Qg',
-	slain:'EYO2bSrrLpk'
+	slain:'EYO2bSrrLpk',
+	nutz:'66I78hXXwvk',
+	faces:'VWN2elZK3VE'
 };
 
 Object.entries(meme).forEach(([k, v]) => {
