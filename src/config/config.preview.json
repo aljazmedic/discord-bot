@@ -1,0 +1,13 @@
+{
+    "[NODE_ENV]":{
+        "sql":{
+            "database":"<...>",
+            "username":"<...>",
+            "password":"<...>",
+            "host": "127.0.0.1",
+            "dialect": "mysql"
+        },
+        "discord_token":"<...>"
+    },
+    "[NODE_ENV_2]":"..."
+}
