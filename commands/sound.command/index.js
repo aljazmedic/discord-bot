@@ -6,15 +6,21 @@ const optionsForSrc = {
 };
 
 export default {
-	name: ['p', 'play', 'dc'], //name of the command
+	name: ['p', 'play', 'dc','fuckoff'], //name of the command
 
 	before: [voice()],
 	run: (msg, client, params) => {
 		const { authorIn, botIn, channel: voiceChannel } = params.voice.dict();
-
-		if (params.trigger.call == 'dc') {
-			if (botIn) params.voice.channel.leave();
-			return;
+		switch(params.trigger.call){
+			case 'fuckoff':
+				msg.reply(':middle_finger:')
+				.then((msg) => {
+					msg.delete({ timeout: 1000 });
+				});
+			// eslint-disable-next-line no-fallthrough
+			case 'dc':
+				if (botIn) params.voice.channel.leave();
+				return;
 		}
 
 		if (params.args.length == 0) {
