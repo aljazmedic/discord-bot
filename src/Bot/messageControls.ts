@@ -1,6 +1,6 @@
-import { Client, Message } from 'discord.js';
+import { Client, Collection, Message, MessageReaction } from 'discord.js';
 import {CommandFunction, CommandParameters} from './Command'
-import { NextFunction } from './MiddlewareManager';
+import { MiddlewareFunction, NextFunction } from './MiddlewareManager';
 
 export function msgCtrl(msg:Message, client:Client, emojiFnDict:IEmojiStringDict) {
 	Object.entries(emojiFnDict).forEach(([emoji, emojiFn]) =>
@@ -13,7 +13,7 @@ export function msgCtrl(msg:Message, client:Client, emojiFnDict:IEmojiStringDict
 			.then((collected) => {
 				const {
 					emoji: { name = false },
-				} = collected.first();
+				} = <MessageReaction> collected.first();
 				if (!name) return;
 				emojiFn(msg, client, {
 					trigger: { reaction: name, collected },
@@ -31,16 +31,28 @@ export function msgCtrl(msg:Message, client:Client, emojiFnDict:IEmojiStringDict
 }
 
 export function selfDeleteCtrl(msg:Message, client:Client) {
-	return msgCtrl(msg, client, {
+	const deleteEmojiDict:IEmojiStringDict ={
 		'🗑': (msg, client, params) => msg.delete(),
-	});
+	}
+	return msgCtrl(msg, client, deleteEmojiDict);
 }
 
-export function selfDeleteMW(msg:Message, client:Client, params:CommandParameters, next:NextFunction) {
+export const selfDeleteMW:MiddlewareFunction =  (msg, client, params, next)=> {
 	selfDeleteCtrl(msg, client);
 	next();
 }
 
 export interface IEmojiStringDict{
-	[index:string]:CommandFunction
+	[index:string]:EmojiCommand
+}
+
+export interface EmojiCommandParameters{
+	trigger:{
+		reaction:string,
+		collected:Collection<string, MessageReaction>
+	},
+}
+
+export interface EmojiCommand{
+	(msg:Message, client:Client, params:EmojiCommandParameters):void,	
 }

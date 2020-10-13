@@ -2,9 +2,9 @@
 //requires all other files in this directory
 import { readdirSync } from 'fs';
 import path from 'path';
-import Sequelize, { DataTypes } from 'sequelize';
+import SeqLib, { Sequelize,DataTypes } from 'sequelize';
 
-const {NODE_ENV} = process.env;
+const NODE_ENV = <string>process.env.NODE_ENV;
 const {sql:config} = require('../../config/config.json')[NODE_ENV] || {sql:{}};
 
 var sequelize = new Sequelize(
@@ -14,7 +14,7 @@ var sequelize = new Sequelize(
 	config,
 );
 /* global db:false */
-var db = {};
+const db:DiscordDatabase = {};
 
 readdirSync(__dirname)
 	.filter(function (file) {
@@ -40,4 +40,8 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 export default db;
-global.db = db;
+
+
+export interface DiscordDatabase{
+	[index:string]:any
+}

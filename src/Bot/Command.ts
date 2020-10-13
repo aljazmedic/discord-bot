@@ -1,20 +1,22 @@
-import { Message,Client } from 'discord.js';
+import { Message,Client, Channel, Role,User } from 'discord.js';
+import Context from './Context';
+import { EmojiCommandParameters } from './messageControls';
 import MiddlewareManager, {MiddlewareFunction} from './MiddlewareManager';
 
 export default class Command {
 	mm: MiddlewareManager;
 	name: string;
 	aliases: string[];
-	runFunction: MiddlewareFunction;
+	runFunction: CommandFunction;
 	description: string;
-	constructor(name:string[] | string, ...middleware: MiddlewareFunction[]) {
+	constructor(name:string[] | string, ...middleware: (MiddlewareFunction|CommandFunction)[]) {
 		this.mm = new MiddlewareManager();
 		let _name:string[] = !Array.isArray(name) ? [name.toLowerCase()]: name;
-		this.name = _name.shift().toLowerCase();
+		this.name = <string> _name.shift()?.toLowerCase();
 		this.aliases = _name;
 		
-		const f = middleware.pop();
-		this.runFunction = (msg, client, params) => {
+		const f:CommandFunction = <CommandFunction>middleware.pop();
+		this.runFunction = (msg:Message, client:Client, params:CommandParameters) => {
 			if (params.isError) return; //TODO fix; middleware flags commmand error. Implement error handler middleware
 			return f(msg, client, params);
 		};
@@ -22,11 +24,11 @@ export default class Command {
 		this.description = '';
 	}
 
-	setDescription = (description) => {
+	setDescription = (description:string) => {
 		this.description = description;
 	};
 
-	matches = (token) => {
+	matches = (token:string):CommandMatch|undefined => {
 		if (this.name == token)
 			return {
 				call: this.name,
@@ -48,11 +50,11 @@ export default class Command {
 		return undefined;
 	};
 
-	use = (...middlewares) => {
+	use = (...middlewares:(MiddlewareFunction|CommandFunction)[]) => {
 		return this.mm.use(...middlewares);
 	};
 
-	run = (msg, client, params:CommandParameters) => {
+	run:CommandFunction = (msg, client, params) => {
 		//Leave arrow so this is bind
 		return this.mm.handle(msg, client, params, this.runFunction);
 	};
@@ -70,9 +72,25 @@ export default class Command {
 }
 
 export interface CommandParameters{
-	args:string[]
+	context?: Context;
+	args:Argument[],
+	entities:{[index:number]:Channel|User|Role},
+	trigger:CommandMatch,
+	settings:{
+
+	},
+	isError?:boolean
 }
+
+export type CommandMatch = {
+	call: string,
+	alias: boolean,
+	fn: Command,
+};
+
 
 export interface CommandFunction{
 	(msg:Message, client:Client, params:CommandParameters):void,	
 }
+
+export type Argument = string | number | Channel | User | Role;

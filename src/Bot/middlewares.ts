@@ -1,9 +1,9 @@
-import { Client, Message } from 'discord.js';
+import { Channel, Client, Message, Role, User } from 'discord.js';
 import { CommandParameters } from './Command';
-import { ContextManager } from './ContextManager';
-import { NextFunction } from './MiddlewareManager';
+import ContextManager from './ContextManager';
+import { MiddlewareFunction, NextFunction } from './MiddlewareManager';
 
-function getEntityFromText(msg:Message, client:Client, mention) {
+function getEntityFromText(msg: Message, client: Client, mention: string): Channel | User | Role | undefined {
 	const userMatch = mention.match(/^<@!?(\d+)>$/);
 	if (userMatch) return msg.mentions.users.get(userMatch[1]);
 
@@ -13,32 +13,34 @@ function getEntityFromText(msg:Message, client:Client, mention) {
 	const channelMatch = mention.match(/^<#(\d+)>$/);
 	if (channelMatch) return client.channels.cache.get(channelMatch[1]);
 
-	return null;
+	return undefined;
 }
 
-export function parseIdsToObjects(msg:Message, client:Client, params:CommandParameters, next:NextFunction) {
+export const parseIdsToObjects: MiddlewareFunction = (msg, client, params, next) => {
 	// Middleware that parses args with cache
 	params.entities = {};
-	const args = params.args || [];
-	args.forEach((arg:string | number | undefined, idx:number) => {
-		const u = getEntityFromText(msg, client, arg);
+	const _args = params.args;
+	_args.forEach((arg, idx: number) => {
+		const u = getEntityFromText(msg, client, <string>arg);
 		if (u) {
-			params.args[idx] = params.entities[idx] = u;
+			params.args[idx] = u;
+			params.entities[idx] = u;
 		}
 	});
 	next();
 }
 
-export function parseNumbers(msg:Message, client:Client, params:CommandParameters, next:NextFunction) {
+export const parseNumbers: MiddlewareFunction = (msg, client, params, next) => {
 	// Middleware that parses args
 	params.args = params.args.map((part) => {
-		return isNaN(part) || typeof part == 'object' ? part : parseFloat(part);
+		return (typeof part == 'object') ? part :
+			typeof part == 'string' && !Number.isNaN(Number(part)) ? parseFloat(part) : part;
 	});
 	next();
 }
 
-export function withContext(contextMgr) {
-	return (msg, client:Client, params, next) => {
+export function withContext(contextMgr: ContextManager): MiddlewareFunction {
+	return (msg, client: Client, params, next) => {
 		params.context = contextMgr.forMessage(msg);
 		next();
 	};

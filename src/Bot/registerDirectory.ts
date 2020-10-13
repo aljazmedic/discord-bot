@@ -1,10 +1,11 @@
 //requires all other files in this directory
 import fs from 'fs';
 import path from 'path';
-import Command from './Command';
-import createMiddleware from './createMiddleware';
+import Command, { CommandFunction } from './Command';
+import createMiddleware, { CreateMiddlewareOptions } from './createMiddleware';
+import { MiddlewareFunction } from './MiddlewareManager';
 
-const check = (f, fileName) => {
+const check = (f:CommandSchema, fileName:string) => {
 	if (!f.name) throw new Error(`No command name in ${fileName}`);
 	if (!f.run) throw new Error(`No command run in ${fileName}`);
 	if (f.run.length != 3) throw new Error(`Invalid command length ${f.name}`);
@@ -13,7 +14,7 @@ const check = (f, fileName) => {
 	return true;
 };
 
-const tryCheck = (command, { skipErrors, fileName }) => {
+const tryCheck = (command:CommandSchema, { skipErrors, fileName }:{skipErrors:boolean, fileName:string}) => {
 	try {
 		return check(command, fileName);
 	} catch (e) {
@@ -24,7 +25,16 @@ const tryCheck = (command, { skipErrors, fileName }) => {
 	return false;
 };
 
-function createCommand(commandSchema, prependMiddlewares) {
+interface CommandSchema{
+	name: string,
+	aliases: string[],
+	check: CreateMiddlewareOptions,
+	before: MiddlewareFunction[],
+	run:CommandFunction,
+	description?:string,
+}
+
+function createCommand(commandSchema:CommandSchema, prependMiddlewares:MiddlewareFunction[]) {
 	var {
 		name: inputName,
 		aliases = [],
@@ -48,8 +58,8 @@ function createCommand(commandSchema, prependMiddlewares) {
 	return c;
 }
 
-export default (dir, options = { skipErrors: false }, prependMiddlewares) => {
-	const commands = [];
+export default (dir:fs.PathLike, options = { skipErrors: false }, prependMiddlewares:MiddlewareFunction[]) => {
+	const commands:{[index:string]:Command} = {};
 	fs.readdirSync(dir)
 		.filter(function (file) {
 			return (
@@ -61,7 +71,7 @@ export default (dir, options = { skipErrors: false }, prependMiddlewares) => {
 		.forEach(function (file) {
 			const commandSchema = require(path.resolve(
 				process.cwd(),
-				dir,
+				<string>dir,
 				file,
 			));
 			if (

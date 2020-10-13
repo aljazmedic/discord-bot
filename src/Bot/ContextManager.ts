@@ -1,12 +1,13 @@
 'use strict';
 
+import { Message, TextChannel, VoiceChannel } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import Context from './Context';
 
 const storage = path.join(__dirname, 'cache', 'contexts.json');
 
-const createIfNoExist = (pth) => {
+const createIfNoExist = (pth: string) => {
 	return new Promise((resolve, reject) => {
 		fs.exists(path.basename(pth), (e) => {
 			if (!e) {
@@ -39,41 +40,42 @@ const createIfNoExist = (pth) => {
 
 } */
 
-const deepInsert = (d, v, ...path) => {
-	let ptr = d,
+const deepInsert = (d: ContextDict, v: string, ...path: string[]) => {
+	let ptr: ContextDict = d,
 		i;
 	for (i = 0; i < path.length - 1; i++) {
 		const e = path[i];
 		if (!(e in ptr)) ptr[e] = {};
-		ptr = ptr[e];
+		ptr = <ContextDict>ptr[e];
 	}
 	ptr[path[i]] = v;
 };
 
-const deepGet = (d, ...path) => {
+const deepGet = (d: ContextDict, ...path: string[]) => {
 	let ptr = d,
 		i;
 	for (i = 0; i < path.length; i++) {
 		const e = path[i];
 		if (!(e in ptr)) return undefined;
-		ptr = ptr[e];
+		ptr = <ContextDict>ptr[e];
 	}
 	return ptr;
 };
 
 export default class ContextManager {
+	contexts: {};
 	constructor() {
 		this.contexts = {};
 	}
 
 	createContext = async (
-		msg,
-		name,
-		obj,
-		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+		msg: Message,
+		name: any,
+		obj: any,
+		{ iA, iC, iG }:ContextIgnoreDict = { iA: false, iC: false, iG: false },
 	) => {
 		return new Promise((resolve, reject) => {
-			const guildId = iG ? '_' : msg.channel.guild.id,
+			const guildId = iG ? '_' : (<TextChannel>msg.channel).guild.id,
 				channelId = iC ? '_' : msg.channel.id,
 				userId = iA ? '_' : msg.author.id;
 
@@ -88,14 +90,14 @@ export default class ContextManager {
 	};
 
 	async set(
-		msg,
-		name,
-		key,
-		value,
-		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+		msg: Message,
+		name: string,
+		key: string,
+		value: any,
+		{ iA, iC, iG }:ContextIgnoreDict = { iA: false, iC: false, iG: false },
 	) {
 		return new Promise((resolve, reject) => {
-			const guildId = iG ? '_' : msg.channel.guild.id,
+			const guildId = iG ? '_' : (<TextChannel>msg.channel).guild.id,
 				channelId = iC ? '_' : msg.channel.id,
 				userId = iA ? '_' : msg.author.id;
 			deepInsert(
@@ -116,11 +118,11 @@ export default class ContextManager {
 	}
 
 	getContext(
-		msg,
-		name,
-		{ iA, iC, iG } = { iA: false, iC: false, iG: false },
+		msg: Message,
+		name: string,
+		{ iA, iC, iG }: ContextIgnoreDict = { iA: false, iC: false, iG: false },
 	) {
-		const guildId = iG ? '_' : msg.channel.guild.id,
+		const guildId = iG ? '_' : (<TextChannel>msg.channel).guild.id,
 			channelId = iC ? '_' : msg.channel.id,
 			userId = iA ? '_' : msg.author.id;
 		return deepGet(this.contexts, guildId, channelId, userId, name);
@@ -132,10 +134,10 @@ export default class ContextManager {
 				resolve(this.contexts);
 			}
 
-			fs.readFile(storage, (err, data) => {
+			fs.readFile(storage, (err, data: Buffer) => {
 				if (err) reject(err);
 				try {
-					this.contexts = JSON.parse(data);
+					this.contexts = JSON.parse(data.toString());
 				} catch (err) {
 					console.error(err);
 					this.contexts = {};
@@ -146,7 +148,7 @@ export default class ContextManager {
 		});
 	};
 
-	forMessage = (msg) => {
+	forMessage = (msg: Message) => {
 		return new Context(msg, this);
 	};
 
@@ -165,3 +167,13 @@ fs.exists(storage, (exists) => {
 		fs.writeFileSync(storage, '{}');
 	}
 });
+
+export interface ContextDict {
+	[index: string]: ContextDict | string | {}
+}
+
+export interface ContextIgnoreDict {
+	iA?: boolean
+	iC?: boolean
+	iG?: boolean
+}

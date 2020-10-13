@@ -1,12 +1,29 @@
-export function onlyIn(dict = {}, { isDev } = { isDev: false }) {
+import { Channel, Guild, Message, TextChannel, User } from "discord.js";
+import { MiddlewareFunction } from "../Bot/MiddlewareManager";
+
+function getMessageProperty(msg:Message, prop:string):User|TextChannel|Guild|null{
+	switch(prop){
+		case 'guild':
+			return msg.guild;
+		case 'channel':
+			return <TextChannel>msg.channel;
+		case 'user':
+			return msg.author;
+		default:
+			return null;
+	}
+}
+
+export function onlyIn(dict:OnlyDict = {}, { isDev } = { isDev: false }):MiddlewareFunction {
 	return (msg, client, params, next) => {
 		if (isDev) return next();
 		Object.entries(dict).forEach(([k, v]) => {
-			if (!msg[k]) return;
-			if (msg[k].id !== v) {
+			const msgRelated:User|Channel|Guild|null = getMessageProperty(msg,k);
+			if (msgRelated && msgRelated.id !== v) {
 				console.log('Only not passing');
 				next({
-					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msg[k].id} (not ${v})`,
+					name:'OnlyPrevented',
+					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msgRelated.id} (not ${v})`,
 				});
 			}
 		});
@@ -14,15 +31,16 @@ export function onlyIn(dict = {}, { isDev } = { isDev: false }) {
 	};
 }
 
-export function onlyNot(dict = {}, { isDev } = { isDev: false }) {
+export function onlyNot(dict:OnlyDict = {}, { isDev } = { isDev: false }):MiddlewareFunction {
 	return (msg, client, params, next) => {
 		if (isDev) return next();
 		Object.entries(dict).forEach(([k, v]) => {
-			if (!msg[k]) return;
-			if (msg[k].id === v) {
+			const msgRelated:User|Channel|Guild|null = getMessageProperty(msg,k);
+			if (msgRelated && msgRelated.id === v) {
 				console.log('Invalid ${k} = ${msg[k].id}');
 				next({
-					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msg[k].id} (Prohibited)`,
+					name:'OnlyPrevented',
+					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msgRelated.id} (Prohibited)`,
 				});
 			}
 		});
@@ -31,10 +49,16 @@ export function onlyNot(dict = {}, { isDev } = { isDev: false }) {
 }
 
 
-export function onlyIf(conditionFn, ...args) {
+export function onlyIf(conditionFn:Function, ...args:any[]):MiddlewareFunction {
 	return (msg, client, params, next) => {
 		if (conditionFn(...args)) {
 			next();
 		}
 	};
 }
+
+
+export type OnlyDict = {
+	[T in MessageProp]?:string
+}
+export type MessageProp = 'guild'|'channel'|'user';

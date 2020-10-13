@@ -1,10 +1,9 @@
-import { Client, ClientUser, MessageEmbed, User } from 'discord.js';
+import { Client, ClientUser, Message, MessageEmbed, User } from 'discord.js';
 import { createHelpCommand } from './help.command';
 import { createSettingsCommand } from './settings.command';
-import MiddlewareManager from './MiddlewareManager';
-import ErrorManager from './ErrorManager';
+import MiddlewareManager, { ErrorCallback, MiddlewareFunction } from './MiddlewareManager';
 import { msgCtrl } from './messageControls';
-import Command from './Command';
+import Command, { CommandFunction, CommandParameters } from './Command';
 import ContextManager from './ContextManager';
 import { parseIdsToObjects, withContext } from './middlewares';
 import registerDir from './registerDirectory';
@@ -15,18 +14,16 @@ export default class Bot {
 	prefix: string;
 	client: Client;
 	mm: MiddlewareManager;
-	em: ErrorManager;
 	cm: ContextManager;
-	_commands: never[];
+	_commands: Command[];
 	_commandNames: string[];
 	settings: { memeChannel: null; };
 	user:ClientUser | null;
 	constructor({prefix}:BotOptions) {
 		this.prefix = prefix;
 		this.client = new Client();
-		this.client.bot = this;
+		//this.client.bot = this;
 		this.mm = new MiddlewareManager();
-		this.em = new ErrorManager();
 		this.cm = new ContextManager();
 
 		this._commands = [];
@@ -40,22 +37,22 @@ export default class Bot {
 		this.settings = {
 			memeChannel: null,
 		};
-		this.client.on('message',(msg)=>{
+		/* this.client.on('message',(msg)=>{
 			const {Guild} = db;
 			console.log(msg)
 			Guild.fromDiscordGuild(msg.channel.guild).then(g=>console.log(g)).catch(console.error);
-		})
+		}) */
 	}
 
-	handleMessage(msg, client, params, callback) {
+	handleMessage(msg: Message, client: Client, params: CommandParameters, callback: CommandFunction) {
 		this.mm.handle(msg, client, params, callback);
 	}
 
-	use(...callbacks) {
+	use(...callbacks:MiddlewareFunction[]) {
 		this.mm.use(...callbacks);
 	}
 
-	_addCommand(c) {
+	_addCommand(c:Command) {
 		if (c.name in this._commandNames) throw new Error('Duplicate command');
 		if (c.aliases && Array.isArray(c.aliases)) {
 			c.aliases.forEach((a) => {
@@ -66,11 +63,11 @@ export default class Bot {
 		this._commands.push(c);
 	}
 
-	register(commandName, ...callbacks) {
+	register(commandName:string|string[], ...callbacks:MiddlewareFunction[]) {
 		this._addCommand(new Command(commandName, ...callbacks));
 	}
 
-	registerDirectory(dir, options, ...middleware) {
+	registerDirectory(dir: string, options: { skipErrors: boolean; } | undefined, ...middleware:MiddlewareFunction[]) {
 		const newCommands = registerDir(dir, options, middleware);
 		/* console.log(newCommands) */
 		for (const [, value] of Object.entries(newCommands)) {
@@ -78,12 +75,12 @@ export default class Bot {
 		}
 	}
 
-	onReady(callback) {
+	onReady(callback: { (): void;}) {
 		return this.client.on('ready', callback);
 	}
 
-	createInvite() {
-		return `https://discord.com/api/oauth2/authorize?client_id=${this.client.user.id}&permissions=1610087760&scope=bot`;
+	createInvite():string {
+		return `https://discord.com/api/oauth2/authorize?client_id=${this.client?.user?.id}&permissions=1610087760&scope=bot`;
 	}
 
 	/**
@@ -93,24 +90,24 @@ export default class Bot {
 	 * @param {object} params Object to assign params to
 	 */
 
-	addRepeatingEvent(t, callback, params) {
+	addRepeatingEvent(t:number, callback:Function, params:any[]) {
 		//this callback has to have client and params
 		this.onReady(() => {
 			setInterval(callback, t, this.client, params);
 		});
 	}
 
-	isBotCommand(content) {
+	isBotCommand(content:string) {
 		if (!content.startsWith(this.prefix)) return false;
 		const args = content.substr(this.prefix.length || 0).split(' ');
-		const commandName = args.shift();
+		const commandName = <string> args.shift();
 		for (let i = 0; i < this._commands.length; i++) {
 			if (this._commands[i].matches(commandName)) return true;
 		}
 		return false;
 	}
 
-	start(token) {
+	start(token:string) {
 		return db.sequelize.sync().then(() => {
 			this._commands.push(
 				createHelpCommand(this._commands),
@@ -122,7 +119,8 @@ export default class Bot {
 				if (content.startsWith(this.prefix)) {
 					//Do parsing
 					const args = content.substr(this.prefix.length || 0).split(' ');
-					const commandName = args.shift();
+					if(args.length == 0) return;
+					const commandName = <string>args.shift();
 					for (let i = 0; i < this._commands.length; i++) {
 						const command = this._commands[i];
 						const commandInit = command.matches(commandName);
@@ -134,6 +132,7 @@ export default class Bot {
 									args,
 									trigger: commandInit,
 									settings: this.settings,
+									entities:{}
 								},
 								command.run,
 							);
@@ -141,7 +140,7 @@ export default class Bot {
 				}
 			});
 			return this.client.login(token);
-		}).catch(err=>console.error(err))
+		}).catch((err:Error)=>console.error(err))
 	}
 
 	get commands() {
@@ -162,5 +161,5 @@ interface BotOptions {
 }
 
 export interface DiscordBotError extends Error {
-	sendDiscord?:{message?:string}
+	sendDiscord?:boolean,
 }
