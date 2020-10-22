@@ -1,3 +1,4 @@
+'use strict'
 import {
 	toTeams,
 	createTeamChannel,
@@ -5,28 +6,28 @@ import {
 	createServerTeams,
 } from './util';
 import { parseArgs } from '../../middleware';
-import { ArgumentParser } from 'argparse';
+import * as argparse from 'argparse';
 import { voice } from '../../middleware';
-import endgameCommand from '../endgame.command.js';
+import endgameCommand from '../endgame.command';
+import { Message,Client, VoiceChannel, Guild, UserResolvable } from 'discord.js';
+
+import Command, { CommandParameters } from '../../Bot/Command';
 
 const { run: endgame } = endgameCommand;
-const commandParser = new ArgumentParser();
-commandParser.addArgument(['-n', '--numTeams'], {
-	type: 'int',
-	defaultValue: 2,
-	dest: 'n',
-});
-commandParser.addArgument('players', { nargs: '*', defaultValue: [] });
+const commandParser = new argparse.ArgumentParser();
+commandParser.add_argument('-n','--numPlayers', {type: 'int',default: 2,dest: 'n',});
+commandParser.add_argument('players', { nargs: '*', default: [] });
 
-export default {
-	name: 'team', //name of the command
+export default class Teams extends Command {
+	constructor(){
+		super();
+		this.name= 'team', //name of the command
+		this.mm.use(parseArgs(commandParser), voice()) // middleware functions
+		this.aliases = ['teams', 'ekipe', 'ekipa']
+	}
 
-	before: [parseArgs(commandParser), voice()], // middleware functions
-
-	aliases: ['teams', 'ekipe', 'ekipa'],
-
-	run: (msg, client, params) => {
-		const lastGame = params.context.get('gameTeams', {
+	run(msg:Message, client:Client, params:CommandParameters) {
+		const lastGame = params.context?.get('gameTeams', {
 			iA: true,iC:true
 		});
 		console.log(lastGame);
@@ -35,14 +36,14 @@ export default {
 			endgame(msg, client, params);
 		//final function
 		console.log(params.parsed);
-		let { n, players } = params.parsed;
+		let { n, players } = <{n:number,players:(string|UserResolvable)[]}>params.parsed;
 		let allUsers = false; //Assume not all player objects are actual users
 		players = players.filter(
-			(e) => (e || e == 0) && e != '' && e != undefined,
+			(e) => (e) && e != '' && e != undefined,
 		);
 		if (players.length == 0) {
 			// grab from voice
-			const { authorIn, channel } = params.voice.dict();
+			const { authorIn, channel } = <{authorIn:boolean, channel:VoiceChannel}>params.voice;
 			if (!authorIn) {
 				return msg.reply(`you must be in a voice channel :loud_sound:`);
 			}
@@ -53,25 +54,25 @@ export default {
 			allUsers = true;
 			//console.log("Voice channel:", players)
 		}
-		const teams = toTeams(players, n, { allUsers });
+		const teams = toTeams(players, n, allUsers);
 		console.log(teams);
 		teams.forEach((team) => {
 			msg.channel.send(team.embed);
 		});
 		if (allUsers) {
-			createServerTeams(msg.guild, client, teams)
+			createServerTeams(<Guild>msg.guild, client, teams)
 				.then((changes) => {
-					return params.context.create('gameTeams', changes, {
+					return params.context?.create('gameTeams', changes, {
 						iA: true,iC:true
 					});
 				})
-				.catch((e, changes) => {
-					params.context.create('gameTeams', changes, {
+				.catch((e) => {
+					params.context?.create('gameTeams', e.changes, {
 						iA: true,
 						iC:true
 					});
 					console.error(e);
 				});
 		}
-	},
+	}
 };

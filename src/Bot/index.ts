@@ -1,86 +1,70 @@
-import { Client, ClientUser, Message, MessageEmbed, User } from 'discord.js';
+import { Client, ClientUser, Message, MessageEmbed, User, ClientOptions } from 'discord.js';
 import { createHelpCommand } from './help.command';
 import { createSettingsCommand } from './settings.command';
-import MiddlewareManager, { ErrorCallback, MiddlewareFunction } from './MiddlewareManager';
+import MiddlewareManager, { DoneCallback, ErrorCallback, ErrorHandlingFunction, MiddlewareFunction } from './MiddlewareManager';
 import { msgCtrl } from './messageControls';
-import Command, { CommandFunction, CommandParameters } from './Command';
+import Command, { CommandFunction, CommandMatch, CommandParameters } from './Command';
 import ContextManager from './ContextManager';
 import { parseIdsToObjects, withContext } from './middlewares';
 import registerDir from './registerDirectory';
 
 export { Command, ContextManager, MiddlewareManager, msgCtrl };
-import db from './models';
-export default class Bot {
+import { sequelize } from './models';
+export default class Bot extends Client {
 	prefix: string;
-	client: Client;
 	mm: MiddlewareManager;
 	cm: ContextManager;
 	_commands: Command[];
 	_commandNames: string[];
-	settings: { memeChannel: null; };
-	user:ClientUser | null;
-	constructor({prefix}:BotOptions) {
-		this.prefix = prefix;
-		this.client = new Client();
+
+	constructor(botOptions: BotOptions) {
+		super(botOptions);
+		this.prefix = botOptions.prefix;
 		//this.client.bot = this;
 		this.mm = new MiddlewareManager();
 		this.cm = new ContextManager();
 
 		this._commands = [];
 		this._commandNames = ['help', 'settings'];
-		this.user = this.client.user;
-		this.client.on('ready', () => {
-			Object.assign(this, this.client);
-		});
 		this.cm.retrieveContexts();
 		this.use(parseIdsToObjects, withContext(this.cm));
-		this.settings = {
-			memeChannel: null,
-		};
-		/* this.client.on('message',(msg)=>{
-			const {Guild} = db;
-			console.log(msg)
-			Guild.fromDiscordGuild(msg.channel.guild).then(g=>console.log(g)).catch(console.error);
-		}) */
 	}
 
-	handleMessage(msg: Message, client: Client, params: CommandParameters, callback: CommandFunction) {
-		this.mm.handle(msg, client, params, callback);
+	handleMessage(msg: Message, params: CommandParameters, command: Command) {
+		this.mm.handle(msg, this, params, command.toDone());
 	}
 
-	use(...callbacks:MiddlewareFunction[]) {
+	use(...callbacks: (MiddlewareFunction | ErrorHandlingFunction)[]) {
 		this.mm.use(...callbacks);
 	}
 
-	_addCommand(c:Command) {
-		if (c.name in this._commandNames) throw new Error('Duplicate command');
-		if (c.aliases && Array.isArray(c.aliases)) {
-			c.aliases.forEach((a) => {
-				if (a in this._commandNames)
-					throw new Error(`Duplicate command alias: ${a}`);
-			});
-		}
-		this._commands.push(c);
+	addCommand(...commands: Command[]) {
+		commands.forEach(c => {
+			if (c.name in this._commandNames) throw new Error('Duplicate command');
+			if (c.aliases && Array.isArray(c.aliases)) {
+				c.aliases.forEach((a) => {
+					if (a in this._commandNames)
+						throw new Error(`Duplicate command alias: ${a}`);
+				});
+			}
+			this._commands.push(c);
+		})
 	}
 
-	register(commandName:string|string[], ...callbacks:MiddlewareFunction[]) {
-		this._addCommand(new Command(commandName, ...callbacks));
-	}
+	/* register(commandName:string|string[], ...callbacks:MiddlewareFunction[]) {
+		this.addCommand(new Command(commandName, ...callbacks));
+	} */
 
-	registerDirectory(dir: string, options: { skipErrors: boolean; } | undefined, ...middleware:MiddlewareFunction[]) {
+	registerDirectory(dir: string, options: { skipErrors: boolean; } | undefined, ...middleware: MiddlewareFunction[]) {
 		const newCommands = registerDir(dir, options, middleware);
 		/* console.log(newCommands) */
 		for (const [, value] of Object.entries(newCommands)) {
-			this._addCommand(value);
+			this.addCommand(value);
 		}
 	}
 
-	onReady(callback: { (): void;}) {
-		return this.client.on('ready', callback);
-	}
-
-	createInvite():string {
-		return `https://discord.com/api/oauth2/authorize?client_id=${this.client?.user?.id}&permissions=1610087760&scope=bot`;
+	createInvite(): string {
+		return `https://discord.com/api/oauth2/authorize?client_id=${this.user?.id}&permissions=1610087760&scope=bot`;
 	}
 
 	/**
@@ -90,76 +74,74 @@ export default class Bot {
 	 * @param {object} params Object to assign params to
 	 */
 
-	addRepeatingEvent(t:number, callback:Function, params:any[]) {
+	addRepeatingEvent(t: number, callback: Function, params: any[]) {
 		//this callback has to have client and params
-		this.onReady(() => {
-			setInterval(callback, t, this.client, params);
+		this.on('ready', () => {
+			setInterval(callback, t, this, params);
 		});
 	}
 
-	isBotCommand(content:string) {
-		if (!content.startsWith(this.prefix)) return false;
+	isBotCommand(content: string): CommandMatch | null {
+		if (!content.startsWith(this.prefix)) return null;
 		const args = content.substr(this.prefix.length || 0).split(' ');
-		const commandName = <string> args.shift();
+		const commandName = <string>args.shift();
 		for (let i = 0; i < this._commands.length; i++) {
-			if (this._commands[i].matches(commandName)) return true;
+			const cm = this._commands[i].matches(commandName);
+			if (cm) return cm;
 		}
-		return false;
+		return null;
 	}
 
-	start(token:string) {
-		return db.sequelize.sync().then(() => {
+	messageHandler = (msg: Message) => {
+		if (!msg.guild) return; //Only work in guild texts
+		const { content } = msg;
+		if (content.startsWith(this.prefix)) {
+			//Do parsing
+			const args = content/* .substr(this.prefix.length || 0) */.split(' ');
+			if (args.length == 0) return;
+			const commandName = <string>args.shift();
+			const commandInit = this.isBotCommand(commandName);
+			console.log(commandInit);
+			if (commandInit)
+				return this.handleMessage(
+					msg,
+					{
+						args,
+						trigger: commandInit,
+						entities: {}
+					},
+					commandInit.fn,
+				);
+		}
+	}
+
+	start(token: string): Promise<string> {
+		return sequelize.sync().then(() => {
 			this._commands.push(
 				createHelpCommand(this._commands),
-				createSettingsCommand(),
+				//createSettingsCommand(),
 			);
-			this.client.on('message', (msg) => {
-				if (!msg.guild) return; //Only work in guild texts
-				const { content } = msg;
-				if (content.startsWith(this.prefix)) {
-					//Do parsing
-					const args = content.substr(this.prefix.length || 0).split(' ');
-					if(args.length == 0) return;
-					const commandName = <string>args.shift();
-					for (let i = 0; i < this._commands.length; i++) {
-						const command = this._commands[i];
-						const commandInit = command.matches(commandName);
-						if (commandInit)
-							return this.handleMessage(
-								msg,
-								this.client,
-								{
-									args,
-									trigger: commandInit,
-									settings: this.settings,
-									entities:{}
-								},
-								command.run,
-							);
-					}
-				}
-			});
-			return this.client.login(token);
-		}).catch((err:Error)=>console.error(err))
+			this.on('message', this.messageHandler);
+			return this.login(token);
+		})
 	}
 
 	get commands() {
 		return this._commands.map((c) => {
-			const {
-				name,
-				description,
-				aliases,
-				mm: { stack },
-			} = c;
+			const { name, description, aliases, mm: { stack }, } = c;
 			return { name, description, aliases, 'mw#': stack.length };
 		});
 	}
 }
 
-interface BotOptions {
-	prefix:string
-}
+type BotOptions = {
+	prefix: string
+} & ClientOptions;
 
 export interface DiscordBotError extends Error {
-	sendDiscord?:boolean,
+	sendDiscord?: boolean,
 }
+
+export interface BotClient extends Client {
+	bot: Bot
+} 

@@ -36,5 +36,11 @@ const settingsFn: CommandFunction = (msg, client, params) => {
 };
 
 export function createSettingsCommand() {
-    return new Command('settings', settingsFn);
+    return new (class SettingsCommand extends Command{
+        constructor(){
+            super()
+            this.name='settings';
+        } 
+        run = settingsFn;
+    })();
 }

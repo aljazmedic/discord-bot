@@ -1,4 +1,4 @@
-{
+export default {
     "array1": [
         "Ancient ",
         "Angry ",

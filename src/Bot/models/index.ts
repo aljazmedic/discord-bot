@@ -1,47 +1,29 @@
 'use strict';
-//requires all other files in this directory
-import { readdirSync } from 'fs';
-import path from 'path';
-import SeqLib, { Sequelize,DataTypes } from 'sequelize';
+import { Sequelize } from 'sequelize';
+
+import { guildFactory } from "./Guild";
+import { soundFactory } from "./Sound";
+import { JokeFactory } from "./Joke";
+import { JokeTypeFactory } from "./JokeType";
+import { JokeReplyFactory } from "./JokeReply";
 
 const NODE_ENV = <string>process.env.NODE_ENV;
-const {sql:config} = require('../../config/config.json')[NODE_ENV] || {sql:{}};
+const { sql: config } = require('../../../config/config.json')[NODE_ENV] || { sql: {} };
 
-var sequelize = new Sequelize(
+export const sequelize = new Sequelize(
 	config.database,
 	config.username,
 	config.password,
 	config,
 );
-/* global db:false */
-const db:DiscordDatabase = {};
 
-readdirSync(__dirname)
-	.filter(function (file) {
-		return (
-			file.indexOf(`.`) !== 0 &&
-			file !== `index.js` &&
-			file.slice(-3) === `.js`
-		);
-	})
-	.forEach(function (file) {
-		const modelFn = require(path.join(__dirname, file)).default;
-		const model = modelFn(sequelize, DataTypes);
-		db[model.name] = model;
-	});
+export const GuildDB = guildFactory(sequelize);
+export const SoundDB = soundFactory(sequelize);
+export const JokeDB = JokeFactory(sequelize);
+export const JokeTypeDB = JokeTypeFactory(sequelize);
+export const JokeReplyDB = JokeReplyFactory(sequelize);
 
-Object.keys(db).forEach(function (modelName) {
-	if (db[modelName].associate) {
-		db[modelName].associate(db);
-	}
-});
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-export default db;
-
-
-export interface DiscordDatabase{
-	[index:string]:any
-}
+JokeReplyDB.belongsTo(JokeDB, { foreignKey: 'joke_id' })
+JokeDB.hasMany(JokeReplyDB, { foreignKey: 'joke_id',	as:'replies' })
+JokeTypeDB.hasMany(JokeDB, { foreignKey: 'jtype_id', })
+JokeDB.belongsTo(JokeTypeDB, { foreignKey: 'jtype_id' })

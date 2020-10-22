@@ -1,12 +1,14 @@
 import Command from './Command';
-import { Message, MessageEmbed } from 'discord.js';
+import { Client, Message, MessageEmbed } from 'discord.js';
 
-export function createHelpCommand(commands:Command[]) {
+export function createHelpCommand(commands: Command[]) {
     const helpEmbed = new MessageEmbed()
         .setTitle('Help')
-        .addFields(commands.map((command:Command) => command.getHelpField()))
+        .addFields(commands.map((command: Command) => command.getHelpField()))
         .setFooter('aljazmedic | davidbes');
-	return new Command('help', (msg:Message) => {
-		msg.reply(helpEmbed);
-	});
+    return new (class HelpCommand extends Command {
+        run = (msg: Message, client: Client,) => {
+            msg.reply(helpEmbed)
+        }
+    })();
 }

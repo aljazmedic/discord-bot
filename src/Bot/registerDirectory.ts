@@ -25,14 +25,6 @@ const tryCheck = (command:CommandSchema, { skipErrors, fileName }:{skipErrors:bo
 	return false;
 };
 
-interface CommandSchema{
-	name: string,
-	aliases: string[],
-	check: CreateMiddlewareOptions,
-	before: MiddlewareFunction[],
-	run:CommandFunction,
-	description?:string,
-}
 
 function createCommand(commandSchema:CommandSchema, prependMiddlewares:MiddlewareFunction[]) {
 	var {
@@ -43,18 +35,23 @@ function createCommand(commandSchema:CommandSchema, prependMiddlewares:Middlewar
 		run,
 		description = '',
 	} = commandSchema;
-	let name;
+	let name:string;
 	if (Array.isArray(inputName)) {
 		name = inputName.shift();
 		aliases = inputName.concat(aliases);
 	} else {
 		name = inputName;
 	}
-	const c = new Command(
-		[name, ...aliases],
-		...[...prependMiddlewares, ...before, createMiddleware(check), run],
-	); //before is user specified, check is constrains
-	c.setDescription(description);
+	const c = new (class T extends Command{
+		constructor(){
+			super();
+			this.name = name;
+			this.aliases = aliases;
+			this.setDescription(description)
+			this.mm.use(...prependMiddlewares, ...before, createMiddleware(check));
+		}
+		run = run
+	})(); //before is user specified, check is constrains
 	return c;
 }
 
@@ -86,3 +83,13 @@ export default (dir:fs.PathLike, options = { skipErrors: false }, prependMiddlew
 		});
 	return commands;
 };
+
+
+export interface CommandSchema{
+	name: string,
+	aliases: string[],
+	check: CreateMiddlewareOptions,
+	before: MiddlewareFunction[],
+	run:CommandFunction,
+	description?:string,
+}

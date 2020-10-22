@@ -1,4 +1,4 @@
-export const data = require('./data');
+import data from './data';
 
 export default function getName() {
 	const names = Object.entries(data).map(

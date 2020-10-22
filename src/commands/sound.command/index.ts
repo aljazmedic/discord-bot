@@ -1,44 +1,53 @@
+import { Client, Message, VoiceChannel } from 'discord.js';
+import Command, { CommandParameters } from '../../Bot/Command';
+import { SoundDB } from '../../Bot/models';
 import { voice } from '../../middleware';
-import playFiles from './data';
+import SoundManager from '../../SoundManager';
 
-const optionsForSrc = {
-	meme: { volume: 0.3 },
-};
+export default class Sound extends Command {
+	constructor() {
+		super();
+		this.name = 'play';
+		this.aliases = ['p', 'dc'] //name of the command
 
-export default {
-	name: ['p', 'play', 'dc'], //name of the command
-
-	before: [voice()],
-	run: (msg, client, params) => {
-		const { authorIn, botIn, channel: voiceChannel } = params.voice.dict();
+		this.mm.use(voice({ failNotJoined: true }))
+	}
+	run(msg: Message, client: Client, params: CommandParameters) {
+		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>params.voice;
 
 		if (params.trigger.call == 'dc') {
-			if (botIn) params.voice.channel.leave();
+			if (botIn) voiceChannel.leave();
 			return;
 		}
 
 		if (params.args.length == 0) {
-			return msg.reply(
-				`pick a sound! (${Object.keys(playFiles).join(' | ')} )`,
-			);
+			return SoundDB.findAll({ attributes: ['name'] }).then(sounds => {
+				msg.reply(
+					`pick a sound! (${sounds.map(s => s.name).join(' | ')} )`,
+				);
+			})
+
 		}
-		
+
 		if (!authorIn) {
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
 
 		const key = params.args[0];
-		if (key == 'meme') {
-			//Implement custom soundbord urls
-		}
-		const uriOptions = playFiles[key];
-		if (!uriOptions) {
-			return msg.reply('invalid sound!');
-		}
-		const opt = optionsForSrc[uriOptions.src];
-		params.voice
-			.get(uriOptions)
-			.then((uri) => params.voice.say(uri, opt))
-			.catch(console.error);
-	},
+
+		SoundDB.findOne({ where: { name: key } }).then(soundSource => {
+			if (!soundSource) {
+				msg.reply('invalid sound!');
+			} else {
+				const { end, start } = soundSource;
+				const options:any = {};
+				if (start != null) options.start=start;
+				if (end != null) options.end=end;
+				SoundManager
+					.get(soundSource, options)
+					.then((uri) => params.voice?.say(uri))
+					.catch(console.error);
+			}
+		})
+	}
 };

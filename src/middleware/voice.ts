@@ -1,22 +1,27 @@
+import { Channel, GuildChannelResolvable, VoiceChannel } from 'discord.js';
+import { MiddlewareFunction } from '../Bot/MiddlewareManager';
 import SoundManager from '../SoundManager';
 
-export function voice({ voice_channel_id } = { voice_channel_id: null }) {
+export function voice({ voiceChannelId, failNotJoined }: VoiceMiddlewareSettings = { voiceChannelId: null, failNotJoined: false }): MiddlewareFunction {
 	//middleware that gets authors channel and appends it to params, some misc info also
 	return function (msg, client, params, next) {
-		const cid = voice_channel_id || msg.member.voice.channelID;
-		console.log('voice CID ' + cid);
+		const cid = voiceChannelId || msg.member?.voice.channelID;
 		if (!cid) {
-			params.voice = new SoundManager(client, undefined);
+			if (failNotJoined) {
+				return msg.reply("you have to be in a channel :loud_sound:");
+			}
 			next();
-			return;
+		} else {
+			client.channels
+				.fetch(cid)
+				.then((voiceChannel: Channel) => {
+					console.log('Author in voice: ', voiceChannel.id);
+					params.voice = new SoundManager(client, <VoiceChannel>voiceChannel);
+					next();
+				})
+				.catch((err: Error) => next(err));
 		}
-		client.channels
-			.fetch(cid)
-			.then((voiceChannel) => {
-				console.log('Author in voice: ', voiceChannel.id);
-				params.voice = new SoundManager(client, voiceChannel);
-				next();
-			})
-			.catch((err) => next(err));
 	};
 }
+
+type VoiceMiddlewareSettings = { voiceChannelId?: string | null, failNotJoined?: boolean }

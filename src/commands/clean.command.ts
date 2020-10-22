@@ -1,19 +1,24 @@
-export default {
-	name: 'clean', //name of the command
+import { Client, Message } from "discord.js";
+import Bot from "../Bot";
+import Command, { CommandParameters } from "../Bot/Command";
 
-	aliases: ['remove'],
-
+export default class Clean extends Command {
+	constructor(){
+		super();
+		this.name= 'clean', //name of the command
+		this.aliases= ['remove']
+	}
 	// eslint-disable-next-line no-unused-vars
-	run: (msg, client, params) => {
+	run(msg:Message, client:Bot, params:CommandParameters){
 		const { channel } = msg;
 		channel.messages
 			.fetch({ limit: 50 })
 			.then((messages) => {
 				return channel.bulkDelete(
 					messages.filter(
-						(m) =>
-							m.author.id == client.user.id ||
-							client.bot.isBotCommand(m.content),
+						(m:Message) =>
+							m.author.id == client.user?.id ||
+							!!client.isBotCommand(m.content),
 					),
 				);
 			})
@@ -21,12 +26,12 @@ export default {
 				if (msgs) {
 					msgs.forEach((e) => console.log(`${e}`));
 				}
-				console.log('deleted ' + (msgs.length || 0));
+				console.log('deleted ' + (Object.keys(msgs).length || 0));
 				return channel.send(':recycle: Messages deleted!');
 			})
-			.then((msg) => {
+			.then((msg:Message) => {
 				msg.delete({ timeout: 5000 });
 			})
 			.catch(console.error);
-	},
+	}
 };
