@@ -2,8 +2,8 @@ import { Collector, CollectorFilter, Message, MessageCollector } from "discord.j
 import Bot, { Command } from "../../Bot";
 import { CommandParameters } from "../../Bot/Command";
 import { JokeDB, JokeTypeDB, JokeReplyDB } from "../../Bot/models";
-import { JokeReply, } from "../../Bot/models/JokeReply";
-import Sequelize from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+
 
 const messageCollectorForJoke = (msg: Message, jokeParts: JokePart[]) => {
     let idx = 0;
@@ -41,29 +41,46 @@ export default class Joke extends Command {
         this.aliases = ['knockknock', 'j']
     }
     run(msg: Message, client: Bot, params: CommandParameters) {
-        console.log(msg);
-        JokeDB.findOne({ order: Sequelize.fn("rand"), include: [{ model: JokeTypeDB }, { model: JokeReplyDB, as: 'replies', order: ['position', 'asc'] }] }).then((joke: any) => {
-            if (!joke) return;
-            let jokeStart: string = joke.JokeType.replyText;
-            const jokeParts: JokePart[] = joke.replies
-                .sort((e1: JokeReply, e2: JokeReply) => e1.getDataValue("position") - e2.getDataValue("position")) //sequelize ne dela
-                .map((jr: JokeReply): JokePart => {
-                    const rgx = new RegExp(jr.getDataValue('triggerRegex'), 'i');
-                    const rply = jr.getDataValue('replyText');
-                    return {
-                        r: rply,
-                        f: (_msg) => _msg.content.match(rgx) && _msg.channel.id == msg.channel.id && _msg.author.id == msg.author.id,
-                        rgx,
-                        directPrint: jr.getDataValue('triggerRegex') == null
-                    }
-                })
-            while (jokeParts.length > 0 && jokeParts[0].directPrint) {
-                const firstPart = <JokePart>jokeParts.shift()
-                jokeStart += " " + firstPart.r;
-            }
-            msg.channel.send(jokeStart).then((botMsg) => messageCollectorForJoke(botMsg, jokeParts))
-        })
+        JokeDB.findAll({
+            order: Sequelize.fn('rand'),
+            limit: 1,
+            include: [
+                {
+                    model: JokeReplyDB,
+                    as: 'replies'
+                },
+                {
+                    model: JokeTypeDB
+                }
+            ],
+        }
+        )
+            .then((jokes: JokeDB[]) => {
+                if (jokes.length == 0) return;
+                const joke = jokes[0];
+                console.log(joke)
+                let jokeStart: string = joke.jType.replyText;
+                console.log(jokeStart)
+                const jokeParts: JokePart[] = joke.getDataValue("replies")
+                    .sort((e1: JokeReplyDB, e2: JokeReplyDB) => e1.getDataValue("position") - e2.getDataValue("position")) //sequelize ne dela
+                    .map((jr: JokeReplyDB): JokePart => {
+                        const rgx = jr.getDataValue('triggerRegex') == null ? null : new RegExp(jr.getDataValue('triggerRegex'), 'i');
+                        const rply = jr.getDataValue('replyText');
+                        return {
+                            r: rply,
+                            f: (_msg) => _msg.content.match(rgx) && _msg.channel.id == msg.channel.id && _msg.author.id == msg.author.id,
+                            rgx,
+                            directPrint: jr.getDataValue('triggerRegex') == null
+                        }
+                    })
+                console.table(jokeParts)
+                while (jokeParts.length > 0 && jokeParts[0].directPrint) {
+                    const firstPart = <JokePart>jokeParts.shift()
+                    jokeStart += " " + firstPart.r;
+                }
+                msg.channel.send(jokeStart).then((botMsg) => messageCollectorForJoke(botMsg, jokeParts))
+            })
     }
 }
 
-export type JokePart = { f: CollectorFilter, r: string, rgx: RegExp, directPrint: boolean }
+export type JokePart = { f: CollectorFilter, r: string, rgx: RegExp|null, directPrint: boolean }

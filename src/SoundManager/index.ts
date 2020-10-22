@@ -5,7 +5,6 @@ import { Client, VoiceChannel, VoiceConnection } from 'discord.js';
 import request from 'request'
 import { SayOptions, SoundSource } from '../commands/sound.command/data';
 import { SoundDB } from "../Bot/models";
-import { SoundAttributes } from '../Bot/models/Sound';
 import ffmpeg from "fluent-ffmpeg";
 
 const storage = path.join('..', '..', `cache`);
@@ -99,7 +98,7 @@ export default class SoundManager {
 		this.dcTimeoutId = undefined;
 	}
 
-	static get({ id, src, ext, hash }: SoundAttributes, options: PostProcessOptions = {}): Promise<string> {
+	static get({ id, src, ext, hash }: SoundDB, options: PostProcessOptions = {}): Promise<string> {
 		return new Promise((resolve, reject) => {
 			console.log(`Retrieving ${id} from ${src}`);
 			if (!Object.keys(sources).includes(src)) {

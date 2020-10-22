@@ -1,51 +1,31 @@
-import { Guild } from "discord.js";
 
-import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
 
-export interface SoundAttributes {
-    id: string;
-    name: string;
-    src: string;
-    ext: string;
-    end?: string;
-    start?: string;
-    hash: string;
-}
-export interface SoundModel extends Model<SoundAttributes>, SoundAttributes { }
-export class Sound extends Model<SoundModel, SoundAttributes> { }
+import { Column, DataType, Table, Model } from "sequelize-typescript";
 
-export type SoundStatic = typeof Model & {
-    new(values?: object, options?: BuildOptions): SoundModel;
-};
+@Table({ timestamps: false })
+export default class Sound extends Model<Sound>
+{
 
-export function soundFactory(sequelize: Sequelize): SoundStatic {
-    return <SoundStatic>sequelize.define("sounds", {
-        id: {
-            type: DataTypes.STRING,
-            primaryKey: true,
-        },
-        src: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-        },
-        ext: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            defaultValue: 'mp3'
-        },
-        hash:{
-            type: DataTypes.STRING,
-        },
-        start: {
-            type: DataTypes.STRING,
-        },
-        end: {
-            type: DataTypes.STRING,
-        }
-    }, { timestamps: false });
+    @Column({ type: DataType.STRING, allowNull: false })
+    public src: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+    })
+    public name: string;
+
+    @Column({ type: DataType.STRING, defaultValue: "mp3", allowNull: false })
+    public ext: string;
+
+    @Column({ type: DataType.STRING })
+    public hash?: string;
+
+    @Column({ type: DataType.STRING })
+    public start?: string;
+
+    @Column({ type: DataType.STRING })
+    public end?: string;
+
 }
