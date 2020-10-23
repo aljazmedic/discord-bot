@@ -2,10 +2,9 @@ import { Client, Message, ClientOptions } from 'discord.js';
 import MiddlewareManager, { ErrorHandlingFunction, MiddlewareFunction } from './MiddlewareManager';
 import { msgCtrl } from './messageControls';
 import Command, { CommandMatch } from './Command';
-import ContextManager from './ContextManager';
 
 
-export { Command, ContextManager, MiddlewareManager, msgCtrl };
+export { Command, MiddlewareManager, msgCtrl };
 import { sequelize } from './models';
 
 const FORBIDDEN_NAMES = ['help', 'settings']

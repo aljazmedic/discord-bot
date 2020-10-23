@@ -6,7 +6,8 @@ import request from 'request'
 import { SoundDB } from "../Bot/models";
 import ffmpeg from "fluent-ffmpeg";
 
-const storage = path.join('..', '..', `cache`);
+const storage = path.join('tmp',`cache`);
+fs.mkdirSync(storage, { recursive: true })
 
 const createValidFilename = (src: string, q: string, ext: string = 'mp3') => {
 	console.log('Creating filename for ' + q);
@@ -20,7 +21,7 @@ const createValidFilename = (src: string, q: string, ext: string = 'mp3') => {
  * @param {String} filename Filename for stream
  * @param {Resolve} parentResolve Final resolve to end parent promise
  */
-const getWriteStreamForFile = (filename: string, parentResolve:{(reason?:any):void} ,ext: string = 'mp3'): Promise<WriteStream> =>
+const getWriteStreamForFile = (filename: string, parentResolve: { (reason?: any): void }, ext: string = 'mp3'): Promise<WriteStream> =>
 	new Promise((resolve, reject) => {
 		fs.promises
 			.mkdir(path.dirname(filename), { recursive: true }) //naredi folder

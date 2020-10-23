@@ -1,11 +1,8 @@
 import { ArgumentParser } from 'argparse';
-import { kMaxLength } from 'buffer';
-import { Message, Client, Channel, Role, User, StringResolvable } from 'discord.js';
+import { Message, Client, Channel, Role, User } from 'discord.js';
 import Bot from '.';
 import SoundManager from '../SoundManager';
-import Context from './Context';
-import { EmojiCommandParameters } from './messageControls';
-import MiddlewareManager, { DoneCallback, ErrorHandlingFunction, MiddlewareFunction, NextFunction } from './MiddlewareManager';
+import MiddlewareManager, { ErrorHandlingFunction, MiddlewareFunction, NextFunction } from './MiddlewareManager';
 
 export default abstract class Command {
 	private mm: MiddlewareManager;
