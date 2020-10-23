@@ -20,7 +20,7 @@ const createValidFilename = (src: string, q: string, ext: string = 'mp3') => {
  * @param {String} filename Filename for stream
  * @param {Resolve} parentResolve Final resolve to end parent promise
  */
-const getWriteStreamForFile = (filename: string, parentResolve:{(reason?:any):void}, ppoptions:PostProcessOptions ,ext: string = 'mp3'): Promise<WriteStream> =>
+const getWriteStreamForFile = (filename: string, parentResolve:{(reason?:any):void} ,ext: string = 'mp3'): Promise<WriteStream> =>
 	new Promise((resolve, reject) => {
 		fs.promises
 			.mkdir(path.dirname(filename), { recursive: true }) //naredi folder
@@ -31,9 +31,6 @@ const getWriteStreamForFile = (filename: string, parentResolve:{(reason?:any):vo
 				writeStream.on('finish', () => {
 					//ko se zapiše resolva
 					console.log(`finished writing ${filename}`);
-					if (ppoptions) {
-						SoundManager.postProcess(filename, ppoptions)
-					}
 					return parentResolve(filename);
 				});
 				return resolve(writeStream);
@@ -42,7 +39,7 @@ const getWriteStreamForFile = (filename: string, parentResolve:{(reason?:any):vo
 	});
 
 const sources: { [index: string]: SourceFunction } = {
-	yt: (filename, q, ppoptions = {}) =>
+	yt: (filename, q) =>
 		//Definiran protokol za pridobivanje videov iz youtuba
 		new Promise((resolve, reject) => {
 			const query = `https://www.youtube.com/watch?v=${q}`;
@@ -52,7 +49,7 @@ const sources: { [index: string]: SourceFunction } = {
 				filter: 'audioonly'
 			}
 
-			getWriteStreamForFile(filename, resolve, ppoptions)
+			getWriteStreamForFile(filename, resolve)
 				.then((writeStream) => {
 					ytdl(query, _options)
 						.pipe(writeStream) //preusmeri v file
@@ -60,17 +57,17 @@ const sources: { [index: string]: SourceFunction } = {
 				})
 				.catch(reject);
 		}),
-	meme: (filename, q, ppoptions) =>
+	meme: (filename, q) =>
 		new Promise((resolve, reject) => {
 			const url = `https://www.memesoundboard.com/sounds/${q}.mp3`;
-			getWriteStreamForFile(filename, resolve, ppoptions).then((writeStream) => {
+			getWriteStreamForFile(filename, resolve).then((writeStream) => {
 				request.get(url).pipe(writeStream).on('error', reject);
 			});
 		}),
-	urban: (filename, q, ppoptions) =>
+	urban: (filename, q) =>
 		new Promise((resolve, reject) => {
 			const url = `http://wav.urbandictionary.com/${q}`;
-			getWriteStreamForFile(filename, resolve, ppoptions, 'wav').then(
+			getWriteStreamForFile(filename, resolve, 'wav').then(
 				(writeStream) => {
 					request.get(url).pipe(writeStream).on('error', reject);
 				},
@@ -97,7 +94,7 @@ export default class SoundManager {
 		this.dcTimeoutId = undefined;
 	}
 
-	static get({ id, src, ext, hash }: SoundDB, options: PostProcessOptions = {}): Promise<string> {
+	static get({ id, src, ext, hash }: SoundDB,): Promise<string> {
 		return new Promise((resolve, reject) => {
 			console.log(`Retrieving ${id} from ${src}`);
 			if (!Object.keys(sources).includes(src)) {
@@ -107,7 +104,7 @@ export default class SoundManager {
 			fs.exists(filename, (exists) => {
 				if (!exists) {
 					console.log(`Downloading ${id} from ${src}`);
-					sources[src](filename, id, options)
+					sources[src](filename, id)
 						.then(resolve)
 						.catch(reject);
 				} else {
@@ -161,7 +158,7 @@ export default class SoundManager {
 
 
 export interface SourceFunction {
-	(filename: string, q: string, options: PostProcessOptions): Promise<string>
+	(filename: string, q: string): Promise<string>
 }
 
 export type PostProcessOptions = {

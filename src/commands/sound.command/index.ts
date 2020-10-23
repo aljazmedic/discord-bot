@@ -9,16 +9,23 @@ export default class Sound extends Command {
 	constructor() {
 		super();
 		this.name = 'play';
-		this.alias('p', 'dc') //name of the command
+		this.alias('p', 'dc', 'fuckoff') //name of the command
 
 		this.before(voice({ failNotJoined: true }))
 	}
 	run(msg: Message, client: Client, params: CommandParameters) {
 		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>params.voice;
 
-		if (params.trigger?.call == 'dc') {
-			if (botIn) voiceChannel.leave();
-			return;
+
+		switch (params.trigger?.call) {
+			case 'fuckoff':
+				msg.reply(':middle_finger:')
+					.then((msg) => {
+						msg.delete({ timeout: 2000 });
+					});
+			case 'dc':
+				if (botIn) voiceChannel.leave();
+				return;
 		}
 
 		if (params.args.length == 0) {
@@ -26,7 +33,7 @@ export default class Sound extends Command {
 				msg.reply(
 					`pick a sound! (${sounds.map(s => s.name).join(' | ')} )`,
 				);
-			}).catch(err=>console.error(err))
+			}).catch(err => console.error(err))
 
 		}
 
@@ -45,9 +52,9 @@ export default class Sound extends Command {
 				if (start != null) options.start = start;
 				if (end != null) options.end = end;
 				SoundManager
-					.get(soundSource, options)
+					.get(soundSource)
 					.then((uri) => params.voice?.say(uri))
-					.catch(err=>console.error(err));
+					.catch(err => console.error(err));
 			}
 		})
 	}
