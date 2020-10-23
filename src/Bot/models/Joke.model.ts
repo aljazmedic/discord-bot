@@ -5,7 +5,7 @@ import JokeReply from "./JokeReply.model";
 import JokeType from "./JokeType.model.";
 
 
-@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
 export default class Joke extends Model {
 
     @BelongsTo(() => JokeType, { foreignKey: 'jtype_id' })

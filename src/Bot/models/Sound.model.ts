@@ -2,7 +2,7 @@
 
 import { Column, DataType, Table, Model, PrimaryKey } from "sequelize-typescript";
 
-@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
 export default class Sound extends Model {
 
     @PrimaryKey

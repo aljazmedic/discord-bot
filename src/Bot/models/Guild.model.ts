@@ -5,7 +5,7 @@ import { DataType, Model, Column, Table, Default, PrimaryKey, HasMany } from "se
 import Team from "./Team.model";
 import TeamPlayer from "./TeamPlayer.model";
 
-@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
 export default class Guild extends Model<Guild>{
 
     @PrimaryKey

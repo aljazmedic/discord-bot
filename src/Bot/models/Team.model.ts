@@ -4,7 +4,7 @@ import { getTeamColor, getTeamName } from "../../commands/team.command/util";
 import Guild from "./Guild.model";
 import TeamPlayer from "./TeamPlayer.model";
 
-@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
 export default class Team extends Model {
 
     @BelongsTo(() => Guild, { foreignKey: 'gid' })
