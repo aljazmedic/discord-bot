@@ -1,45 +1,63 @@
 import { ArgumentParser } from 'argparse';
-import { Message, Client, Channel, Role, User } from 'discord.js';
+import { kMaxLength } from 'buffer';
+import { Message, Client, Channel, Role, User, StringResolvable } from 'discord.js';
 import Bot from '.';
 import SoundManager from '../SoundManager';
 import Context from './Context';
 import { EmojiCommandParameters } from './messageControls';
-import MiddlewareManager, { DoneCallback, MiddlewareFunction } from './MiddlewareManager';
+import MiddlewareManager, { DoneCallback, ErrorHandlingFunction, MiddlewareFunction, NextFunction } from './MiddlewareManager';
 
 export default abstract class Command {
-	mm: MiddlewareManager;
+	private mm: MiddlewareManager;
 	name: string;
-	aliases: string[];
+	private _aliases: string[];
 	description: string;
 	result: number | undefined
 	argumentParser: ArgumentParser | undefined
+	private mwbefore: MiddlewareFunction[];
+	private mwafter: ErrorHandlingFunction[];
 	constructor() {
-		this.mm = new MiddlewareManager();
 		this.description = '';
 		this.name = 'command-' + (typeof this);
-		this.aliases = []
+		this._aliases = []
+		this.mwbefore = []
+		this.mwafter = []
 		this.argumentParser = undefined;
+		this.mm = new MiddlewareManager();
 	}
-	/* constructor(name:string[] | string, ...middleware: (MiddlewareFunction|CommandFunction)[]) {
-		
-		let _name:string[] = !Array.isArray(name) ? [name.toLowerCase()]: name;
-		this.name = <string> _name.shift()?.toLowerCase();
-		this.aliases = _name;
-		
-		const f:CommandFunction = <CommandFunction>middleware.pop();
-		this.runFunction = (msg:Message, client:Client, params:CommandParameters) => {
-			if (params.isError) return; //TODO fix; middleware flags commmand error. Implement error handler middleware
-			return f(msg, client, params);
+
+	getDispatcher = () => {
+		//Assure, the stack is executed after the run
+		const nextRun: MiddlewareFunction = (this.run.length == 4) ?
+			<MiddlewareFunction>this.run :
+			(msg: Message, client: Client, params: CommandParameters, next: NextFunction) => {
+				try {
+					this.run(msg, client, params);
+				} catch (e) {
+					next(e);
+					return;
+				}
+				next();
+			}
+
+		this.mm.use(...this.mwbefore, nextRun.bind(this), ...this.mwafter);
+		console.log("COMMAND STACK: [" + this.name + "] " + this.mm.stack.map(l => l.name || "anon").join("->"))
+		return (msg: Message, client: Bot, params: CommandParameters, next: NextFunction) => {
+			return this.mm.handle(msg, client, params, (err?) => {
+				if (err) {
+					next(err);
+				} else {
+					next();
+				}
+			})
 		};
-		this.mm.use(...middleware);
-		this.description = '';
-	} */
+	}
 
 	setDescription = (description: string) => {
 		this.description = description;
 	};
 
-	matches = (token: string): CommandMatch | undefined => {
+	matches = (token: string): CommandMatch | false => {
 		if (this.name == token)
 			return {
 				call: this.name,
@@ -49,7 +67,7 @@ export default abstract class Command {
 		if (this.aliases && this.aliases.length) {
 			for (let i = 0; i < this.aliases.length; i++) {
 				const alias = this.aliases[i];
-				if (alias.startsWith(token)) {
+				if (alias == token) {
 					return {
 						call: alias,
 						alias: true,
@@ -58,42 +76,41 @@ export default abstract class Command {
 				}
 			}
 		}
-		return undefined;
+		return false;
 	};
 
+	before = (...middlewares: (MiddlewareFunction)[]) => {
+		return this.mwbefore.push(...middlewares);
+	};
 
-	toDone(): DoneCallback {
-		return (err, msg, client, params) => {
-			if(err){
-				console.log("PRE COMMAND ERROR");
-				console.error(err);
-				return;
-			}
-			this.mm.handle(msg, client, params, (_err, msg, client, params) => {
-				if (_err) {
-					console.log("IN COMMAND ERROR");
-					console.error(_err);
-					return;
-				}
-				this.run(msg,client,params);
-			});
-		};
+	after = (...middlewares: ErrorHandlingFunction[]) => {
+		return this.mwafter.push(...middlewares);
 	}
 
+	alias = (...aliases: string[]) => {
+		this._aliases.push(...aliases)
+	}
 
-	use = (...middlewares: (MiddlewareFunction)[]) => {
-		return this.mm.use(...middlewares);
-	};
+	get aliases(): string[] {
+		return this._aliases;
+	}
 
-	abstract run(msg: Message, client: Client, params: CommandParameters): void;
+	abstract run(msg: Message, client: Client, params: CommandParameters, next?: NextFunction): void;
 
 	toString() {
 		return `Command(${this.name} [${this.aliases.join(', ')}], mw: ${this.mm.stack.length})`;
 	}
-	getHelpField() {
+	getHelpField(bot: Bot) {
+		const p = bot.prefix;
+		const embedAliases = `Also: *${p}${this.aliases.join(`*, *${p}`)}*\n`;
+		const embedDescription = this.description.replace(/[\r\t\n]+/gi, " ").replace(/s+/gi, " ");
+		let value = `${this.aliases.length ? embedAliases : ""}${this.description.length ? embedDescription : ""}`;
+		if (value == "") {
+			value = `**${this.name}** command. Kinda obvious...`;
+		}
 		return {
-			name: `${this.name}`,
-			value: `Also: (${this.aliases.join('|')})${this.description && ("\n" + this.description)}`
+			name: `\`${p}${this.name}\``,
+			value
 		}
 	}
 }
@@ -103,12 +120,8 @@ export default abstract class Command {
 } */
 
 export interface CommandParameters {
-	context?: Context;
 	args: Argument[],
-	entities: {
-		[index: number]: Channel | User | Role
-	},
-	trigger: CommandMatch,
+	trigger?: CommandMatch,
 	//settings: {},
 	parsed?: {},
 	voice?: SoundManager

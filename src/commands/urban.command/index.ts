@@ -4,8 +4,8 @@ import SoundManager from '../../SoundManager';
 import axios from 'axios';
 import { ArgumentParser } from 'argparse';
 import Command, { CommandFunction, CommandParameters } from '../../Bot/Command'
-import { CommandSchema } from '../../Bot/registerDirectory'
 import { Client, Message } from 'discord.js';
+import Sound from '../../Bot/models/Sound.model';
 
 const commandParser = new ArgumentParser();
 commandParser.add_argument('-s', {
@@ -20,12 +20,9 @@ export default class Urban extends Command {
 	constructor() {
 		super();
 		this.name = 'urban'
-		this.aliases = ['whatis', 'dict']
-		this.mm.use(parseArgs(commandParser), voice())
+		this.alias('whatis', 'dict')
+		this.before(parseArgs(commandParser), voice())
 		this.description = 'Looks it up in urban dict'
-	}
-	useParser(parser:ArgumentParser){
-		console.log("URBAN");
 	}
 
 	run(msg: Message, client: Client, params: CommandParameters) {
@@ -33,14 +30,11 @@ export default class Urban extends Command {
 		const term = query.join(" ")
 		axios({
 			method: 'GET',
-			url:
-				'https://mashape-community-urban-dictionary.p.rapidapi.com/define',
+			url: 'https://mashape-community-urban-dictionary.p.rapidapi.com/define',
 			headers: {
 				'content-type': 'application/octet-stream',
-				'x-rapidapi-host':
-					'mashape-community-urban-dictionary.p.rapidapi.com',
-				'x-rapidapi-key':
-					process.env.RAPID_API_URBAN_KEY,
+				'x-rapidapi-host': 'mashape-community-urban-dictionary.p.rapidapi.com',
+				'x-rapidapi-key': process.env.RAPID_API_URBAN_KEY,
 				useQueryString: true,
 			},
 			params: {
@@ -60,11 +54,14 @@ export default class Urban extends Command {
 					msg.reply("you have to be in a channel! :loud_sound:");
 				} else if (sound_urls.length && say) {
 					const idx = Math.floor(Math.random() * sound_urls.length);
-					const q = sound_urls[idx].substring("http://wav.urbandictionary.com/".length);
-					console.log("query: ", q);
-					SoundManager.get({ q, src: 'urban', ext: 'wav' })
-						.then((uri: string) => params.voice?.say(uri))
-						.catch(console.error);
+					const id = sound_urls[idx].substring("http://wav.urbandictionary.com/".length);
+					Sound.create(
+						{ id, src: 'urban', ext: 'wav' }
+					).then(created => {
+						SoundManager.get(created)
+							.then((uri: string) => params.voice?.say(uri))
+							.catch(console.error);
+					})
 				}
 			})
 			.catch((error) => {

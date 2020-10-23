@@ -2,20 +2,20 @@
 
 import { Client, Message } from 'discord.js';
 import Command, { CommandParameters } from '../../Bot/Command';
-import { parseNumbers } from '../../Bot/middlewares';
+import { parseNumbers } from '../../middleware';
 
 export default class Random extends Command {
 	constructor() {
 		super();
 		this.name = 'random'
-		this.aliases = ['dice', 'coin', 'coinflip', 'cointoss', 'dnd']
-		this.mm.use(parseNumbers)
+		this.alias('dice', 'coin', 'coinflip', 'cointoss', 'dnd')
+		this.before(parseNumbers)
 		this.description = 'Returns a random value'
 	}
 	run(msg: Message, client: Client, params: CommandParameters) {
-		let message: { (n: number): string } = (n) => `picked a randum number ${n} out of a ${m}`;
 		let m: number;
-		if (!params.trigger.alias) {
+		let message: { (n: number): string } = (n) => `picked a randum number ${n} out of a ${m}`;
+		if (!params.trigger!.alias) {
 			//The command was not called with an alias
 			if (Number.isNaN(Number(params.args[0]))) {
 				m = 100;
@@ -23,7 +23,7 @@ export default class Random extends Command {
 				m = Number(params.args[0]);
 			}
 		} else {
-			switch (params.trigger.call) {
+			switch (params.trigger!.call) {
 				//aliases define its own max numbers
 				case 'dice':
 					m = 6;

@@ -1,13 +1,12 @@
 import { Guild } from "discord.js";
 
-import { BuildOptions, DataTypes, Sequelize } from "sequelize";
-import { BelongsTo, Column, HasMany, Table, Model, ForeignKey } from "sequelize-typescript";
+import { BelongsTo, Column, HasMany, Table, Model, ForeignKey, DataType } from "sequelize-typescript";
 import JokeReply from "./JokeReply.model";
 import JokeType from "./JokeType.model.";
 
 
 @Table({ timestamps: false })
-export default class Joke extends Model{
+export default class Joke extends Model {
 
     @BelongsTo(() => JokeType, { foreignKey: 'jtype_id' })
     public jType: JokeType;
@@ -18,4 +17,10 @@ export default class Joke extends Model{
 
     @HasMany(() => JokeReply, { foreignKey: 'joke_id', as: 'replies' })
     public replies: JokeReply[] = [];
+
+    @Column({ type: DataType.INTEGER })
+    public api_id: number;
+/*  //TODO
+    @HasMany(() => JokeVote, { foreignKey: 'joke_id', as: 'votes' })
+    public votes:JokeVote[]; */
 }

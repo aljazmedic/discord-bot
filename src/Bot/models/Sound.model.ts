@@ -1,10 +1,13 @@
 
 
-import { Column, DataType, Table, Model } from "sequelize-typescript";
+import { Column, DataType, Table, Model, PrimaryKey } from "sequelize-typescript";
 
 @Table({ timestamps: false })
-export default class Sound extends Model<Sound>
-{
+export default class Sound extends Model {
+
+    @PrimaryKey
+    @Column(DataType.STRING)
+    public id:string;
 
     @Column({ type: DataType.STRING, allowNull: false })
     public src: string;

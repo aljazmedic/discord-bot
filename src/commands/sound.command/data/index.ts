@@ -60,8 +60,3 @@ export type SoundSource = {
 	options?: SayOptions
 	ext?:'mp3' | 'wav'
 }
-
-export type SayOptions = {
-	volume?: number
-
-}

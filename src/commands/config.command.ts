@@ -25,7 +25,6 @@ export default class Config extends Command {
         super();
         this.description = '';
         this.name = "config" //name of the command
-        this.aliases = []
         //this.setName("ping", "testp");
     }
 

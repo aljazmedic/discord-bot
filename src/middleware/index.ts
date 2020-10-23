@@ -1,6 +1,6 @@
-export { onlyIn,onlyNot,onlyIf } from './only';
+export { onlyIn, onlyNot, onlyIf } from './only';
 export { randomChance } from './randomChance';
-export { parseArgs } from './parseArgs';
+export { parseArgs, parseIdsToObjects, parseNumbers } from './parsers';
 export { voice } from './voice';
 
 /* import fs from 'fs';

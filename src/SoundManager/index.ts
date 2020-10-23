@@ -3,7 +3,6 @@ import fs, { PathLike, WriteStream } from 'fs';
 import path from 'path';
 import { Client, VoiceChannel, VoiceConnection } from 'discord.js';
 import request from 'request'
-import { SayOptions, SoundSource } from '../commands/sound.command/data';
 import { SoundDB } from "../Bot/models";
 import ffmpeg from "fluent-ffmpeg";
 
@@ -171,3 +170,9 @@ export type PostProcessOptions = {
 	hash?: string;
 	filename?: string;
 };
+
+
+export type SayOptions = {
+	volume?: number
+
+}

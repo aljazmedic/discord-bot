@@ -1,8 +1,8 @@
 import Bot, { msgCtrl } from './Bot';
 import { selfDeleteMW } from './Bot/messageControls';
-import { Client, Message } from 'discord.js';
+import { Client, Message, TextChannel } from 'discord.js';
 import { randomChance, onlyIn, onlyNot, onlyIf } from './middleware';
-import Command, { CommandParameters,CommandFunction } from './Bot/Command';
+import Command, { CommandParameters, CommandFunction } from './Bot/Command';
 import path from 'path';
 import Ping from './commands/ping.command';
 const NODE_ENV = process.env.NODE_ENV || 'production'
@@ -14,7 +14,11 @@ const bot = new Bot(config);
 bot.on('ready', () => {
 	console.info(`Logged in as ${bot.user?.tag}!`);
 	console.info(`Url invite: ${bot.createInvite()}`);
+	console.log(`Listening for:\n${bot._commandNames.join('|')}`)
 });
+
+import addCommands from './commands'
+addCommands(bot);
 /* 
 bot.onReady(() => {
 	setInterval(
@@ -42,8 +46,9 @@ bot.onReady(() => {
 /* bot.register('greet', randomChance(0.5), (msg:Message, client:Client) => {
 	console.log('PARAMS', client);
 	msg.reply('Hi!');
-});
+}) */
 
+/*
 //358966701548765185
 bot.register('em', selfDeleteMW, (msg:Message, client:Client, params:CommandParameters) => {
 	msg.awaitReactions(() => true, { max: 1, time: 30000 }).then((collected) => {
@@ -61,8 +66,6 @@ bot.register('em', selfDeleteMW, (msg:Message, client:Client, params:CommandPara
 	});
 }); */
 
-import addCommands from './commands'
-addCommands(bot);
 /* 
 bot.registerDirectory(
 	path.join(__dirname,'commands'),
@@ -75,5 +78,7 @@ bot.registerDirectory(
 	onlyIf(() => process.env.ONLY_DEBUG),
 	onlyIn({ channel: '494617599859228683' }),
 ); */
+
 bot.start(config.discord_token);
+
 

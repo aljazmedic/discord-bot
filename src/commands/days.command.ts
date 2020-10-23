@@ -8,13 +8,12 @@ export default class Days extends Command {
     constructor(){
         super();
         this.name= "days", //name of the command
-        this.aliases= ["whichday","weekday"]
+        this.alias("whichday","weekday","dan")
     }
 
 	run(msg:Message, client:Client, params:CommandParameters) {
         //final function
-        const d = new Date();
-        const numday = d.getDay();
+        const numday = new Date().getDay();
         let message;
         switch(numday){
             case 3:

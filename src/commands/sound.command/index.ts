@@ -9,14 +9,14 @@ export default class Sound extends Command {
 	constructor() {
 		super();
 		this.name = 'play';
-		this.aliases = ['p', 'dc'] //name of the command
+		this.alias('p', 'dc') //name of the command
 
-		this.mm.use(voice({ failNotJoined: true }))
+		this.before(voice({ failNotJoined: true }))
 	}
 	run(msg: Message, client: Client, params: CommandParameters) {
 		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>params.voice;
 
-		if (params.trigger.call == 'dc') {
+		if (params.trigger?.call == 'dc') {
 			if (botIn) voiceChannel.leave();
 			return;
 		}
@@ -26,7 +26,7 @@ export default class Sound extends Command {
 				msg.reply(
 					`pick a sound! (${sounds.map(s => s.name).join(' | ')} )`,
 				);
-			})
+			}).catch(err=>console.error(err))
 
 		}
 
@@ -34,9 +34,9 @@ export default class Sound extends Command {
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
 
-		const name = <string> params.args[0];
+		const name = <string>params.args[0];
 
-		SoundDB.findOne({ where: { name:"str" } }).then(soundSource => {
+		SoundDB.findOne({ where: { name } }).then(soundSource => {
 			if (!soundSource) {
 				msg.reply('invalid sound!');
 			} else {
@@ -47,7 +47,7 @@ export default class Sound extends Command {
 				SoundManager
 					.get(soundSource, options)
 					.then((uri) => params.voice?.say(uri))
-					.catch(console.error);
+					.catch(err=>console.error(err));
 			}
 		})
 	}

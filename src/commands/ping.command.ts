@@ -5,16 +5,15 @@ import { GuildDB } from "../Bot/models";
 export default class Ping extends Command {
 	constructor() {
 		super();
-		this.description = '';
+		this.description = 'replies pong to the sender!';
 		this.name = "ping" //name of the command
-		this.aliases = ["testp"]
-		//this.setName("ping", "testp");
+		this.alias("testp")
 	}
 
 	run(msg: Message, client: Client, params: CommandParameters) {
 		//final function
-		console.log(params.context?.get('ram-id:5'))
-		GuildDB.create(<Guild>msg.guild).then((created) => {
+		GuildDB.fetch(msg.guild!)
+		.then((created) => {
 			console.log(created);
 			return msg.reply("pong");
 		}).catch(err => {

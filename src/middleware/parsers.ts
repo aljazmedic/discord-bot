@@ -1,7 +1,30 @@
+/* eslint-disable no-unused-vars */
+import {ArgumentParser} from 'argparse';
 import { Channel, Client, Message, Role, User } from 'discord.js';
-import { CommandParameters } from './Command';
-import ContextManager from './ContextManager';
-import { MiddlewareFunction, NextFunction } from './MiddlewareManager';
+import { MiddlewareFunction } from '../Bot/MiddlewareManager';
+
+export function parseArgs(argparser:ArgumentParser):MiddlewareFunction {
+	//with argparser parse the args of a command
+	return (msg, client, params, next) => {
+		try{
+			params.parsed = argparser.parse_known_args(<string[]>params.args)[0];
+		}catch(e){
+			next(e);
+		}
+		next();
+	};
+}
+
+export const parseNumbers: MiddlewareFunction = (msg, client, params, next) => {
+	// Middleware that parses args
+	params.args = params.args.map((part) => {
+		return (typeof part == 'object') ? part :
+			typeof part == 'string' && !Number.isNaN(Number(part)) ? parseFloat(part) : part;
+	});
+	next();
+}
+
+
 
 function getEntityFromText(msg: Message, client: Client, mention: string): Channel | User | Role | undefined {
 	const userMatch = mention.match(/^<@!?(\d+)>$/);
@@ -18,30 +41,12 @@ function getEntityFromText(msg: Message, client: Client, mention: string): Chann
 
 export const parseIdsToObjects: MiddlewareFunction = (msg, client, params, next) => {
 	// Middleware that parses args with cache
-	params.entities = {};
 	const _args = params.args;
 	_args.forEach((arg, idx: number) => {
 		const u = getEntityFromText(msg, client, <string>arg);
 		if (u) {
 			params.args[idx] = u;
-			params.entities[idx] = u;
 		}
 	});
 	next();
-}
-
-export const parseNumbers: MiddlewareFunction = (msg, client, params, next) => {
-	// Middleware that parses args
-	params.args = params.args.map((part) => {
-		return (typeof part == 'object') ? part :
-			typeof part == 'string' && !Number.isNaN(Number(part)) ? parseFloat(part) : part;
-	});
-	next();
-}
-
-export function withContext(contextMgr: ContextManager): MiddlewareFunction {
-	return (msg, client: Client, params, next) => {
-		params.context = contextMgr.forMessage(msg);
-		next();
-	};
 }

@@ -23,7 +23,7 @@ export function onlyIn(dict:OnlyDict = {}, { isDev } = { isDev: false }):Middlew
 				console.log('Only not passing');
 				next({
 					name:'OnlyPrevented',
-					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msgRelated.id} (not ${v})`,
+					message: `Attempt to call ${params.trigger?.fn.name} with ${k} = ${msgRelated.id} (not ${v})`,
 				});
 			}
 		});
@@ -40,7 +40,7 @@ export function onlyNot(dict:OnlyDict = {}, { isDev } = { isDev: false }):Middle
 				console.log('Invalid ${k} = ${msg[k].id}');
 				next({
 					name:'OnlyPrevented',
-					message: `Attempt to call ${params.trigger.fn.name} with ${k} = ${msgRelated.id} (Prohibited)`,
+					message: `Attempt to call ${params.trigger?.fn.name} with ${k} = ${msgRelated.id} (Prohibited)`,
 				});
 			}
 		});

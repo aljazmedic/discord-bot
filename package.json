@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
     "dev:mw": "cross-env NODE_ENV=development nodemon src/middleware.index.ts",
+    "get:joke": "cross-env NODE_ENV=development nodemon src/new-jokes.index.ts",
     "build": "tsc -p .",
     "start": "cross-env NODE_ENV=development node dist/index.js",
     "lint": "npm run lint:js",
