@@ -1,7 +1,7 @@
 import { BelongsTo, Column, Table, Model, DataType, ForeignKey, ModelClassGetter } from "sequelize-typescript";
 import Joke from "./Joke.model";
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
 export default class JokeReply extends Model {
 
     @Column({ type: DataType.STRING, allowNull: false })

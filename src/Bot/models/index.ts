@@ -16,7 +16,7 @@ export const sequelize = new Sequelize(
 	config.username,
 	config.password,
 	{
-		...config,
+		...config,set:2,
 		models:
 			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB]//'*.model.[tj]s'
 	}

@@ -5,7 +5,7 @@ import { BelongsTo, Column, HasMany, Table, Model, ForeignKey, DataType, Primary
 import { TeamDB } from ".";
 import Team from "./Team.model";
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
 export default class TeamPlayer extends Model {
 
 

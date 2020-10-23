@@ -5,7 +5,7 @@ import { DataType, Model, Column, Table, Default, PrimaryKey, HasMany } from "se
 import Team from "./Team.model";
 import TeamPlayer from "./TeamPlayer.model";
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, charset: 'utf-8', collate:'utf8_general_ci' })
 export default class Guild extends Model<Guild>{
 
     @PrimaryKey
@@ -26,11 +26,11 @@ export default class Guild extends Model<Guild>{
 
     //VOTING
 
-    @Default("👍")
+    @Default(":+1:") //👍
     @Column({ type: DataType.STRING })
     public upvote_emoji: string;
 
-    @Default("👎")
+    @Default(":-1:") //👎
     @Column({ type: DataType.STRING })
     public downvote_emoji: string;
 
