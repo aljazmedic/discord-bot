@@ -7,7 +7,9 @@
             "host": "127.0.0.1",
             "dialect": "mysql"
         },
-        "discord_token":"<...>"
+        "discord_token":"<...>",
+        "prefix":"<...>",
+        "urban_token":"<...>"
     },
     "[NODE_ENV_2]":"..."
 }

@@ -5,6 +5,11 @@ import axios from 'axios';
 import { ArgumentParser } from 'argparse';
 import Command, { CommandFunction, CommandParameters } from '../../Bot/Command'
 import { Client, Message } from 'discord.js';
+
+const NODE_ENV = <string>process.env.NODE_ENV;
+const urban_token = <string>require('../../../config/config.json')[NODE_ENV].urban_token || undefined;
+
+
 import Sound from '../../Bot/models/Sound.model';
 
 const commandParser = new ArgumentParser();
@@ -28,13 +33,18 @@ export default class Urban extends Command {
 	run(msg: Message, client: Client, params: CommandParameters) {
 		const { say, query } = <{ say: boolean, query: string[] }>params.parsed;
 		const term = query.join(" ")
+		if(urban_token === undefined){
+			msg.reply("Developer messed up!");
+			return
+		}
+
 		axios({
 			method: 'GET',
 			url: 'https://mashape-community-urban-dictionary.p.rapidapi.com/define',
 			headers: {
 				'content-type': 'application/octet-stream',
 				'x-rapidapi-host': 'mashape-community-urban-dictionary.p.rapidapi.com',
-				'x-rapidapi-key': process.env.RAPID_API_URBAN_KEY,
+				'x-rapidapi-key': urban_token,
 				useQueryString: true,
 			},
 			params: {
