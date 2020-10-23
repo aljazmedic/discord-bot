@@ -4,7 +4,7 @@ import { getTeamColor, getTeamName } from "../../commands/team.command/util";
 import Guild from "./Guild.model";
 import TeamPlayer from "./TeamPlayer.model";
 
-@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate: 'utf8_general_ci' })
 export default class Team extends Model {
 
     @BelongsTo(() => Guild, { foreignKey: 'gid' })
@@ -48,7 +48,9 @@ export default class Team extends Model {
         @HasMany(() => JokeVote, { foreignKey: 'joke_id', as: 'votes' })
         public votes:JokeVote[]; */
     createEmbed(): Promise<MessageEmbed> {
-        return this.reload().then((rloaded) => new MessageEmbed()
+        return this.reload({
+            include: [TeamPlayer]
+        }).then((rloaded) => new MessageEmbed()
             .setColor(rloaded.color)
             .setTitle(rloaded.name)
             .setDescription(rloaded.indexedName)
@@ -56,7 +58,7 @@ export default class Team extends Model {
                 rloaded.members.map((tm, idx) => {
                     return {
                         name: `Player #${idx + 1}`,
-                        value: `<@${tm.id}>`
+                        value: tm.isPlayer ? `<@${tm.member_id}>` : tm.new_name
                     }
                 })
             )

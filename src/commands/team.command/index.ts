@@ -61,9 +61,9 @@ export default class Teams extends Command {
 			return TeamDB.createTeams(msg.guild!, n)
 				.then((teams) => diviteIntoTeams(teams, userPlayers))
 				.then((updatedTeams) => {
-					updatedTeams.forEach(team => {
-						msg.channel.send(team.createEmbed())
-					})
+					updatedTeams.forEach(team => team.createEmbed().then(embed => msg.channel.send(embed)))
+
+
 				}).catch(err => console.error(err))
 		}
 
