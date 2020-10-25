@@ -1,7 +1,9 @@
 import { resolve } from "bluebird";
 import { Client, Message, Guild, TextChannel, GuildCreateChannelOptions } from "discord.js";
-import Command, { CommandFunction, CommandParameters } from "../Bot/Command";
+import Command, { CommandFunction, CommandMessage, CommandResponse } from "../Bot/Command";
 import { GuildDB } from "../Bot/models";
+import { getLogger } from '../logger';
+const logger = getLogger(__filename);
 
 
 type CreateControlChannelOptions = GuildCreateChannelOptions & {
@@ -28,7 +30,8 @@ export default class Config extends Command {
         //this.setName("ping", "testp");
     }
 
-    run(msg: Message, client: Client, params: CommandParameters) {
+    run(msg: CommandMessage, client: Client, res: CommandResponse) {
+
         //final function
         const { id, name }: { id: string, name: string } = <Guild>msg.guild;
         GuildDB.findOrCreate({
@@ -41,14 +44,15 @@ export default class Config extends Command {
                 if (result.role_cid) {
                     return client.channels.fetch(result.role_cid);
                 } else {
-                    return msg.guild?.channels.create("role assign", {
-                        type: 'text', reason: "To auto-manage roles",
-                    })
+                    return msg.guild?.channels.create("role assign",
+                        {
+                            type: 'text', reason: "To auto-manage roles",
+                        })
                 }
             })
         }).then((channel) => GuildDB.update({ role_cid: channel.id }, { where: { id } }).then(([n, updated]) => {
             console.log(updated);
         })
-        ).catch(err => { console.error(err) })
+        ).catch(err => { logger.error(err) })
     }
 };

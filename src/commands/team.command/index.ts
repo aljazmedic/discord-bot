@@ -4,9 +4,11 @@ import * as argparse from 'argparse';
 import { voice } from '../../middleware';
 import { Message, Client, VoiceChannel, Guild, UserResolvable, Team, GuildMemberResolvable, GuildMember, User } from 'discord.js';
 
-import Command, { CommandParameters } from '../../Bot/Command';
+import Command, { CommandMessage, CommandResponse } from '../../Bot/Command';
 import { TeamDB, TeamPlayerDB } from '../../Bot/models';
-import { NextFunction } from '../../Bot/MiddlewareManager';
+
+import { getLogger } from '../../logger';
+const logger = getLogger(__filename);
 
 const commandParser = new argparse.ArgumentParser();
 commandParser.add_argument('-n', '--numPlayers', { type: 'int', default: 2, dest: 'n', });
@@ -20,14 +22,14 @@ export default class Teams extends Command {
 		this.alias('teams', 'ekipe', 'ekipa', 'endteams', 'endgame')
 	}
 
-	run(msg: Message, client: Client, params: CommandParameters) {
+	run(msg:CommandMessage, client: Client, res: CommandResponse) {
 		/* console.log(lastGame);
 		if (lastGame)
 			//still active
 			endgame(msg, client, params); */
 		//final function
-		console.log(params.trigger)
-		switch (params.trigger!.call) {
+		console.log(msg.trigger)
+		switch (msg.trigger!.caller) {
 			case 'endgame':
 			case 'endteams': TeamDB.findAll({
 				where: {
@@ -35,20 +37,20 @@ export default class Teams extends Command {
 				}
 			}).then((teams) => {
 				teams.forEach(t => t.disband(msg.guild!))
-			}).catch(err => console.error(err))
+			}).catch(err => logger.error(err))
 				return;
 		}
 
 
-		console.log(params.parsed);
-		let { n, players } = <{ n: number, players: (string | User)[] }>params.parsed;
+		console.log(msg.parsed);
+		let { n, players } = <{ n: number, players: (string | User)[] }>msg.parsed;
 		let allUsers = false; //Assume not all player objects are actual users
 		players = players.filter(
 			(e) => (e && e != '' && e != undefined),
 		);
 		if (players.length == 0) {
 			// grab from voice
-			const { authorIn, channel } = <{ authorIn: boolean, channel: VoiceChannel }>params.voice;
+			const { authorIn, channel } = <{ authorIn: boolean, channel: VoiceChannel }>msg.voice;
 			if (!authorIn) {
 				return msg.reply(`you must be in a voice channel :loud_sound:`);
 			}
@@ -64,7 +66,7 @@ export default class Teams extends Command {
 					updatedTeams.forEach(team => team.createEmbed().then(embed => msg.channel.send(embed)))
 
 
-				}).catch(err => console.error(err))
+				}).catch(err => logger.error(err))
 		}
 
 	}

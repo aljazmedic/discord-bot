@@ -1,20 +1,20 @@
 import { exception } from "console";
 import { Message } from "discord.js";
 import Bot, { DiscordBotError } from ".";
-import Command, { CommandFunction, CommandMatch, CommandParameters } from "./Command";
+import { getLogger } from "../logger";
+import Command, { CommandMessage, CommandTrigger } from "./Command";
+import CommandResponse from "./Command/response";
+const logger = getLogger(__filename)
 
-class Layer {
+
+export class Layer {
 	handle: MiddlewareFunction | ErrorHandlingFunction;
-	matches: Transformer<Message, boolean> | Transformer<Message, CommandMatch | boolean>;
+	matches: Transformer<Message, boolean> | Transformer<Message, CommandTrigger | false>;
 	name?: string;
-	constructor(fn: Layerable, matcher?: Transformer<Message>) {
-		console.log("Layer make " + (fn.name && fn.name));
+	constructor(fn: Layerable, matcher?: Transformer<Message, boolean>) {
+		logger.debug("Layer make " + (fn.name && fn.name));
 		if (fn instanceof Command) {
-			this.matches = (msg: Message) => {
-				const args = msg.content.split(' ');
-				if (args.length == 0) return false;
-				return fn.matches(args[0].trim()) || false;
-			}
+			this.matches = fn.matches
 			this.handle = fn.getDispatcher()
 			this.name = `Command(${fn.name})`;
 		} else {
@@ -24,24 +24,24 @@ class Layer {
 		}
 	}
 
-	handleError(err: DiscordBotError, msg: Message, client: Bot, params: CommandParameters, next: NextFunction) {
+	handleError(err: DiscordBotError, msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) {
 		if (this.handle.length !== 5) {
 			return next(err)
 		}
 		const fn = <ErrorHandlingFunction>this.handle;
 		try {
-			fn(err, msg, client, params, next);
+			fn(err, msg, client, res, next);
 		} catch (e) { next(e) }
 	}
 
-	handleRequest(msg: Message, client: Bot, params: CommandParameters, next: NextFunction) {
+	handleRequest(msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) {
 		if (this.handle.length > 4) {
 			//Not a command  handler
 			return next();
 		}
 		const fn = <MiddlewareFunction>this.handle;
 		try {
-			fn(msg, client, params, next);
+			fn(msg, client, res, next);
 		} catch (e) { next(e) }
 	}
 }
@@ -90,14 +90,12 @@ export default class MiddlewareManager {
 		this.stack.unshift(...middlewareFunctions.map((layerable): Layer => layerableToLayer(layerable, matcher)));
 	}
 
-	handle(msg: Message, client: Bot, params: CommandParameters, done: DoneCallback) {
+	handle(msg: CommandMessage, client: Bot, res: CommandResponse, done: DoneCallback) {
 		let idx = 0;
 
-		/** DEBUG PURPOSES 
-		const frames: { name: string[], applicable: boolean[] } = {name:[],applicable:[]}*/
 		const next: NextFunction = (err) => {
 
-			let match: CommandMatch | boolean = false;
+			let match: CommandTrigger | boolean = false;
 			let nextLayer: Layer | undefined = undefined;
 			while (!match) {
 				if (idx >= this.stack.length) {
@@ -108,38 +106,31 @@ export default class MiddlewareManager {
 
 				match = nextLayer.matches(msg);
 
-				/** DEBUG PURPOSES 
-				frames.name.push(nextLayer.name!);
-				frames.applicable.push(!!match);*/
+				logger.debug(`\'${(msg.content.length < 15 ? msg.content : (msg.content.substring(0,12)+'...').padEnd(9))}\' Layer(${nextLayer.name}) match? ${!!match}`)
 			}
-			if (!nextLayer) {
+
+			if (!match || !nextLayer) {
 				return done(undefined);
 			}
 
-			if (!(typeof match == 'boolean')) {
-				params.trigger = match;
-			}
-
 			if (err) {
-				nextLayer.handleError(err, msg, client, params, next);
+				nextLayer.handleError(err, msg, client, res, next);
 			} else {
-				nextLayer.handleRequest(msg, client, params, next);
+				nextLayer.handleRequest(msg, client, res, next);
 			}
 		};
 		next();
-		/** DEBUG PURPOSES 
-		console.table(frames) */
 	}
 
 }
 
 export interface ErrorHandlingFunction {
-	(err: DiscordBotError, msg: Message, client: Bot, params: CommandParameters, next: NextFunction): void;
+	(err: DiscordBotError, msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction): void;
 }
 
 
 export interface MiddlewareFunction {
-	(msg: Message, client: Bot, params: CommandParameters, next: NextFunction): void,
+	(msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction): void,
 }
 
 export interface NextFunction {
@@ -153,6 +144,5 @@ export interface DoneCallback {
 export interface Transformer<T, T2 = boolean> {
 	(e: T): T2
 }
-
 
 export type Layerable = Command | MiddlewareFunction | ErrorHandlingFunction;

@@ -1,25 +1,29 @@
-import { Client, Collection, Message, MessageReaction } from 'discord.js';
-import {CommandFunction, CommandParameters} from './Command'
+import { Client, Collection, Message, MessageReaction, User } from 'discord.js';
+import { getLogger } from '../logger';
+import { CommandFunction, CommandMessage, CommandResponse } from './Command'
 import { MiddlewareFunction, NextFunction } from './MiddlewareManager';
+const logger = getLogger(__filename)
 
-export function msgCtrl(msg:Message, client:Client, emojiFnDict:IEmojiStringDict) {
-	Object.entries(emojiFnDict).forEach(([emoji, emojiFn]) =>
-		msg
-			.awaitReactions(
-				(reaction, user) =>
-					user.id == msg.author.id && reaction.emoji.name == emoji,
-				{ max: 1, time: 30000 },
-			)
-			.then((collected) => {
-				const {
-					emoji: { name = false },
-				} = <MessageReaction> collected.first();
-				if (!name) return;
-				emojiFn(msg, client, {
-					trigger: { reaction: name, collected },
-				});
-			}),
-	);
+export function addController(msg: Message, client: Client, emojiFnDict: IEmojiStringDict, userWhitelist?: string[]) {
+	const userFilter = (u: User) => userWhitelist == undefined || userWhitelist.includes(u.id)
+
+	Object.entries(emojiFnDict).forEach(([emoji, emojiFn]) => {
+		const collector = msg.createReactionCollector((reaction, user) =>
+			userFilter(user) && reaction.emoji.name == emoji && user.id !== client.user!.id, {
+			maxEmojis: 1,
+			time: 15000
+		})
+		collector.on('collect', (reaction, user) => {
+			emojiFn(msg, client, {
+				trigger: { reaction, user },
+			});
+		}).on('end', () => {
+			const theReaction = msg.reactions.cache.find((r) => r.me && r.emoji.name == emoji)
+			if (theReaction) {
+				theReaction.remove()
+			}
+		})
+	});
 
 	return Promise.all(
 		Object.keys(emojiFnDict).map((emoji) =>
@@ -30,29 +34,29 @@ export function msgCtrl(msg:Message, client:Client, emojiFnDict:IEmojiStringDict
 	);
 }
 
-export function selfDeleteCtrl(msg:Message, client:Client) {
-	const deleteEmojiDict:IEmojiStringDict ={
+export function selfDeleteCtrl(msg: Message, client: Client, options: SelfDeleteOptions = {}) {
+	const deleteEmojiDict: IEmojiStringDict = {
 		'🗑': (msg, client, params) => msg.delete(),
 	}
-	return msgCtrl(msg, client, deleteEmojiDict);
+	return addController(msg, client, deleteEmojiDict, options.userAllow);
 }
 
-export const selfDeleteMW:MiddlewareFunction =  (msg, client, params, next)=> {
-	selfDeleteCtrl(msg, client);
-	next();
+
+export interface IEmojiStringDict {
+	[index: string]: EmojiCommand
 }
 
-export interface IEmojiStringDict{
-	[index:string]:EmojiCommand
-}
-
-export interface EmojiCommandParameters{
-	trigger:{
-		reaction:string,
-		collected:Collection<string, MessageReaction>
+export interface EmojiCommandParameters {
+	trigger: {
+		reaction: MessageReaction,
+		user: User
 	},
 }
 
-export interface EmojiCommand{
-	(msg:Message, client:Client, params:EmojiCommandParameters):void,	
+export type SelfDeleteOptions = {
+	userAllow?: string[];
+}
+
+export interface EmojiCommand {
+	(msg: Message, client: Client, params: EmojiCommandParameters): void,
 }

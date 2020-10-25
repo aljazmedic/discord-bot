@@ -1,20 +1,19 @@
-import Bot, { msgCtrl } from './Bot';
-import { selfDeleteMW } from './Bot/messageControls';
-import { Client, Message, TextChannel } from 'discord.js';
-import { randomChance, onlyIn, onlyNot, onlyIf } from './middleware';
-import Command, { CommandParameters, CommandFunction } from './Bot/Command';
-import path from 'path';
-import Ping from './commands/ping.command';
+
+
+import Bot from './Bot';
 const NODE_ENV = process.env.NODE_ENV || 'production'
 
 const config = require('../config/config.json')[NODE_ENV] || {};
-
 const bot = new Bot(config);
+import { getLogger } from './logger';
+const logger = getLogger('MAIN')
+
+
 
 bot.on('ready', () => {
-	console.info(`Logged in as ${bot.user?.tag}!`);
-	console.info(`Url invite: ${bot.createInvite()}`);
-	console.log(`Listening for:\n${bot._commandNames.join('|')}`)
+	logger.info(`Logged in as ${bot.user?.tag}!`);
+	logger.info(`Url invite: ${bot.createInvite()}`);
+	logger.info(`Listening for: (${bot._commandNames.join('|')})`)
 });
 
 import addCommands from './commands'
@@ -33,7 +32,7 @@ bot.onReady(() => {
 					return message.delete();
 				})
 				.then(() => {})
-				.catch(console.error);
+				.catch(logger.error);
 		},
 		5 * 1000,
 		bot.client,

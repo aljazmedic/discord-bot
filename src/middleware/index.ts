@@ -1,4 +1,4 @@
-export { onlyIn, onlyNot, onlyIf } from './only';
+export { onlyWhen as onlyIn, exceptWhen as onlyNot } from './filters';
 export { randomChance } from './randomChance';
 export { parseArgs, parseIdsToObjects, parseNumbers } from './parsers';
 export { voice } from './voice';

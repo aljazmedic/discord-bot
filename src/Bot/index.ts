@@ -1,11 +1,14 @@
-import { Client, Message, ClientOptions } from 'discord.js';
+import { Client, Message, ClientOptions, MessageReaction } from 'discord.js';
 import MiddlewareManager, { ErrorHandlingFunction, MiddlewareFunction } from './MiddlewareManager';
-import { msgCtrl } from './messageControls';
-import Command, { CommandMatch } from './Command';
+import { addController } from './messageControls';
+import Command, { CommandMessage, CommandTrigger } from './Command';
 
 
-export { Command, MiddlewareManager, msgCtrl };
+export { Command, MiddlewareManager, addController as msgCtrl };
 import { sequelize } from './models';
+import { getLogger } from '../logger';
+import CommandResponse from './Command/response';
+const logger = getLogger(__filename);
 
 const FORBIDDEN_NAMES = ['help', 'settings']
 
@@ -23,6 +26,19 @@ export default class Bot extends Client {
 
 		this._commands = [];
 		this._commandNames = [];
+
+		this.on('error', logger.error)
+		this.on('warn', logger.warn)
+		this.use(logger.logMiddleware!);
+	}
+
+
+	nicknameUpdater(name: string) {
+		this.on('guildCreate', (g) => {
+			const guildMember = g.members.cache.get(this.user!.id);
+			if (guildMember)
+				guildMember!.setNickname(name).catch(e => logger.warn(e));
+		})
 	}
 
 	use(...callbacks: (MiddlewareFunction | ErrorHandlingFunction)[]) {
@@ -64,27 +80,38 @@ export default class Bot extends Client {
 		return `https://discord.com/api/oauth2/authorize?client_id=${this.user?.id}&permissions=8&scope=bot`;
 	}
 
-	isBotCommand(content: string): CommandMatch | null {
-		if (!content.startsWith(this.prefix)) return null;
-		const args = content.substr(this.prefix.length || 0).split(' ');
-		const commandName = <string>args.shift();
+	//Warning! Non-pure function
+	isBotCommand(msg: Message): CommandTrigger | false {
+		if (!msg.content.startsWith(this.prefix)) return false;
+		msg.content = msg.content.substring(this.prefix.length)
 		for (let i = 0; i < this._commands.length; i++) {
-			const cm = this._commands[i].matches(commandName);
+			const cm = this._commands[i].matches(msg);
 			if (cm) return cm;
 		}
-		return null;
+		logger.debug('Prefix ok, no match')
+		return false;
 	}
 
 	messageHandler = (msg: Message) => {
 		if (!msg.guild) return; //Only work in guild texts
 		const { content } = msg;
 		if (content.startsWith(this.prefix)) {
-			const args = content.split(' ');
-			args.shift();
-			msg.content = msg.content.substring(this.prefix.length);
-			this.mm.handle(msg, this, { args }, (err) => {
+			//Alter message, so it does not have the prefix
+			const trigger = this.isBotCommand(msg)
+			logger.debug("Command Trigger:", trigger)
+			if(!trigger){
+				//It wont match any Layers
+				return;
+			}
+			const rsp = new CommandResponse(msg);
+			const cMsg: CommandMessage = Object.assign(msg,
+				{
+					trigger,
+					args: msg.content.split(' ')
+				})
+			this.mm.handle(cMsg, this, rsp, (err) => {
 				if (err)
-					console.error(err);
+					logger.error(err);
 			});
 			return;
 		}
@@ -103,7 +130,8 @@ export default class Bot extends Client {
 }
 
 type BotOptions = {
-	prefix: string
+	prefix: string;
+	nickname?: string
 } & ClientOptions;
 
 export interface DiscordBotError extends Error {

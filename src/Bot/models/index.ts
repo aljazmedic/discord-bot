@@ -7,7 +7,8 @@ import JokeTypeDB from "./JokeType.model.";
 import JokeReplyDB from "./JokeReply.model";
 import TeamDB from './Team.model'
 import TeamPlayerDB from './TeamPlayer.model'
-
+import { getLogger } from '../../logger';
+const logger = getLogger("sequelize")
 const NODE_ENV = <string>process.env.NODE_ENV;
 const { sql: config } = require('../../../config/config.json')[NODE_ENV] || { sql: {} };
 
@@ -16,9 +17,11 @@ export const sequelize = new Sequelize(
 	config.username,
 	config.password,
 	{
-		...config,set:2,
+		logging: (s,) => {
+			logger.debug(s)},
+		...config, set: 2,
 		models:
-			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB]//'*.model.[tj]s'
+			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB]//'*.model.[tj]s',
 	}
 );
 

@@ -1,7 +1,7 @@
 {
-  "name": "404_team_generator",
+  "name": "404_discord_bot",
   "version": "0.0.1",
-  "description": "Team generator bot ",
+  "description": "Discord bot with express-like environment",
   "main": "src/index.ts",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
@@ -23,6 +23,7 @@
   },
   "keywords": [
     "discord",
+    "discord.js",
     "node.js",
     "gaming"
   ],
@@ -56,6 +57,7 @@
     "@babel/plugin-syntax-class-properties": "^7.10.4",
     "@babel/plugin-syntax-export-default-from": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
+    "@types/app-root-path": "^1.2.4",
     "@types/argparse": "^2.0.2",
     "@types/bluebird": "^3.5.32",
     "@types/node": "^14.14.2",
@@ -77,6 +79,7 @@
     "@types/ffmpeg": "^1.0.1",
     "@types/fluent-ffmpeg": "^2.1.16",
     "@types/validator": "^13.1.0",
+    "app-root-path": "^3.0.0",
     "argparse": "^2.0.1",
     "axios": "^0.20.0",
     "cheerio": "^1.0.0-rc.3",
@@ -92,6 +95,8 @@
     "request-promise": "^4.2.6",
     "sequelize": "^5.22.3",
     "sequelize-typescript": "^1.1.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0",
     "ytdl": "^1.3.5",
     "ytdl-core": "^3.2.1"
   },
@@ -99,7 +104,9 @@
     "ignore": [
       "lib/*.js",
       "README",
-      "Bot/cache/*.json"
+      "Bot/cache/*.json",
+      "tmp/*",
+      "*.log"
     ]
   }
 }

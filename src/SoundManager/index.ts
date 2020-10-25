@@ -6,7 +6,10 @@ import request from 'request'
 import { SoundDB } from "../Bot/models";
 import ffmpeg from "fluent-ffmpeg";
 
-const storage = path.join('tmp',`cache`);
+import { getLogger } from '../logger'
+const logger = getLogger(__dirname);
+
+const storage = path.join('tmp', `cache`);
 fs.mkdirSync(storage, { recursive: true })
 
 const createValidFilename = (src: string, q: string, ext: string = 'mp3') => {
@@ -105,9 +108,7 @@ export default class SoundManager {
 			fs.exists(filename, (exists) => {
 				if (!exists) {
 					console.log(`Downloading ${id} from ${src}`);
-					sources[src](filename, id)
-						.then(resolve)
-						.catch(reject);
+					return sources[src](filename, id)
 				} else {
 					resolve(filename);
 				}
@@ -153,7 +154,7 @@ export default class SoundManager {
 					}
 				});
 			})
-			.catch(console.error);
+			.catch(logger.error);
 	}
 }
 

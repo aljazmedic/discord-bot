@@ -3,8 +3,10 @@ import { fromDataToEmbed, UrbanEmbedData } from './util'
 import SoundManager from '../../SoundManager';
 import axios from 'axios';
 import { ArgumentParser } from 'argparse';
-import Command, { CommandFunction, CommandParameters } from '../../Bot/Command'
+import Command, { CommandMessage, CommandResponse } from '../../Bot/Command'
 import { Client, Message } from 'discord.js';
+import { getLogger } from '../../logger';
+const logger = getLogger(__filename);
 
 const NODE_ENV = <string>process.env.NODE_ENV;
 const urban_token = <string>require('../../../config/config.json')[NODE_ENV].urban_token || undefined;
@@ -30,10 +32,10 @@ export default class Urban extends Command {
 		this.description = 'Looks it up in urban dict'
 	}
 
-	run(msg: Message, client: Client, params: CommandParameters) {
-		const { say, query } = <{ say: boolean, query: string[] }>params.parsed;
+	run(msg: CommandMessage, client: Client, res: CommandResponse) {
+		const { say, query } = <{ say: boolean, query: string[] }>msg.parsed;
 		const term = query.join(" ")
-		if(urban_token === undefined){
+		if (urban_token === undefined) {
 			msg.reply("Developer messed up!");
 			return
 		}
@@ -60,7 +62,7 @@ export default class Urban extends Command {
 				console.log("Saying: " + say)
 				let { sound_urls = [] } = list[0]
 				sound_urls = sound_urls.filter((v: string) => v.startsWith('http://wav.urbandictionary.com'))
-				if (!params.voice?.authorIn) {
+				if (!msg.voice?.authorIn) {
 					msg.reply("you have to be in a channel! :loud_sound:");
 				} else if (sound_urls.length && say) {
 					const idx = Math.floor(Math.random() * sound_urls.length);
@@ -69,13 +71,13 @@ export default class Urban extends Command {
 						{ id, src: 'urban', ext: 'wav' }
 					).then(created => {
 						SoundManager.get(created)
-							.then((uri: string) => params.voice?.say(uri))
-							.catch(console.error);
+							.then((uri: string) => msg.voice?.say(uri))
+							.catch(logger.error);
 					})
 				}
 			})
 			.catch((error) => {
-				console.error(error);
+				logger.error(error);
 				return msg.reply("cannot find it!");
 			});
 	}

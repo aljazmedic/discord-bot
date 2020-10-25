@@ -1,9 +1,10 @@
-import { Client, Message, VoiceChannel } from 'discord.js';
-import { Literal } from 'sequelize/types/lib/utils';
-import Command, { CommandParameters } from '../../Bot/Command';
+import { Client, Message, MessageEmbed, VoiceChannel } from 'discord.js';
+import Command, { CommandMessage, CommandResponse } from '../../Bot/Command';
 import { SoundDB } from '../../Bot/models';
 import { voice } from '../../middleware';
 import SoundManager from '../../SoundManager';
+import { getLogger } from '../../logger';
+const logger = getLogger(__filename);
 
 export default class Sound extends Command {
 	constructor() {
@@ -13,11 +14,11 @@ export default class Sound extends Command {
 
 		this.before(voice({ failNotJoined: true }))
 	}
-	run(msg: Message, client: Client, params: CommandParameters) {
-		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>params.voice;
+	run(msg:CommandMessage, client: Client, res: CommandResponse) {
+		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>msg.voice;
 
 
-		switch (params.trigger?.call) {
+		switch (msg.trigger?.caller) {
 			case 'fuckoff':
 				msg.reply(':middle_finger:')
 					.then((msg) => {
@@ -28,12 +29,18 @@ export default class Sound extends Command {
 				return;
 		}
 
-		if (params.args.length == 0) {
+		if (msg.args.length == 0) {
 			return SoundDB.findAll({ attributes: ['name'] }).then(sounds => {
-				msg.reply(
-					`pick a sound! (${sounds.map(s => s.name).join(' | ')} )`,
-				);
-			}).catch(err => console.error(err))
+				const helpEmbed = new MessageEmbed()
+					.setTitle('Help')
+					.addFields(sounds.map((s: SoundDB) => {
+						return {
+							name:s.name,
+							value:`Source ${s.src.toUpperCase()}`
+						}
+					}))
+				return msg.reply(helpEmbed);
+			})
 
 		}
 
@@ -41,7 +48,7 @@ export default class Sound extends Command {
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
 
-		const name = <string>params.args[0];
+		const name = <string>msg.args[0];
 
 		SoundDB.findOne({ where: { name } }).then(soundSource => {
 			if (!soundSource) {
@@ -53,8 +60,8 @@ export default class Sound extends Command {
 				if (end != null) options.end = end;
 				SoundManager
 					.get(soundSource)
-					.then((uri) => params.voice?.say(uri))
-					.catch(err => console.error(err));
+					.then((uri) => msg.voice?.say(uri))
+					.catch(err => logger.error(err));
 			}
 		})
 	}

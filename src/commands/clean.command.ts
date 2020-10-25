@@ -1,6 +1,8 @@
 import { Client, Message } from "discord.js";
 import Bot from "../Bot";
-import Command, { CommandParameters } from "../Bot/Command";
+import Command, { CommandMessage, CommandResponse } from "../Bot/Command";
+import { getLogger } from '../logger';
+const logger = getLogger(__filename);
 
 export default class Clean extends Command {
 	constructor() {
@@ -9,7 +11,7 @@ export default class Clean extends Command {
 		this.alias('remove');
 	}
 	// eslint-disable-next-line no-unused-vars
-	run(msg: Message, client: Bot, params: CommandParameters) {
+	run(msg: CommandMessage, client: Bot, res: CommandResponse) {
 		const targetChannel = msg.channel;
 		targetChannel.messages
 			//fetch last 50 messages in the channel
@@ -18,16 +20,12 @@ export default class Clean extends Command {
 				messages.filter(
 					//filter them and pass the result to bulk
 					(m: Message) => {
-						const msgParts = m.content.split(' ');
-						if (msgParts.length > 0) return false;
-						return (m.author.id == client.user?.id || !!client.isBotCommand(msgParts[0]));
+						return (m.author.id == client.user!.id || !!client.isBotCommand(m));
 					}),
 			))
 			.then((deleted) => {
-				console.log(`Deleted #${deleted.keys.length} messages`);
-				return targetChannel.send(':recycle: Messages deleted!')
-			})
-			.then((msg: Message) => msg.delete({ timeout: 5000 })) //Delete response after 5seconds
-			.catch(console.error);
+				console.log(`Deleted #${Object.keys(deleted).length} messages`);
+				return res.channelReply(':recycle: Messages deleted!')
+			}).then((m) => m.delete({ timeout: 5000 })).catch(logger.error)
 	}
 };

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { Client, Message } from 'discord.js';
-import Command, { CommandParameters } from '../../Bot/Command';
+import Command, { CommandMessage, CommandResponse } from '../../Bot/Command';
 import { parseNumbers } from '../../middleware';
 
 export default class Random extends Command {
@@ -12,18 +12,18 @@ export default class Random extends Command {
 		this.before(parseNumbers)
 		this.description = 'Returns a random value'
 	}
-	run(msg: Message, client: Client, params: CommandParameters) {
+	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		let m: number;
 		let message: { (n: number): string } = (n) => `picked a randum number ${n} out of a ${m}`;
-		if (!params.trigger!.alias) {
+		if (!msg.trigger.alias) {
 			//The command was not called with an alias
-			if (Number.isNaN(Number(params.args[0]))) {
+			if (Number.isNaN(Number(msg.args[0]))) {
 				m = 100;
 			} else {
-				m = Number(params.args[0]);
+				m = Number(msg.args[0]);
 			}
 		} else {
-			switch (params.trigger!.call) {
+			switch (msg.trigger!.caller) {
 				//aliases define its own max numbers
 				case 'dice':
 					m = 6;
@@ -35,6 +35,7 @@ export default class Random extends Command {
 					break;
 				case 'coin':
 				case 'coinflip':
+				case 'cointoss':
 					m = 2;
 					message = (n) => `flipped ${n == 1 ? 'heads' : 'tails'}`;
 					break;

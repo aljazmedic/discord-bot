@@ -1,14 +1,14 @@
 import { CollectorFilter, Message } from "discord.js";
 import Bot, { Command } from "../../Bot";
-import { CommandParameters } from "../../Bot/Command";
+import { CommandMessage, CommandResponse } from "../../Bot/Command";
 import { JokeDB, JokeTypeDB, JokeReplyDB } from "../../Bot/models";
 import { Sequelize } from 'sequelize-typescript';
 
 
-const messageCollectorForJoke = (msg: Message, jokeParts: JokePart[]) => {
+const messageCollectorForJoke = (msg:Message, jokeParts: JokePart[]) => {
     let idx = 0;
 
-    (function next(_msg: Message) {
+    (function next(_msg:Message) {
         if (idx >= jokeParts.length) return;
 
         const thisPart = jokeParts[idx++];
@@ -37,7 +37,7 @@ export default class Joke extends Command {
         this.name = 'joke';
         this.alias('knockknock', 'j')
     }
-    run(msg: Message, client: Bot, params: CommandParameters) {
+    run(msg:CommandMessage, client: Bot, res: CommandResponse) {
         JokeDB.findAll({
             order: Sequelize.fn('rand'),
             limit: 1,
