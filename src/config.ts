@@ -19,4 +19,7 @@ export type Configuration = {
     readonly discord_token: string;
     readonly prefix: string;
     readonly urban_token: string;
+    readonly logger:{
+        readonly consoleLevel:string
+    }
 }
