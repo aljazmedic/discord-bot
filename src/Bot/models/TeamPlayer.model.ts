@@ -1,11 +1,11 @@
 import { resolve } from 'bluebird'
 
-import { GuildMember, User, Guild as dGuild } from "discord.js";
-import { BelongsTo, Column, HasMany, Table, Model, ForeignKey, DataType, PrimaryKey, Default } from "sequelize-typescript";
+import { GuildMember, Guild as dGuild } from "discord.js";
+import { BelongsTo, Column, Table, Model, ForeignKey, DataType, Default } from "sequelize-typescript";
 import { TeamDB } from ".";
 import Team from "./Team.model";
 
-@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
+@Table({ timestamps: false, charset: 'utf8', collate: 'utf8_general_ci' })
 export default class TeamPlayer extends Model {
 
 

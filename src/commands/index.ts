@@ -12,6 +12,9 @@ import Sound from "./sound.command";
 import Joke from "./joke.command";
 import Help from './help.command';
 import { MiddlewareFunction } from '../Bot/MiddlewareManager';
+import Urban from './urban.command';
+import Qran from './qran.command';
+import RPS from './rck-ppr-scisors.command';
 
 const allCommands:Command[] = [
     new Config(),
@@ -22,9 +25,12 @@ const allCommands:Command[] = [
     new Teams(),
     new Sound(),
     new Joke(),
-    new Help()]
+    new Help(),
+    new Urban(),
+    new Qran(),
+    new RPS(),
+]
 
-export const exportDict: { [index: string]: typeof Command } = { Ping, Days, Clean, Teams, Random };
 export default (bot: Bot, ...middlewares:MiddlewareFunction[]): void => {
     allCommands.forEach((c)=>{
         c.before(...middlewares)

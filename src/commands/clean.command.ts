@@ -6,8 +6,7 @@ const logger = getLogger(__filename);
 
 export default class Clean extends Command {
 	constructor() {
-		super();
-		this.name = 'clean'; //name of the command
+		super('clean');//name of the command
 		this.alias('remove');
 	}
 	// eslint-disable-next-line no-unused-vars

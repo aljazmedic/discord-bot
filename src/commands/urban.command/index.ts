@@ -25,8 +25,7 @@ commandParser.add_argument('query', { nargs: '+', default: [], });
 
 export default class Urban extends Command {
 	constructor() {
-		super();
-		this.name = 'urban'
+		super('urban');
 		this.alias('whatis', 'dict')
 		this.before(parseArgs(commandParser), voice())
 		this.description = 'Looks it up in urban dict'
@@ -58,7 +57,7 @@ export default class Urban extends Command {
 				if (list.length === 0) {
 					return msg.reply("cannot find it!");
 				}
-				msg.reply(fromDataToEmbed(list[0]));
+				res.msgReply(fromDataToEmbed(list[0]));
 				console.log("Saying: " + say)
 				let { sound_urls = [] } = list[0]
 				sound_urls = sound_urls.filter((v: string) => v.startsWith('http://wav.urbandictionary.com'))

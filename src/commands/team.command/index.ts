@@ -16,13 +16,13 @@ commandParser.add_argument('players', { nargs: '*', default: [] });
 
 export default class Teams extends Command {
 	constructor() {
-		super();
-		this.name = 'team'; //name of the command
+		super('team');
+		//name of the command
 		this.before(parseArgs(commandParser), voice()) // middleware functions
 		this.alias('teams', 'ekipe', 'ekipa', 'endteams', 'endgame')
 	}
 
-	run(msg:CommandMessage, client: Client, res: CommandResponse) {
+	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		/* console.log(lastGame);
 		if (lastGame)
 			//still active

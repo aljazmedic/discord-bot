@@ -7,10 +7,12 @@ import JokeTypeDB from "./JokeType.model.";
 import JokeReplyDB from "./JokeReply.model";
 import TeamDB from './Team.model'
 import TeamPlayerDB from './TeamPlayer.model'
+import RPSPlayerDB from './RPSPlayer.model'
+import { sql as config } from '../../config'
+
 import { getLogger } from '../../logger';
+import RPSGame from './RPSGame.mode';
 const logger = getLogger("sequelize")
-const NODE_ENV = <string>process.env.NODE_ENV;
-const { sql: config } = require('../../../config/config.json')[NODE_ENV] || { sql: {} };
 
 export const sequelize = new Sequelize(
 	config.database,
@@ -18,12 +20,13 @@ export const sequelize = new Sequelize(
 	config.password,
 	{
 		logging: (s,) => {
-			logger.debug(s)},
+			logger.debug(s)
+		},
 		...config, set: 2,
 		models:
-			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB]//'*.model.[tj]s',
+			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame]//'*.model.[tj]s',
 	}
 );
 
-export { GuildDB, SoundDB, JokeDB, JokeTypeDB, TeamPlayerDB, JokeReplyDB, TeamDB }
+export { GuildDB, SoundDB, JokeDB, JokeTypeDB, TeamPlayerDB, JokeReplyDB, TeamDB, RPSPlayerDB,RPSGame }
 

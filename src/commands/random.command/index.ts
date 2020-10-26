@@ -6,8 +6,7 @@ import { parseNumbers } from '../../middleware';
 
 export default class Random extends Command {
 	constructor() {
-		super();
-		this.name = 'random'
+		super('random');
 		this.alias('dice', 'coin', 'coinflip', 'cointoss', 'dnd')
 		this.before(parseNumbers)
 		this.description = 'Returns a random value'

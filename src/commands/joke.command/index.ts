@@ -33,8 +33,7 @@ const messageCollectorForJoke = (msg:Message, jokeParts: JokePart[]) => {
 
 export default class Joke extends Command {
     constructor() {
-        super();
-        this.name = 'joke';
+        super('joke');
         this.alias('knockknock', 'j')
     }
     run(msg:CommandMessage, client: Bot, res: CommandResponse) {

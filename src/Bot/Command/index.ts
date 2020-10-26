@@ -19,9 +19,9 @@ export default abstract class Command {
 	argumentParser: ArgumentParser | undefined
 	private mwbefore: MiddlewareFunction[];
 	private mwafter: ErrorHandlingFunction[];
-	constructor() {
+	constructor(name:string) {
 		this.description = '';
-		this.name = 'command-' + (typeof this);
+		this.name = name;
 		this._aliases = []
 		this.mwbefore = []
 		this.mwafter = []

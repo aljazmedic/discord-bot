@@ -36,7 +36,7 @@ export function addController(msg: Message, client: Client, emojiFnDict: IEmojiS
 
 export function selfDeleteCtrl(msg: Message, client: Client, options: SelfDeleteOptions = {}) {
 	const deleteEmojiDict: IEmojiStringDict = {
-		'🗑': (msg, client, params) => msg.delete(),
+		'🗑': (msg, client, params) => msg.delete().catch(e=>logger.error("Message already deleted!")),
 	}
 	return addController(msg, client, deleteEmojiDict, options.userAllow);
 }

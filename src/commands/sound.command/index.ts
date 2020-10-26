@@ -8,21 +8,21 @@ const logger = getLogger(__filename);
 
 export default class Sound extends Command {
 	constructor() {
-		super();
-		this.name = 'play';
+		super('play');
+
 		this.alias('p', 'dc', 'fuckoff') //name of the command
 
-		this.before(voice({ failNotJoined: true }))
+		this.before(voice())
 	}
-	run(msg:CommandMessage, client: Client, res: CommandResponse) {
+	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>msg.voice;
 
-
-		switch (msg.trigger?.caller) {
+		console.log(msg.trigger.caller)
+		switch (msg.trigger.caller) {
 			case 'fuckoff':
-				msg.reply(':middle_finger:')
+				msg.reply(getOffensiveResponse())
 					.then((msg) => {
-						msg.delete({ timeout: 2000 });
+						msg.delete({ timeout: 5000 });
 					});
 			case 'dc':
 				if (botIn) voiceChannel.leave();
@@ -35,8 +35,8 @@ export default class Sound extends Command {
 					.setTitle('Help')
 					.addFields(sounds.map((s: SoundDB) => {
 						return {
-							name:s.name,
-							value:`Source ${s.src.toUpperCase()}`
+							name: s.name,
+							value: `Source ${s.src.toUpperCase()}`
 						}
 					}))
 				return msg.reply(helpEmbed);
@@ -66,3 +66,17 @@ export default class Sound extends Command {
 		})
 	}
 };
+
+
+const getOffensiveResponse = () => {
+	const all = ["**K**nit **Y**ourself a nice **S**carf",
+		"mods? help? dis nigga braindead",
+		':middle_finger:',"( ͡° ͜ʖ ͡°)",
+		"\`\`\`php\n$fuck_you = [\"but in\" => \"php\"]\;\n\`\`\`",
+		"r u doing drugs again?", "New phone, Who dis?", "Allahu akhbar.", "aye ayn't",
+		"what are you, fucking gay?","https://tenor.com/view/reverse-card-uno-uno-cards-gif-13032597",
+		new MessageEmbed().setTitle('fuck you, but emebeded').setColor('3447003')
+	]
+	const idx = Math.floor(Math.random() * all.length);
+	return all[idx];
+}

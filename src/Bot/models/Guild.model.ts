@@ -5,9 +5,8 @@ import { DataType, Model, Column, Table, Default, PrimaryKey, HasMany } from "se
 import Team from "./Team.model";
 import TeamPlayer from "./TeamPlayer.model";
 
-@Table({ timestamps: false, charset: 'utf8', collate:'utf8_general_ci' })
-export default class Guild extends Model<Guild>{
-
+@Table({ timestamps: false, charset: 'utf8', collate: 'utf8_general_ci' })
+export default class Guild extends Model {
     @PrimaryKey
     @Column(DataType.STRING)
     public id: string;
@@ -26,11 +25,11 @@ export default class Guild extends Model<Guild>{
 
     //VOTING
 
-    @Default(":+1:") //👍
+    @Default("\:+1:") //👍
     @Column({ type: DataType.STRING })
     public upvote_emoji: string;
 
-    @Default(":-1:") //👎
+    @Default("\:-1:") //👎
     @Column({ type: DataType.STRING })
     public downvote_emoji: string;
 
@@ -45,7 +44,7 @@ export default class Guild extends Model<Guild>{
                 name: guild.name,
                 upvote_emoji, downvote_emoji
             }
-        });
+        })
     }
 }
 

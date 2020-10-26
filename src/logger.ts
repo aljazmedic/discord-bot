@@ -46,7 +46,7 @@ const logger: BotLogger = createLogger({
                 myFormat,
             ),
             handleExceptions: true,
-            level: /* process.env.NODE_ENV === 'development' ? 'debug' : */ 'info'
+            level: process.env.NODE_ENV === 'development' ? 'debug' : 'info'
         }),
         new transports.File({
             format: combine(ignorePrivate(), timestamp({

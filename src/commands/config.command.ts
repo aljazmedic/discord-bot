@@ -24,9 +24,9 @@ function createControlChannel(guild: Guild, channelsOptions: CreateControlChanne
 
 export default class Config extends Command {
     constructor() {
-        super();
+        super( "config");
         this.description = '';
-        this.name = "config" //name of the command
+        //name of the command
         //this.setName("ping", "testp");
     }
 

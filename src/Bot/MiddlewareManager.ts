@@ -105,8 +105,8 @@ export default class MiddlewareManager {
 				nextLayer = this.stack[idx++];
 
 				match = nextLayer.matches(msg);
-
-				logger.debug(`\'${(msg.content.length < 15 ? msg.content : (msg.content.substring(0,12)+'...').padEnd(9))}\' Layer(${nextLayer.name}) match? ${!!match}`)
+				if (!!match)
+					logger.debug(`\'${(msg.content.length < 15 ? msg.content : (msg.content.substring(0, 12) + '...').padEnd(9))}\' Layer(${nextLayer.name}) match? ${!!match}`)
 			}
 
 			if (!match || !nextLayer) {

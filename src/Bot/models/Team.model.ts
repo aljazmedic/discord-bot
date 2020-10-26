@@ -1,4 +1,4 @@
-import { MessageEmbed, User, Guild as dGuild, PermissionResolvable, TextChannel, VoiceChannel } from "discord.js";
+import { MessageEmbed, User, Guild as dGuild, PermissionResolvable, } from "discord.js";
 import { BelongsTo, Column, HasMany, Table, Model, ForeignKey, DataType } from "sequelize-typescript";
 import { getTeamColor, getTeamName } from "../../commands/team.command/util";
 import Guild from "./Guild.model";

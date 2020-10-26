@@ -6,9 +6,9 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 
 export default class Days extends Command {
     constructor() {
-        super();
-        this.name = "days", //name of the command
-            this.alias("whichday", "weekday", "dan")
+        super("days");
+        //name of the command
+        this.alias("whichday", "weekday", "dan")
     }
 
     run(msg: Message, client: Client, res: CommandResponse) {
