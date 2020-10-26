@@ -8,6 +8,7 @@
     "dev:mw": "cross-env NODE_ENV=development nodemon src/middleware.index.ts",
     "get:joke": "cross-env NODE_ENV=development nodemon src/new-jokes.index.ts",
     "build": "tsc -p .",
+    "prebuild":"rm -rf dist/",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "lint": "npm run lint:js",
     "lint:css": "stylelint app/**/*.js",

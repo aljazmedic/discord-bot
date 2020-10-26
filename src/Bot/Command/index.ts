@@ -12,16 +12,16 @@ const logger = getLogger(__filename)
 
 export default abstract class Command {
 	private mm: MiddlewareManager;
-	name: string;
+	_name: string;
 	private _aliases: string[];
 	description: string;
 	result: number | undefined
 	argumentParser: ArgumentParser | undefined
 	private mwbefore: MiddlewareFunction[];
 	private mwafter: ErrorHandlingFunction[];
-	constructor(name:string) {
+	constructor(_name: string) {
 		this.description = '';
-		this.name = name;
+		this._name = _name;
 		this._aliases = []
 		this.mwbefore = []
 		this.mwafter = []
@@ -48,7 +48,7 @@ export default abstract class Command {
 			}
 
 		this.mm.use(...this.mwbefore, nextRun.bind(this), ...this.mwafter);
-		logger.debug("COMMAND STACK: [" + this.name + "] " + this.mm.stack.map(l => l.name || "anon").join("->"))
+		logger.debug("COMMAND STACK: [" + this._name + "] " + this.mm.stack.map(l => l.name || "anon").join("->"))
 		return (msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) => {
 			return this.mm.handle(msg, client, res, (err?) => {
 				if (err) {
@@ -65,10 +65,10 @@ export default abstract class Command {
 	};
 
 	matches = (_msg: Message): CommandTrigger | false => {
-		if (contentMatchStringRe(_msg, this.name)) {
+		if (contentMatchStringRe(_msg, this._name)) {
 			return {
 				alias: false,
-				caller: this.name,
+				caller: this._name,
 				fn: this
 			}
 			/* const cmsg = this.createCommandMessage(_msg, { alias: false, caller: this.name })
@@ -107,10 +107,14 @@ export default abstract class Command {
 		return this._aliases;
 	}
 
+	get name():string{
+		return this._name;
+	}
+
 	abstract run(msg: CommandMessage, client: Client, res: CommandResponse, next?: NextFunction): void;
 
 	toString() {
-		return `Command(${this.name} [${this.aliases.join(', ')}], mw: ${this.mm.stack.length})`;
+		return `Command(${this._name} [${this.aliases.join(', ')}], mw: ${this.mm.stack.length})`;
 	}
 	getHelpField(bot: Bot) {
 		const p = bot.prefix;
@@ -118,10 +122,10 @@ export default abstract class Command {
 		const embedDescription = this.description.replace(/[\r\t\n]+/gi, " ").replace(/s+/gi, " ");
 		let value = `${this.aliases.length ? embedAliases : ""}${this.description.length ? embedDescription : ""}`;
 		if (value == "") {
-			value = `**${this.name}** command. Kinda obvious...`;
+			value = `**${this._name}** command. Kinda obvious...`;
 		}
 		return {
-			name: `\`${p}${this.name}\``,
+			name: `\`${p}${this._name}\``,
 			value
 		}
 	}
