@@ -1,3 +1,5 @@
+import { OnlyDict } from "./middleware/filters";
+
 const NODE_ENV = <string>process.env.NODE_ENV || 'production';
 const config: Configuration = require('../config/config.json')[NODE_ENV] || {};
 
@@ -10,13 +12,23 @@ export { sql, discord_token };
 
 export type Configuration = {
     readonly sql: {
-        database: string;
-        username: string;
-        password?: string;
-        host: string;
-        dialect: 'mysql' | 'sqlite'
+        readonly database: string;
+        readonly username: string;
+        readonly password?: string;
+        readonly host: string;
+        readonly dialect: 'mysql' | 'sqlite'
     },
     readonly discord_token: string;
     readonly prefix: string;
     readonly urban_token: string;
+    readonly logger?:{
+        readonly consoleLevel:string
+    };
+    readonly commandIgnore?:OnlyDict;
+    readonly developers?:DevInfo[];
+}
+
+export type DevInfo = {
+    id:string;
+    nick:string;
 }

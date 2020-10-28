@@ -32,7 +32,7 @@ export default class RPSPlayer extends Model {
 
     promptUser(client: Bot, resultChannel: TextChannel | DMChannel) {
         const emojis = ["✂", "🗞", "🪨"]
-        const emojisEsc = ["\:rock:", "\:newspaper:", "\:scissors:"]
+        const emojisEsc = ["\:rock:", "\:newspaper2:", "\:scissors:"]
         const last = emojisEsc.pop();
         const emojiString = `${emojisEsc.join(', ')} or ${last}`;
         const self = this;

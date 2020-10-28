@@ -41,6 +41,7 @@ export default class RPSGame extends Model {
     resolveGame(client: Bot, resultChannel: TextChannel | DMChannel) {
         createEmbed(client, this).then(([msgEmbed, winner_uid]) =>
             this.update({ winner_uid }).then(() => resultChannel.send(msgEmbed))
+                .then(() => resultChannel.send(this.players.map(p => `<@${p.uid}>`).join(', ')).then(m => m.delete({ timeout: 3000 })))
         )
     }
 }
@@ -81,7 +82,7 @@ function createEmbed(c: Bot, g: RPSGame): Promise<[MessageEmbed, string | null]>
         })
     }
 
-    retEmbed.addField('It\'s a tie!', 'You both lose')
+    retEmbed.addField('It\'s a tie!', 'aka. You both lose')
     return Promise.resolve([retEmbed, winner_uid])
 }
 const fmtPcked = (s: string) => {

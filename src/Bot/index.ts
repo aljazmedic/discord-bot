@@ -99,15 +99,17 @@ export default class Bot extends Client {
 			//Alter message, so it does not have the prefix
 			const trigger = this.isBotCommand(msg)
 			logger.debug("Command Trigger:", trigger)
-			if(!trigger){
+			if (!trigger) {
 				//It wont match any Layers
 				return;
 			}
 			const rsp = new CommandResponse(msg);
+			const args = msg.content.split(' ')
+			args.shift()
 			const cMsg: CommandMessage = Object.assign(msg,
 				{
 					trigger,
-					args: msg.content.split(' ')
+					args
 				})
 			this.mm.handle(cMsg, this, rsp, (err) => {
 				if (err)

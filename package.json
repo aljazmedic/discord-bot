@@ -8,7 +8,7 @@
     "dev:mw": "cross-env NODE_ENV=development nodemon src/middleware.index.ts",
     "get:joke": "cross-env NODE_ENV=development nodemon src/new-jokes.index.ts",
     "build": "tsc -p .",
-    "prebuild":"rm -rf dist/",
+    "prebuild": "rm -rf dist/",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "lint": "npm run lint:js",
     "lint:css": "stylelint app/**/*.js",
@@ -99,7 +99,7 @@
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0",
     "ytdl": "^1.3.5",
-    "ytdl-core": "^3.2.1"
+    "ytdl-core": "^3.4.2"
   },
   "nodemonConfig": {
     "ignore": [

@@ -119,7 +119,7 @@ export default abstract class Command {
 	getHelpField(bot: Bot) {
 		const p = bot.prefix;
 		const embedAliases = `Also: *${p}${this.aliases.join(`*, *${p}`)}*\n`;
-		const embedDescription = this.description.replace(/[\r\t\n]+/gi, " ").replace(/s+/gi, " ");
+		const embedDescription = this.description.replace(/[\t\n]+/gi, " ").replace(/\s+/gi, " ");
 		let value = `${this.aliases.length ? embedAliases : ""}${this.description.length ? embedDescription : ""}`;
 		if (value == "") {
 			value = `**${this._name}** command. Kinda obvious...`;

@@ -47,15 +47,13 @@ const sources: { [index: string]: SourceFunction } = {
 		//Definiran protokol za pridobivanje videov iz youtuba
 		new Promise((resolve, reject) => {
 			const query = `https://www.youtube.com/watch?v=${q}`;
-			const _options: ytdl.downloadOptions = {
-				quality: 'highestaudio',
-				highWaterMark: 1 << 25,
-				filter: 'audioonly'
-			}
-
 			getWriteStreamForFile(filename, resolve)
 				.then((writeStream) => {
-					ytdl(query, _options)
+					ytdl(query, {
+						quality: 'highestaudio',
+						highWaterMark: 1 << 25,
+						filter: 'audioonly'
+					})
 						.pipe(writeStream) //preusmeri v file
 						.on('error', reject)
 				})
@@ -108,7 +106,7 @@ export default class SoundManager {
 			fs.exists(filename, (exists) => {
 				if (!exists) {
 					console.log(`Downloading ${id} from ${src}`);
-					return sources[src](filename, id)
+					sources[src](filename, id).then(resolve)
 				} else {
 					resolve(filename);
 				}

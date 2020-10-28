@@ -13,7 +13,10 @@ bot.on('ready', () => {
 });
 
 import addCommands from './commands'
-addCommands(bot);
+//import addDevCommands from './commands-dev'
+import { exceptWhen, onlyDev } from './middleware/filters';
+addCommands(bot, exceptWhen(config.commandIgnore || {}));
+//addDevCommands(bot, onlyDev)
 
 bot.start(config.discord_token);
 

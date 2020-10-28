@@ -9,7 +9,21 @@
         },
         "discord_token":"<...>",
         "prefix":"<...>",
-        "urban_token":"<...>"
+        "urban_token":"<...>",
+        "logger?": {
+            "consoleLevel": "info|debug|warn"
+        },
+        "commandIgnore?":{
+            "guild?":["<...>"],
+            "channel?":["<...>"],
+            "user?":["<...>"]
+        },
+        "developers?": [
+            {
+                "id": "<..(discord.js) user.id..>",
+                "nick": "<...>"
+            }
+        ]
     },
     "[NODE_ENV_2]":"..."
 }

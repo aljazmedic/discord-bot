@@ -1,5 +1,7 @@
 import approot from 'app-root-path'
 import path from 'path';
+
+import config from './config'
 import winston, { createLogger, format, transports } from 'winston'
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { MiddlewareFunction } from './Bot/MiddlewareManager';
@@ -46,7 +48,7 @@ const logger: BotLogger = createLogger({
                 myFormat,
             ),
             handleExceptions: true,
-            level: process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+            level: (config.logger?.consoleLevel || 'info')
         }),
         new transports.File({
             format: combine(ignorePrivate(), timestamp({
