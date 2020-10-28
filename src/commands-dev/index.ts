@@ -3,12 +3,17 @@ import Command from '../Bot/Command';
 import Bot from '../Bot';
 
 import Remove from './remove.command';
+import { MiddlewareFunction } from '../Bot/MiddlewareManager';
+import SettingsCommand from './settings.command';
 
-export default (bot: Bot): void => {
-    const r = new Remove();
-    r.before((msg, client, params, next) => {
-        if (msg.author.id == "205802315393925120")
-            next();
+const allCommands:Command[] = [
+    new Remove(),
+    new SettingsCommand()
+]
+
+export default (bot: Bot, ...middlewares:MiddlewareFunction[]): void => {
+    allCommands.forEach((c)=>{
+        c.before(...middlewares)
     })
-    bot.addCommand(r)
+    bot.addCommand(...allCommands)
 }

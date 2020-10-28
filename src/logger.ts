@@ -49,6 +49,7 @@ const logger: BotLogger = createLogger({
             ),
             handleExceptions: true,
             level: (config.logger?.consoleLevel || 'info')
+
         }),
         new transports.File({
             format: combine(ignorePrivate(), timestamp({
