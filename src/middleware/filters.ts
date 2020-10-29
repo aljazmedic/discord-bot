@@ -54,35 +54,37 @@ function checkAgainst(msg: CommandMessage, f: Filterable<Message>): [boolean, st
 
 export function onlyWhen(...filterables: Filterable<Message>[]): MiddlewareFunction {
 	return (msg, client, res, next) => {
-		filterables.forEach((f) => {
-			const [doesMatch, checkName] = checkAgainst(msg, f);
+		for (let i = 0; i < filterables.length; i++) {
+			const filter = filterables[i];
+			const [doesMatch, checkName] = checkAgainst(msg, filter);
 			if (!doesMatch) {
 				const err = {
-					name: 'OnlyWhenPrevented',
+					name: 'ExceptWhenPrevented',
 					message: `Attempt to call ${msg.trigger.fn.name}, check fail: ${checkName}`,
 				};
 				logger.error(err);
-				next(err);
+				return next(err);
 			}
-		});
-		next();
+		}
+		return next();
 	};
 }
 
 export function exceptWhen(...filterables: Filterable<Message>[]): MiddlewareFunction {
 	return (msg, client, res, next) => {
-		filterables.forEach((f) => {
-			const [doesMatch, checkName] = checkAgainst(msg, f);
+		for (let i = 0; i < filterables.length; i++) {
+			const filter = filterables[i];
+			const [doesMatch, checkName] = checkAgainst(msg, filter);
 			if (doesMatch) {
 				const err = {
 					name: 'ExceptWhenPrevented',
 					message: `Attempt to call ${msg.trigger.fn.name}, check fail: ${checkName}`,
 				};
 				logger.error(err);
-				next(err);
+				return next(err);
 			}
-		});
-		next();
+		}
+		return next();
 	};
 }
 

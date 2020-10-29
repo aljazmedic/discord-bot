@@ -15,7 +15,7 @@ bot.on('ready', () => {
 import addCommands from './commands'
 //import addDevCommands from './commands-dev'
 import { exceptWhen, onlyDev } from './middleware/filters';
-addCommands(bot, exceptWhen(config.commandIgnore || {}));
+addCommands(bot);
 //addDevCommands(bot, onlyDev)
 
 bot.start(config.discord_token);
