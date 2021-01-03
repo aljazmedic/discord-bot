@@ -44,6 +44,6 @@ export default class Random extends Command {
 		}
 		const randN = Math.floor(Math.random() * m) + 1;
 
-		msg.channel.send(`${msg.author} ${message(randN)}`);
+		res.channelReply(`${msg.author} ${message(randN)}`);
 	}
 };

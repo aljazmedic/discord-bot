@@ -15,6 +15,8 @@ import { MiddlewareFunction } from '../Bot/MiddlewareManager';
 import Urban from './urban.command';
 import Qran from './qran.command';
 import RPS from './rck-ppr-scisors.command';
+import Poll from './poll.command';
+import Invite from './invite.command';
 
 const allCommands:Command[] = [
     new Config(),
@@ -29,6 +31,8 @@ const allCommands:Command[] = [
     new Urban(),
     new Qran(),
     new RPS(),
+    new Poll(),
+    new Invite(),
 ]
 
 export default (bot: Bot, ...middlewares:MiddlewareFunction[]): void => {

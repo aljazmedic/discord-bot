@@ -1,6 +1,6 @@
 import { ArgumentParser } from 'argparse';
 import { RSA_PSS_SALTLEN_MAX_SIGN } from 'constants';
-import { Message, Client, Channel, Role, User, StringResolvable, MessageOptions, MessageAdditions, SplitOptions, APIMessage, MessageAttachment, MessageEmbed } from 'discord.js';
+import { Message, Client, Channel, Role, User, StringResolvable, MessageOptions, MessageAdditions, SplitOptions, APIMessage, MessageAttachment, MessageEmbed, TextChannel, NewsChannel } from 'discord.js';
 import Bot from '..';
 import { getLogger } from '../../logger';
 import SoundManager from '../../SoundManager';
@@ -107,7 +107,7 @@ export default abstract class Command {
 		return this._aliases;
 	}
 
-	get name():string{
+	get name(): string {
 		return this._name;
 	}
 
@@ -134,8 +134,11 @@ export default abstract class Command {
 
 function contentMatchStringRe(msg: Message, s: string) {
 	//Checks wether content starts with \bWORD\b <- \b is for word boundary
-	const escapedRegex = s.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-	const match = msg.content.match(new RegExp(`^\\b${escapedRegex}\\b`, 'i'))
+	const escapedRegex = s.trim().replace(/[-\/\\^$*+!?.()\|[\]{}]/g, '\\$&');
+	const compiled = new RegExp(`^\\b${escapedRegex}\\b`, 'i');
+	//console.log(msg.content)
+	const match = msg.content.match(compiled)
+	//console.log(compiled)
 	return match;
 }
 
@@ -153,8 +156,10 @@ export type CommandMessage = {
 		[index: string]: any
 	}
 	args: Argument[],
-	voice?: SoundManager
-} & Message;
+	voice?: SoundManager,
+} & Message & {
+	channel: TextChannel | NewsChannel
+};
 
 
 export interface CommandFunction {

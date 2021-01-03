@@ -54,7 +54,7 @@ export default class Teams extends Command {
 			if (!authorIn) {
 				return msg.reply(`you must be in a voice channel :loud_sound:`);
 			}
-			const userPlayers: GuildMember[] = channel.members.array();//.map((gm) => gm.user); //players from voice channel
+			const userPlayers: GuildMember[] = channel.members.array().filter(gm=>!gm.user.bot);//.map((gm) => gm.user); //players from voice channel
 			if (userPlayers.length == 1) {
 				return msg.reply(`you need actual friends for a team`);
 			}

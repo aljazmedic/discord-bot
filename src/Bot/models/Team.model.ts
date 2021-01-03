@@ -149,7 +149,7 @@ export default class Team extends Model {
                 channelIDs.map(cid =>
                     g.channels.cache.get(cid)?.delete().catch(_ => Promise.resolve())))
                 .then(() =>
-                    g.roles.cache.get(rloaded.role_id)?.delete().catch(_ => Promise.resolve())
+                    g.roles.fetch(rloaded.role_id).then(r => r?.delete()).catch(_ => Promise.resolve())
                 )
                 .then(() => Promise.all(rloaded.members.map(m => m.disband(g))))
                 .then(() => rloaded.destroy())

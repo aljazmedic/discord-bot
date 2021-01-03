@@ -1,113 +1,110 @@
 {
-  "name": "404_discord_bot",
-  "version": "0.0.1",
-  "description": "Discord bot with express-like environment",
-  "main": "src/index.ts",
-  "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
-    "dev:mw": "cross-env NODE_ENV=development nodemon src/middleware.index.ts",
-    "get:joke": "cross-env NODE_ENV=development nodemon src/new-jokes.index.ts",
-    "build": "tsc -p .",
-    "prebuild": "rm -rf dist/",
-    "start": "cross-env NODE_ENV=production node dist/index.js",
-    "lint": "npm run lint:js",
-    "lint:css": "stylelint app/**/*.js",
-    "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts",
-    "lint:eslint:fix": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts --fix",
-    "lint:js": "npm run lint:eslint -- . ",
-    "lint:staged": "lint-staged",
-    "civleaders": "npm run utils/civ_leader.scraper.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aljazmedic/discord-bot.git"
-  },
-  "keywords": [
-    "discord",
-    "discord.js",
-    "node.js",
-    "gaming"
-  ],
-  "author": "aljazmedic davidbes",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/aljazmedic/discord-bot/issues"
-  },
-  "homepage": "https://github.com/aljazmedic/discord-bot#readme",
-  "lint-staged": {
-    "*.js": [
-      "npm run lint:eslint:fix",
-      "git add --force"
+    "name": "404_discord_bot",
+    "version": "0.0.1",
+    "description": "Discord bot with express-like environment",
+    "main": "src/index.ts",
+    "scripts": {
+        "dev": "npx cross-env NODE_ENV=development nodemon src/index.ts",
+        "dev:mw": "cross-env NODE_ENV=development nodemon src/middleware.index.ts",
+        "get:joke": "cross-env NODE_ENV=inserting ts-node src/new-jokes.index.ts",
+        "build": "tsc -p .",
+        "prebuild": "rm -rf dist/",
+        "start": "cross-env NODE_ENV=production node dist/index.js",
+        "lint:css": "stylelint app/**/*.js",
+        "lint:eslint:fix": "eslint --ignore-path .gitignore --fix",
+        "lint:ts": "npm run lint:eslint -- . ",
+        "lint:staged": "lint-staged",
+        "lint": "eslint . --ext .ts",
+        "civleaders": "npm run utils/civ_leader.scraper.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aljazmedic/discord-bot.git"
+    },
+    "keywords": [
+        "discord",
+        "discord.js",
+        "node.js",
+        "gaming"
     ],
-    "*.json": [
-      "prettier --write",
-      "git add --force"
-    ]
-  },
-  "pre-commit": "lint:staged",
-  "resolutions": {
-    "babel-core": "7.0.0-bridge.0"
-  },
-  "engines": {
-    "node": "12.x"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.0",
-    "@babel/node": "^7.10.5",
-    "@babel/plugin-syntax-class-properties": "^7.10.4",
-    "@babel/plugin-syntax-export-default-from": "^7.10.4",
-    "@babel/preset-env": "^7.11.0",
-    "@types/app-root-path": "^1.2.4",
-    "@types/argparse": "^2.0.2",
-    "@types/bluebird": "^3.5.32",
-    "@types/node": "^14.14.2",
-    "@types/request": "^2.48.5",
-    "babel-eslint": "^8.2.6",
-    "babel-plugin-dynamic-import-node-sync": "^2.0.1",
-    "babel-plugin-styled-components": "^1.11.1",
-    "cross-env": "^7.0.2",
-    "dotenv": "^8.2.0",
-    "eslint": "^4.19.1",
-    "nodemon": "^2.0.4",
-    "prettier": "2.0.5",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
-  },
-  "dependencies": {
-    "@discordjs/opus": "^0.3.2",
-    "@types/cheerio": "^0.22.22",
-    "@types/ffmpeg": "^1.0.1",
-    "@types/fluent-ffmpeg": "^2.1.16",
-    "@types/validator": "^13.1.0",
-    "app-root-path": "^3.0.0",
-    "argparse": "^2.0.1",
-    "axios": "^0.20.0",
-    "cheerio": "^1.0.0-rc.3",
-    "colors": "^1.4.0",
-    "discord": "^0.8.2",
-    "discord.js": "^12.2.0",
-    "ffmpeg": "0.0.4",
-    "fluent-ffmpeg": "^2.1.2",
-    "md5-file": "^5.0.0",
-    "mysql2": "^2.2.5",
-    "reflect-metadata": "^0.1.13",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6",
-    "sequelize": "^5.22.3",
-    "sequelize-typescript": "^1.1.0",
-    "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0",
-    "ytdl": "^1.3.5",
-    "ytdl-core": "^3.4.2"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "lib/*.js",
-      "README",
-      "Bot/cache/*.json",
-      "tmp/*",
-      "*.log"
-    ]
-  }
+    "author": "aljazmedic davidbes",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/aljazmedic/discord-bot/issues"
+    },
+    "homepage": "https://github.com/aljazmedic/discord-bot#readme",
+    "lint-staged": {
+        "*.js": [
+            "npm run lint:eslint:fix",
+            "git add --force"
+        ],
+        "*.json": [
+            "prettier --write",
+            "git add --force"
+        ]
+    },
+    "pre-commit": "lint:staged",
+    "resolutions": {
+        "babel-core": "7.0.0-bridge.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.10.5",
+        "@babel/core": "^7.11.0",
+        "@babel/node": "^7.10.5",
+        "@babel/plugin-syntax-class-properties": "^7.10.4",
+        "@babel/plugin-syntax-export-default-from": "^7.10.4",
+        "@babel/preset-env": "^7.11.0",
+        "@types/app-root-path": "^1.2.4",
+        "@types/argparse": "^2.0.2",
+        "@types/bluebird": "^3.5.32",
+        "@types/node": "^14.14.2",
+        "@types/request": "^2.48.5",
+        "babel-eslint": "^8.2.6",
+        "babel-plugin-dynamic-import-node-sync": "^2.0.1",
+        "babel-plugin-styled-components": "^1.11.1",
+        "cross-env": "^7.0.2",
+        "dotenv": "^8.2.0",
+        "eslint": "^4.19.1",
+        "nodemon": "^2.0.4",
+        "prettier": "2.0.5",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.3",
+        "typescript-eslint": "^0.0.1-alpha.0"
+    },
+    "dependencies": {
+        "@discordjs/opus": "^0.3.2",
+        "@types/cheerio": "^0.22.22",
+        "@types/ffmpeg": "^1.0.1",
+        "@types/fluent-ffmpeg": "^2.1.16",
+        "@types/validator": "^13.1.0",
+        "app-root-path": "^3.0.0",
+        "argparse": "^2.0.1",
+        "axios": "^0.20.0",
+        "cheerio": "^1.0.0-rc.3",
+        "colors": "^1.4.0",
+        "discord": "^0.8.2",
+        "discord.js": "^12.5.1",
+        "ffmpeg": "0.0.4",
+        "fluent-ffmpeg": "^2.1.2",
+        "md5-file": "^5.0.0",
+        "mysql2": "^2.2.5",
+        "reflect-metadata": "^0.1.13",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.6",
+        "sequelize": "^5.22.3",
+        "sequelize-typescript": "^1.1.0",
+        "winston": "^3.3.3",
+        "winston-daily-rotate-file": "^4.5.0",
+        "ytdl": "^1.3.5",
+        "ytdl-core": "^4.3.1"
+    },
+    "nodemonConfig": {
+        "ignore": [
+            "lib/*.js",
+            "README",
+            "Bot/cache/*.json",
+            "tmp/*",
+            "*.log"
+        ]
+    }
 }

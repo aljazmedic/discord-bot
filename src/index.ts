@@ -13,11 +13,17 @@ bot.on('ready', () => {
 });
 
 import addCommands from './commands'
-//import addDevCommands from './commands-dev'
-import { exceptWhen, onlyDev } from './middleware/filters';
+import addDevCommands from './commands-dev'
+import { ifNotMessage, onlyDev } from './middleware/filters';
 addCommands(bot);
-//addDevCommands(bot, onlyDev)
+if (process.env.NODE_ENV === "development")
+	addDevCommands(bot, onlyDev)
 
-bot.start(config.discord_token);
+bot.start(config.discord_token).then(()=>{
+	bot.guilds.cache.forEach((g,k)=>{
+		const me = g.members.cache.find((gm)=>(!!bot.user && (gm.user.id == bot.user.id)));
+		me?.setNickname("Turbo Bot")
+	})
+});
 
 

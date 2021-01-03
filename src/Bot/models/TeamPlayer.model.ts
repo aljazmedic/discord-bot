@@ -3,7 +3,10 @@ import { resolve } from 'bluebird'
 import { GuildMember, Guild as dGuild } from "discord.js";
 import { BelongsTo, Column, Table, Model, ForeignKey, DataType, Default } from "sequelize-typescript";
 import { TeamDB } from ".";
+import { getLogger } from '../../logger';
 import Team from "./Team.model";
+
+const logger = getLogger(__filename);
 
 @Table({ timestamps: false, charset: 'utf8', collate: 'utf8_general_ci' })
 export default class TeamPlayer extends Model {
@@ -90,6 +93,7 @@ export default class TeamPlayer extends Model {
             if (currentName != this.new_name || member.id == g.owner?.id) {
                 return Promise.resolve(member);
             } else {
+                logger.info(`GuildMember ${member.id}-> ${this.previous_name}`);
                 return member.setNickname(this.previous_name);
             }
         }).then((member) => {

@@ -15,19 +15,21 @@ export default class Ping extends Command {
 
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		//final function
-		GuildDB.fetch(msg.guild!)
-			.then((created) => {
-				res.useModifier('C', (m) => m.react('👏'))
-				res.useModifier('C', (repliedMsg) => selfDeleteCtrl(repliedMsg, client))
-				res.useModifier('R', (repliedMsg) => selfDeleteCtrl(repliedMsg, client,))
-				res.useModifier((m) => {
-					const coll = m.createReactionCollector(() => true)
-					coll.on('collect', (reaction: ReactionEmoji) => { console.log(reaction) })
-				})
-				logger.debug(created);/* 
+		GuildDB.upsert({
+            id: msg.guild?.id,
+            name: msg.guild?.name
+        })
+            .then((created) => {
+                res.useModifier('C', (repliedMsg) => selfDeleteCtrl(repliedMsg, client))
+                res.useModifier((m) => {
+                    const coll = m.createReactionCollector(() => true,{time:10000})
+                    coll.on('collect', (reaction: ReactionEmoji) => { logger.debug(reaction) })
+                })
+                logger.debug(created);/* 
 				res.dmReply("DMpong");
 				res.msgReply('msgReplyPong - anyone can delete me!') */
-				res.channelReply('channelPong')
-			}).catch(logger.error);
+				res.channelReply('pong!')
+				res.dmReply('private pong :sunglasses:')
+            }).catch(logger.error);
 	}
 };

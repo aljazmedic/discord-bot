@@ -9,7 +9,7 @@ const logger = getLogger(__filename);
 export default class Qran extends Command {
     constructor() {
         super('Qran');
-        this.alias('bible', 'amen')
+        this.alias('bible', 'amen', 'allah', 'koran')
         this.description = "Selam alejkum (ٱلسَّلَامُ عَلَيْكُمْ)"
     }
 

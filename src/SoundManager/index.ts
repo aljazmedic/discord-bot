@@ -7,13 +7,13 @@ import { SoundDB } from "../Bot/models";
 import ffmpeg from "fluent-ffmpeg";
 
 import { getLogger } from '../logger'
-const logger = getLogger(__dirname);
+const logger = getLogger(__filename);
 
-const storage = path.join('tmp', `cache`);
+const storage = path.join(__dirname,'..','..','tmp', `cache`);
 fs.mkdirSync(storage, { recursive: true })
 
-const createValidFilename = (src: string, q: string, ext: string = 'mp3') => {
-	console.log('Creating filename for ' + q);
+const getFilename = (src: string, q: string, ext: string = 'mp3') => {
+	logger.info('Creating filename for ' + q);
 	let _q = q.replace(/[*\\/.:"'&$!()[\] ]/gi, '_a');
 	if (!_q.endsWith(`.${ext}`)) _q = _q + `.${ext}`;
 	return path.join(storage, src, _q);
@@ -34,7 +34,7 @@ const getWriteStreamForFile = (filename: string, parentResolve: { (reason?: any)
 				}); //write stream za mp3
 				writeStream.on('finish', () => {
 					//ko se zapiše resolva
-					console.log(`finished writing ${filename}`);
+					logger.info(`finished writing ${filename}`);
 					return parentResolve(filename);
 				});
 				return resolve(writeStream);
@@ -51,7 +51,7 @@ const sources: { [index: string]: SourceFunction } = {
 				.then((writeStream) => {
 					ytdl(query, {
 						quality: 'highestaudio',
-						highWaterMark: 1 << 25,
+						//highWaterMark: 1 << 25,
 						filter: 'audioonly'
 					})
 						.pipe(writeStream) //preusmeri v file
@@ -64,7 +64,7 @@ const sources: { [index: string]: SourceFunction } = {
 			const url = `https://www.memesoundboard.com/sounds/${q}.mp3`;
 			getWriteStreamForFile(filename, resolve).then((writeStream) => {
 				request.get(url).pipe(writeStream).on('error', reject);
-			});
+			}).catch(reject);
 		}),
 	urban: (filename, q) =>
 		new Promise((resolve, reject) => {
@@ -73,7 +73,7 @@ const sources: { [index: string]: SourceFunction } = {
 				(writeStream) => {
 					request.get(url).pipe(writeStream).on('error', reject);
 				},
-			);
+			).catch(reject);
 		}),
 };
 
@@ -98,23 +98,32 @@ export default class SoundManager {
 
 	static get({ id, src, ext, hash }: SoundDB,): Promise<string> {
 		return new Promise((resolve, reject) => {
-			console.log(`Retrieving ${id} from ${src}`);
+			logger.info(`Retrieving ${id} from ${src}`);
 			if (!Object.keys(sources).includes(src)) {
 				return reject(new Error('invalid source: ' + src));
 			}
-			const filename = createValidFilename(src, id, ext);
-			fs.exists(filename, (exists) => {
-				if (!exists) {
-					console.log(`Downloading ${id} from ${src}`);
-					sources[src](filename, id).then(resolve)
+			const filename = getFilename(src, id, ext);//path.join(storage, );
+			fs.promises.stat(filename).then((stat:fs.Stats) => {
+				if (stat.size == 0) {
+					logger.info(`Re-downloading ${id} from ${src}`);
+					sources[src](filename, id)
+						.then(resolve)
 				} else {
 					resolve(filename);
 				}
-			});
+			}).catch((e)=>{
+				if(e.code && e.code == "ENOENT"){
+					logger.info(`Downloading ${id} from ${src}`);
+					sources[src](filename, id)
+						.then(resolve)
+				}else{
+					reject(e)
+				}	
+			})
 		});
 	}
 
-	static postProcess(filename: string, options: PostProcessOptions): ffmpeg.FfmpegCommand {
+	static(filename: string, options: PostProcessOptions): ffmpeg.FfmpegCommand {
 		let command = ffmpeg(filename)
 			.audioCodec('libmp3lame')
 			.setStartTime(options.start === undefined ? '0s' : options.start)
@@ -125,34 +134,30 @@ export default class SoundManager {
 	}
 
 	say(uri: string, { volume }: SayOptions = { volume: 0.8 }) {
-		console.log('Saying: ' + uri);
-		this.client.clearTimeout(<NodeJS.Timer>this.dcTimeoutId);
-		this.dcTimeoutId = undefined;
+		logger.info('Saying: ' + uri);
+		//this.client.clearTimeout(<NodeJS.Timer>this.dcTimeoutId);
+		//this.dcTimeoutId = undefined;
 		return this.channel
 			.join()
 			.then((vconnection) => {
-				const dispatcher = vconnection.play(uri, { volume });
-				dispatcher.on('speaking', (spk) => {
+				const dispatcher = vconnection.play(uri).on('speaking', (spk) => {
 					if (!spk) {
-						this.dcTimeoutId = this.client.setTimeout(
-							(channel, client) => {
-								let { id: channelID } = channel; // Get the user's voice channel I
-								if (channelID) {
-									// Find an existing connection to that channel
-									let connection = client.voice.connections.find(
-										(conn: VoiceConnection) => conn.channel.id == channelID,
-									);
-									if (connection)
-										// If you find one, use .disconnect()
-										connection.disconnect();
-								}
-							},
-							this.STAY_IN_VOICE_TIME, this.channel, this.client
-						);
+						let { id: channelID } = this.channel; // Get the user's voice channel I
+						logger.debug(channelID)
+						if (channelID && this.client && this.client.voice) {
+							// Find an existing connection to that channel
+							let connection = this.client.voice.connections.find(
+								(conn: VoiceConnection) => conn.channel.id == channelID,
+							);
+							if (connection)
+								// If you find one, use .disconnect()
+								connection.disconnect();
+						}
 					}
 				});
+				//dispatcher.on('')
 			})
-			.catch(logger.error);
+			.catch((e) => { logger.error(e) });
 	}
 }
 

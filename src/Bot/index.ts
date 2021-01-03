@@ -1,4 +1,4 @@
-import { Client, Message, ClientOptions, MessageReaction } from 'discord.js';
+import { Client, Message, ClientOptions, MessageReaction, DMChannel, TextChannel, NewsChannel } from 'discord.js';
 import MiddlewareManager, { ErrorHandlingFunction, MiddlewareFunction } from './MiddlewareManager';
 import { addController } from './messageControls';
 import Command, { CommandMessage, CommandTrigger } from './Command';
@@ -93,7 +93,8 @@ export default class Bot extends Client {
 	}
 
 	messageHandler = (msg: Message) => {
-		if (!msg.guild) return; //Only work in guild texts
+		if (msg.channel.type != "text") return; //Only work in guild texts
+		if(msg.channel instanceof DMChannel) return;
 		const { content } = msg;
 		if (content.startsWith(this.prefix)) {
 			//Alter message, so it does not have the prefix
@@ -106,10 +107,12 @@ export default class Bot extends Client {
 			const rsp = new CommandResponse(msg);
 			const args = msg.content.split(' ')
 			args.shift()
+			if (!msg.channel.isText()) return;
 			const cMsg: CommandMessage = Object.assign(msg,
 				{
 					trigger,
-					args
+					args,
+					channel:msg.channel as TextChannel | NewsChannel
 				})
 			this.mm.handle(cMsg, this, rsp, (err) => {
 				if (err)

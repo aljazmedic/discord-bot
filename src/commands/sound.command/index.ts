@@ -33,7 +33,6 @@ export default class Sound extends Command {
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>msg.voice;
 
-		console.log(msg.trigger.caller)
 		switch (msg.trigger.caller) {
 			case 'fuckoff':
 				getOffensiveResponse((<TextChannel>msg.channel).nsfw).then(snd => {
@@ -63,7 +62,6 @@ export default class Sound extends Command {
 					.setTitle('Help')
 					.addFields(Object.entries(data)
 						.map(([src, arr]) => {
-							console.log(src)
 							return {
 								name: src.toUpperCase(),
 								value: `Sounds \`${arr.join('\`, \`')}\``
@@ -90,7 +88,10 @@ export default class Sound extends Command {
 				if (end != null) options.end = end;
 				SoundManager
 					.get(soundSource)
-					.then((uri) => msg.voice?.say(uri))
+					.then((uri) => {
+						logger.debug("Resource uri: " + uri);
+						return msg.voice?.say(uri);
+					})
 					.catch(err => logger.error(err));
 			}
 		})

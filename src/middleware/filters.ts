@@ -1,4 +1,5 @@
 import { Channel, Guild, Message, TextChannel, User } from "discord.js";
+import { ExceptionHandler } from "winston";
 import Bot from "../Bot";
 import { CommandMessage, CommandResponse } from "../Bot/Command";
 import { MiddlewareFunction, NextFunction } from "../Bot/MiddlewareManager";
@@ -35,34 +36,42 @@ function checkAgainst(msg: CommandMessage, f: Filterable<Message>): [boolean, st
 		const [propName, keyWantedValue] = f;
 		const prop = getMessageProperty(msg, propName)
 		return [prop != null && (prop.id == keyWantedValue), propName];
-	} else {
-		//dictionary
-
-		const { guild = [], channel = [], user = [] } = f;
-		if (!(guild.length && guild.includes(msg.guild!.id))) {
-			return [false, `dict(guild)`];
+	} else if (typeof f == "object") {
+		let incArray = f.guild || [];
+		if (f.guild) {
+			if (!(msg.guild && msg.guild.id in incArray)) {
+				return [false, `onlyDict(${incArray})`];
+			}
 		}
-		if (!(user.length && user.includes(msg.author.id))) {
-			return [false, `dict(user)`];
+		incArray = f.channel || [];
+		if (f.guild) {
+			if (!(msg.channel && msg.channel.id in incArray)) {
+				return [false, `onlyDict(${incArray})`];
+			}
 		}
-		if (!(channel.length && channel.includes(msg.channel!.id))) {
-			return [false, `dict(channel)`];
+		incArray = f.user || [];
+		if (f.guild) {
+			if (!(msg.author && msg.author.id in incArray)) {
+				return [false, `onlyDict(${incArray})`];
+			}
 		}
-		return [true, 'dict'];
+		return [true, ''];
+	}
+	else {
+		throw new Error("Invalid filter!");
 	}
 }
 
-export function onlyWhen(...filterables: Filterable<Message>[]): MiddlewareFunction {
+export function ifMessage(...filterables: Filterable<Message>[]): MiddlewareFunction {
 	return (msg, client, res, next) => {
 		for (let i = 0; i < filterables.length; i++) {
 			const filter = filterables[i];
 			const [doesMatch, checkName] = checkAgainst(msg, filter);
 			if (!doesMatch) {
-				const err = {
-					name: 'ExceptWhenPrevented',
+				const err: Error = {
+					name: 'ifMessageFilter',
 					message: `Attempt to call ${msg.trigger.fn.name}, check fail: ${checkName}`,
 				};
-				logger.error(err);
 				return next(err);
 			}
 		}
@@ -70,17 +79,16 @@ export function onlyWhen(...filterables: Filterable<Message>[]): MiddlewareFunct
 	};
 }
 
-export function exceptWhen(...filterables: Filterable<Message>[]): MiddlewareFunction {
+export function ifNotMessage(...filterables: Filterable<Message>[]): MiddlewareFunction {
 	return (msg, client, res, next) => {
 		for (let i = 0; i < filterables.length; i++) {
 			const filter = filterables[i];
 			const [doesMatch, checkName] = checkAgainst(msg, filter);
 			if (doesMatch) {
 				const err = {
-					name: 'ExceptWhenPrevented',
+					name: 'ifNotMessageFilter',
 					message: `Attempt to call ${msg.trigger.fn.name}, check fail: ${checkName}`,
 				};
-				logger.error(err);
 				return next(err);
 			}
 		}
@@ -94,7 +102,7 @@ export function onlyDev(msg: CommandMessage, client: Bot, res: CommandResponse, 
 	}
 }
 
-export const idIsDev = (id: string): boolean => {
+const idIsDev = (id: string): boolean => {
 	const devArr = (config.developers || []).map(d => d.id);
 	return devArr.includes(id);
 }
