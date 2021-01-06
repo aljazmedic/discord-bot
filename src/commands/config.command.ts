@@ -6,7 +6,7 @@ import Command, { Argument, CommandFunction, CommandMessage, CommandResponse } f
 import { GuildDB } from "../Bot/models";
 import Guild from "../Bot/models/Guild.model";
 import { getLogger } from '../logger';
-import { parseIdsToObjects } from "../middleware";
+import { onlyDev, parseIdsToObjects } from "../middleware";
 const logger = getLogger(__filename);
 
 
@@ -52,7 +52,7 @@ export default class Config extends Command {
         this.description = '';
         //name of the command
         //this.setName("ping", "testp");
-        this.before(parseIdsToObjects)
+        this.before(onlyDev,parseIdsToObjects)
     }
 
     run(msg: CommandMessage, bot: Bot, res: CommandResponse) {

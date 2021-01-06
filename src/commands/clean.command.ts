@@ -1,13 +1,16 @@
 import { Client, Message } from "discord.js";
 import Bot from "../Bot";
+
 import Command, { CommandMessage, CommandResponse } from "../Bot/Command";
 import { getLogger } from '../logger';
+import { hasPremission, Permissions } from "../middleware";
 const logger = getLogger(__filename);
 
 export default class Clean extends Command {
 	constructor() {
 		super('clean');//name of the command
 		this.alias('remove');
+		this.before(hasPremission("MANAGE_CHANNELS"))
 	}
 	// eslint-disable-next-line no-unused-vars
 	run(msg: CommandMessage, client: Bot, res: CommandResponse) {

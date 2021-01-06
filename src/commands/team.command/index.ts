@@ -1,5 +1,5 @@
 'use strict'
-import { parseArgs } from '../../middleware';
+import { onlyDev, parseArgs } from '../../middleware';
 import * as argparse from 'argparse';
 import { voice } from '../../middleware';
 import { Message, Client, VoiceChannel, Guild, UserResolvable, Team, GuildMemberResolvable, GuildMember, User } from 'discord.js';
@@ -18,7 +18,10 @@ export default class Teams extends Command {
 	constructor() {
 		super('team');
 		//name of the command
-		this.before(parseArgs(commandParser), voice()) // middleware functions
+		this.before( 
+			onlyDev, parseArgs(commandParser), voice()) // middleware functions
+
+
 		this.alias('teams', 'ekipe', 'ekipa', 'endteams', 'endgame')
 	}
 

@@ -1,18 +1,19 @@
 import { Client, Message, MessageEmbed, TextChannel, VoiceChannel } from 'discord.js';
 import Command, { CommandMessage, CommandResponse } from '../../Bot/Command';
 import { SoundDB } from '../../Bot/models';
-import { voice } from '../../middleware';
+import { cooldown, voice } from '../../middleware';
 import SoundManager from '../../SoundManager';
 import { getLogger } from '../../logger';
+import { MiddlewareFunction } from '../../Bot/MiddlewareManager';
 const logger = getLogger(__filename);
 
 const all = ["**K**nit **Y**ourself a nice **S**carf",
-	"mods? help? dis nigga braindead",
 	':middle_finger:', "( ͡° ͜ʖ ͡°)",
 	"\`\`\`php\n$fuck_you = [\"but in\" => \"php\"]\;\n\`\`\`",
 	//"r u doing drugs again?", "New phone, Who dis?", "Allahu akhbar.",
 	"aye ayn't",
-	"what are you, fucking gay?", "https://tenor.com/view/reverse-card-uno-uno-cards-gif-13032597",
+	"what are you, fucking gay?",
+	"https://tenor.com/view/reverse-card-uno-uno-cards-gif-13032597",
 	new MessageEmbed().setTitle('fuck you, but emebeded').setColor('344703')
 ]
 
@@ -22,32 +23,37 @@ function getOffensiveResponse(nsfw = false) {
 	return Promise.resolve(all[idx]);
 }
 
+
+const priorityDc: MiddlewareFunction = (msg, bot, res, next) => {
+	const { authorIn, botIn, channel: voiceChannel } = <SoundManager>msg.voice;
+	switch (msg.trigger.caller) {
+		case 'fuckoff':
+			getOffensiveResponse((<TextChannel>msg.channel).nsfw).then(snd => {
+				return res.channelReply(snd)
+			})
+				.then((_msg) => {
+					_msg.delete({ timeout: 4000 }).catch(e => logger.warn("Message already deleted"));
+				}).then(() => msg.delete().catch(e => logger.warn("Message already deleted"))).catch(err => logger.error(err));
+		case 'dc':
+			if (botIn) voiceChannel.leave();
+			return;
+	}
+	return next();
+}
+
 export default class Sound extends Command {
+	resetCooldown: (id: string) => boolean;
 	constructor() {
 		super('play');
 
 		this.alias('p', 'dc', 'fuckoff') //name of the command
+		const [cooldownMW, resetter] = cooldown({ cooldown: 7000, exportReset: true })
 
-		this.before(voice())
+		this.resetCooldown = resetter;
+		this.before(voice(), priorityDc, cooldownMW)
 	}
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {
 		const { authorIn, botIn, channel: voiceChannel } = <SoundManager>msg.voice;
-
-		switch (msg.trigger.caller) {
-			case 'fuckoff':
-				getOffensiveResponse((<TextChannel>msg.channel).nsfw).then(snd => {
-					return res.channelReply(snd)
-				})
-					.then((_msg) => {
-						_msg.delete({ timeout: 5000 }).catch(e => logger.warn("Message already deleted"));
-					}).then(() => msg.delete().catch(e => logger.warn("Message already deleted"))).catch(err => logger.error(err));
-			case 'dc':
-				if (botIn) voiceChannel.leave();
-				return;
-			default:
-				break;
-		}
-
 		if (msg.args.length == 0) {
 			return SoundDB.findAll({ attributes: ['name', 'src'] }).then(sounds => {
 				const data: { [index: string]: string[] } =
@@ -73,6 +79,7 @@ export default class Sound extends Command {
 		}
 
 		if (!authorIn) {
+			this.resetCooldown(msg.author.id);
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
 
@@ -81,6 +88,7 @@ export default class Sound extends Command {
 		SoundDB.findOne({ where: { name } }).then(soundSource => {
 			if (!soundSource) {
 				msg.reply('invalid sound!');
+				this.resetCooldown(msg.author.id);
 			} else {
 				const { end, start } = soundSource;
 				const options: any = {};

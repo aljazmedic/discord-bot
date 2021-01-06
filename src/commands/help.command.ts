@@ -13,7 +13,7 @@ export default class Help extends Command {
         const helpEmbed = new MessageEmbed()
             .setTitle('Help')
             .addFields(client.commands.map((command: Command) => command.getHelpField(client)))
-            .setFooter('Made by bot team with ❤')
+            .setFooter('Made by bot ?teams with ❤')
         //.setThumbnail('https://avatars3.githubusercontent.com/u/35614267?s=400&v=4')
         return res.msgReply(helpEmbed)
     }

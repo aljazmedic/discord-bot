@@ -1,5 +1,6 @@
 import Bot from './Bot';
 import config from "./config";
+import { Permissions } from 'discord.js'
 import { getLogger } from './logger';
 const logger = getLogger('MAIN')
 
@@ -15,13 +16,14 @@ bot.on('ready', () => {
 import addCommands from './commands'
 import addDevCommands from './commands-dev'
 import { ifNotMessage, onlyDev } from './middleware/filters';
-addCommands(bot);
+import { cooldown, hasPremission } from './middleware';
+addCommands(bot, cooldown({ cooldown: 3000 }));
 if (process.env.NODE_ENV === "development")
 	addDevCommands(bot, onlyDev)
 
-bot.start(config.discord_token).then(()=>{
-	bot.guilds.cache.forEach((g,k)=>{
-		const me = g.members.cache.find((gm)=>(!!bot.user && (gm.user.id == bot.user.id)));
+bot.start(config.discord_token).then(() => {
+	bot.guilds.cache.forEach((g, k) => {
+		const me = g.members.cache.find((gm) => (!!bot.user && (gm.user.id == bot.user.id)));
 		me?.setNickname("Turbo Bot")
 	})
 });

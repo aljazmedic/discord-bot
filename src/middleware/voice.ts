@@ -18,7 +18,7 @@ export function voice({ voiceChannelId, failNotJoined }: VoiceMiddlewareSettings
 			client.channels
 				.fetch(cid)
 				.then((voiceChannel: Channel) => {
-					logger.info('Author in voice: ', voiceChannel.id);
+					logger.info('Author in voice: ', voiceChannel);
 					msg.voice = new SoundManager(client, <VoiceChannel>voiceChannel);
 					next();
 				})

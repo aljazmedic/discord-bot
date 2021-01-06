@@ -2,7 +2,7 @@
 
 import { Client, Message, ReactionEmoji, User } from 'discord.js';
 import Command, { Argument, CommandMessage, CommandResponse } from '../../Bot/Command';
-import { parseNumbers } from '../../middleware';
+import { onlyDev, parseNumbers } from '../../middleware';
 
 function removeElement(arr: any[], e: any) {
 	const idx = arr.indexOf(e);
@@ -18,6 +18,7 @@ export default class Poll extends Command {
 		super('poll');
 		this.alias('vote')
 		this.description = 'Allows people to vote democratically'
+		this.before(onlyDev)
 	}
 
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {

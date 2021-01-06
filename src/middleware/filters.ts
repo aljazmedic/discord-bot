@@ -102,7 +102,7 @@ export function onlyDev(msg: CommandMessage, client: Bot, res: CommandResponse, 
 	}
 }
 
-const idIsDev = (id: string): boolean => {
+export const idIsDev = (id: string): boolean => {
 	const devArr = (config.developers || []).map(d => d.id);
 	return devArr.includes(id);
 }
