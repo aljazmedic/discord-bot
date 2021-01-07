@@ -2,9 +2,9 @@ import { OnlyDict } from "./middleware/filters";
 import fs from 'fs'
 const { NODE_ENV = 'production' } = process.env;
 const cfgPath = '../config/config.json';
-const cfgFileStat = fs.statSync(cfgPath);
+const cfgFileStat = fs.existsSync(cfgPath);
 let config: Configuration;
-if (cfgFileStat && cfgFileStat.size != 0) {
+if (cfgFileStat) {
     config = require(cfgPath)[NODE_ENV] || {};
     if (!config) throw new Error(`No such conifg: ${NODE_ENV}`)
 } else {
