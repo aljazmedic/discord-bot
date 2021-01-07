@@ -6,10 +6,10 @@ import { ArgumentParser } from 'argparse';
 import Command, { CommandMessage, CommandResponse } from '../../Bot/Command'
 import { Client, Message } from 'discord.js';
 import { getLogger } from '../../logger';
+import config from '../../config'
 const logger = getLogger(__filename);
 
-const NODE_ENV = <string>process.env.NODE_ENV;
-const urban_token = <string>require('../../../config/config.json')[NODE_ENV].urban_token || undefined;
+const { urban_token } = config;
 
 
 import Sound from '../../Bot/models/Sound.model';
