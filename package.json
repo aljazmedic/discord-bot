@@ -9,7 +9,7 @@
         "get:joke": "cross-env NODE_ENV=inserting ts-node src/new-jokes.index.ts",
         "build": "tsc -p .",
         "prebuild": "rm -rf dist/",
-        "start": "cross-env NODE_ENV=production node dist/index.js",
+        "start": "node dist/index.js",
         "lint:css": "stylelint app/**/*.js",
         "lint:eslint:fix": "eslint --ignore-path .gitignore --fix",
         "lint:ts": "npm run lint:eslint -- . ",

@@ -1,6 +1,6 @@
 import { OnlyDict } from "./middleware/filters";
 
-const NODE_ENV = <string>process.env.NODE_ENV || 'production';
+const { NODE_ENV = 'production' } = process.env;
 const config: Configuration = require('../config/config.json')[NODE_ENV] || {};
 
 
@@ -21,14 +21,14 @@ export type Configuration = {
     readonly discord_token: string;
     readonly prefix: string;
     readonly urban_token: string;
-    readonly logger?:{
-        readonly consoleLevel:string
+    readonly logger?: {
+        readonly consoleLevel: string
     };
-    readonly commandIgnore?:OnlyDict;
-    readonly developers?:DevInfo[];
+    readonly commandIgnore?: OnlyDict;
+    readonly developers?: DevInfo[];
 }
 
 export type DevInfo = {
-    id:string;
-    nick:string;
+    id: string;
+    nick: string;
 }

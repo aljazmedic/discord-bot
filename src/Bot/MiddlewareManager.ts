@@ -12,7 +12,7 @@ export class Layer {
 	matches: Transformer<Message, boolean> | Transformer<Message, CommandTrigger | false>;
 	name?: string;
 	constructor(fn: Layerable, matcher?: Transformer<Message, boolean>) {
-		logger.debug("Layer make " + (fn.name && fn.name));
+		//logger.debug("Layer make " + (fn.name && fn.name));
 		if (fn instanceof Command) {
 			this.matches = fn.matches
 			this.handle = fn.getDispatcher()
@@ -105,8 +105,6 @@ export default class MiddlewareManager {
 				nextLayer = this.stack[idx++];
 
 				match = nextLayer.matches(msg);
-				if (!!match)
-					logger.debug(`\'${(msg.content.length < 15 ? msg.content : (msg.content.substring(0, 12) + '...').padEnd(9))}\' Layer(${nextLayer.name}) match? ${!!match}`)
 			}
 
 			if (!match || !nextLayer) {
