@@ -26,6 +26,9 @@ if (cfgFileStat) {
         DISCORD_BOT_URBAN)) {
         throw new Error(`Missing configuration in environment and config.json!`)
     }
+    if(DISCORD_BOT_SQL_DIALECT != "mysql" &&DISCORD_BOT_SQL_DIALECT != "sqlite"){
+        throw new Error(`Invalid sql dialect!`)
+    }
     config = {
         sql: {
             database: DISCORD_BOT_SQL_DB,
@@ -51,7 +54,7 @@ export type Configuration = {
         readonly username: string;
         readonly password?: string;
         readonly host: string;
-        readonly dialect: string;
+        readonly dialect: "mysql" | "postgres" | "sqlite";
     },
     readonly discord_token: string;
     readonly prefix: string;

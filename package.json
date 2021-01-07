@@ -22,7 +22,8 @@
         "url": "git+https://github.com/aljazmedic/discord-bot.git"
     },
     "engines": {
-        "npm": "6.14.10"
+        "npm": "6.14.10",
+        "node": "15.5.*"
     },
     "keywords": [
         "discord",
