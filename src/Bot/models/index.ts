@@ -13,7 +13,7 @@ import { getLogger } from '../../logger';
 import RPSGame from './RPSGame.mode';
 const logger = getLogger("sequelize")
 
-const { dialect, database, username, password, port } = config;
+const { dialect, database, username, password, port,host } = config;
 export const sequelize = new Sequelize(
 	database,
 	username,
@@ -23,6 +23,7 @@ export const sequelize = new Sequelize(
 			logger.debug(s)
 		},
 		port,
+		host,
 		dialect,
 		...(config.other || {}),
 		set: 2,
