@@ -15,7 +15,7 @@ export default class Clean extends Command {
 	// eslint-disable-next-line no-unused-vars
 	run(msg: CommandMessage, client: Bot, res: CommandResponse) {
 		const targetChannel = msg.channel;
-		targetChannel.messages
+		return targetChannel.messages
 			//fetch last 50 messages in the channel
 			.fetch({ limit: 50 })
 			.then((messages) => targetChannel.bulkDelete(
@@ -26,8 +26,9 @@ export default class Clean extends Command {
 					}),
 			))
 			.then((deleted) => {
-				console.log(`Deleted #${Object.keys(deleted).length} messages`);
+				logger.info(`Deleted ${deleted.size} messages`);
+				res.useModifier((m) => m.delete({ timeout: 2000 }))
 				return res.channelReply(':recycle: Messages deleted!')
-			}).then((m) => m.delete({ timeout: 5000 })).catch(logger.error)
+			}).catch((e) => logger.error(e))
 	}
 };

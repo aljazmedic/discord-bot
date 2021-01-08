@@ -1,13 +1,18 @@
 import { OnlyDict } from "./middleware/filters";
 import fs from 'fs'
-import { config as dotenv } from 'dotenv'
 import { resolve } from "app-root-path";
-dotenv();
+import logger from "./logger";
+
 const { NODE_ENV = 'production' } = process.env;
+if (NODE_ENV == "development") {
+    require('dotenv').config();
+    logger.debug("Parsing .env file")
+}
 const cfgPath = resolve('config/config.json');
 const cfgFileStat = fs.existsSync(cfgPath);
 let config: Configuration = cfgFileStat ? require(cfgPath)[NODE_ENV] || {} : {};
 if (!config) {
+    logger.info("No suitable config.json, reading the environment...")
     const { DISCORD_BOT_TOKEN,
         DISCORD_BOT_PREFIX,
         DISCORD_BOT_SQL_DB,
