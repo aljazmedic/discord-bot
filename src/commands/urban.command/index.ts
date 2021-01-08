@@ -17,7 +17,7 @@ import Sound from '../../Bot/models/Sound.model';
 const commandParser = new ArgumentParser();
 commandParser.add_argument('-s', {
 	default: false,
-	action: 'storeTrue',
+	action: 'store_true',
 	dest: 'say',
 });
 
@@ -35,7 +35,7 @@ export default class Urban extends Command {
 		const { say, query } = <{ say: boolean, query: string[] }>msg.parsed;
 		const term = query.join(" ")
 		if (urban_token === undefined) {
-			msg.reply("Developer messed up!");
+			msg.reply("Developer messed up! I need urban-dictionary key");
 			return
 		}
 

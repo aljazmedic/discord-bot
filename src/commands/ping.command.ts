@@ -11,6 +11,7 @@ export default class Ping extends Command {
 		super("ping");
 		this.description = 'replies pong to the sender!';
 		this.alias("testp")
+		this.before(hasPremission([]))
 	}
 
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {

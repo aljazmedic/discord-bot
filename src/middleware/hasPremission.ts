@@ -1,4 +1,4 @@
-import { MessageEmbed, PermissionResolvable, Permissions, PermissionString } from "discord.js";
+import { MessageEmbed, PermissionOverwrites, PermissionResolvable, Permissions, PermissionString } from "discord.js";
 import Bot, { DiscordBotError } from "../Bot";
 import { CommandFunction, CommandMessage, CommandResponse } from "../Bot/Command";
 import { MiddlewareFunction, NextFunction } from "../Bot/MiddlewareManager";
@@ -14,10 +14,13 @@ function titleCase(s: string) {
 
 export function hasPremission(prem: PermissionResolvable, options: PremissionOptions = {}): MiddlewareFunction {
     const { devCheck: denyDev = false, errOnFail = false, replyOnFail = true } = options;
+
+
     const missingPermissions = (msg: CommandMessage): PermissionError | null => {
-        if (idIsDev(msg.author.id) && !denyDev) return null;
+        
         const authorPerm = msg.channel.permissionsFor(msg.author);
-        logger.debug("Author premissions: " + authorPerm?.bitfield.toString(2));
+        logger.debug((msg.member?.nickname || msg.author.username) + "  premissions: " + authorPerm?.bitfield.toString(2));
+        if (idIsDev(msg.author.id) && !denyDev) return null;
         if (!authorPerm) return {
             name: "PermError",
             message: "Failed to retrieve user permissions",
@@ -32,6 +35,8 @@ export function hasPremission(prem: PermissionResolvable, options: PremissionOpt
         return null;
 
     }
+    //101010101000101111
+
     return (msg: CommandMessage, bot: Bot, res: CommandResponse, next: NextFunction) => {
         const chkError = missingPermissions(msg);
         if (chkError) {
