@@ -1,6 +1,5 @@
 import Bot from './Bot';
 import config from "./config";
-import { Permissions } from 'discord.js'
 import { getLogger } from './logger';
 const logger = getLogger('MAIN')
 
