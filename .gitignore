@@ -12,6 +12,7 @@ config/config.json
 
 tmp/
 src/middleware.index.ts
+.env
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
