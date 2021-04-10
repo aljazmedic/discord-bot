@@ -8,7 +8,6 @@ export { Command, MiddlewareManager, addController as msgCtrl };
 import { sequelize } from './models';
 import { getLogger } from '../logger';
 import CommandResponse from './Command/response';
-import CliInterface from './cli';
 const logger = getLogger(__filename);
 
 const FORBIDDEN_NAMES = ['help', 'settings']
@@ -18,14 +17,12 @@ export default class Bot extends Client {
 	private mm: MiddlewareManager;
 	_commands: Command[]; //commands array
 	_commandNames: string[]; //Checking the names dont overlap
-	cli: CliInterface;
 
 	constructor(botOptions: BotOptions) {
 		super(botOptions);
 		this.prefix = botOptions.prefix;
 		//this.client.bot = this;
 		this.mm = new MiddlewareManager();
-		this.cli = new CliInterface(this);
 
 
 		this._commands = [];
@@ -97,7 +94,6 @@ export default class Bot extends Client {
 
 	messageHandler = (msg: Message) => {
 		if (msg.channel.type == "dm"){
-			this.cli.messageHandler(msg)
 			return; //Only work in guild texts
 		}
 		const { content } = msg;

@@ -83,7 +83,7 @@ export default class Sound extends Command {
 			return msg.reply('you must be in a channel :loud_sound:');
 		}
 
-		const name = <string>msg.args[0];
+		const name = msg.args[0].toString();
 
 		SoundDB.findOne({ where: { name } }).then(soundSource => {
 			if (!soundSource) {

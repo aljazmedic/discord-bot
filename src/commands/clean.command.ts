@@ -10,7 +10,7 @@ export default class Clean extends Command {
 	constructor() {
 		super('clean');//name of the command
 		this.alias('remove');
-		this.before(hasPremission("MANAGE_CHANNELS"))
+		this.before(hasPremission("MANAGE_MESSAGES"))
 	}
 	// eslint-disable-next-line no-unused-vars
 	run(msg: CommandMessage, client: Bot, res: CommandResponse) {

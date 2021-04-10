@@ -77,12 +77,12 @@ function createEmbed(c: Bot, g: RPSGame): Promise<[MessageEmbed, string | null]>
                 winner_uid
             },
         }).then(n => {
-            retEmbed.addField(`${winner} has won!`, `Total wins: ${n + 1}`)
+            retEmbed.addField(`<@${winner_uid}> has won!`, `Total wins: ${n + 1}`)
             return Promise.resolve([retEmbed, winner_uid])
         })
     }
 
-    retEmbed.addField('It\'s a tie!', 'aka. You both lose')
+    retEmbed.addField('It\'s a tie!', 'no winners here!')
     return Promise.resolve([retEmbed, winner_uid])
 }
 const fmtPcked = (s: string) => {

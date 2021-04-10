@@ -17,8 +17,12 @@ import Qran from './qran.command';
 import RPS from './rck-ppr-scisors.command';
 import Poll from './poll.command';
 import Invite from './invite.command';
+import Modrost from './modrost.command';
+import Remove from './remove.command';
+import SettingsCommand from './settings.command';
+import Eval from './eval.command';
 
-const allCommands:Command[] = [
+const allCommands: Command[] = [
     new Config(),
     new Ping(),
     new Days(),
@@ -31,12 +35,27 @@ const allCommands:Command[] = [
     new Urban(),
     new Qran(),
     new RPS(),
-    new Poll(),
     new Invite(),
+    new Modrost()
 ]
 
-export default (bot: Bot, ...middlewares:MiddlewareFunction[]): void => {
-    allCommands.forEach((c)=>{
+
+const devCommands: Command[] = [
+    //new Remove(),
+    //new SettingsCommand(),
+    //new Eval(),
+    //new Poll()
+]
+
+export function addDevCommands(bot: Bot, ...middlewares: MiddlewareFunction[]): void {
+    devCommands.forEach((c) => {
+        c.before(...middlewares)
+    })
+    bot.addCommand(...devCommands)
+}
+
+export default (bot: Bot, ...middlewares: MiddlewareFunction[]): void => {
+    allCommands.forEach((c) => {
         c.before(...middlewares)
     })
     bot.addCommand(...allCommands)

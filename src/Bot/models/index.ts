@@ -11,26 +11,20 @@ import RPSPlayerDB from './RPSPlayer.model'
 import { sql as config } from '../../config'
 import { getLogger } from '../../logger';
 import RPSGame from './RPSGame.mode';
+import Pregovor from './Pregovor.model';
 const logger = getLogger("sequelize")
 
-const { dialect, database, username, password, port,host } = config;
-export const sequelize = new Sequelize(
-	database,
-	username,
-	password,
+export const sequelize = new Sequelize(config, 
 	{
 		logging: (s,) => {
 			logger.debug(s)
 		},
-		port,
-		host,
-		dialect,
-		...(config.other || {}),
+		//...(config.other || {}),
 		set: 2,
 		models:
-			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame]//'*.model.[tj]s',
+			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame, Pregovor]//'*.model.[tj]s',
 	}
 );
 
-export { GuildDB, SoundDB, JokeDB, JokeTypeDB, TeamPlayerDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame }
+export { GuildDB, SoundDB, JokeDB, JokeTypeDB, TeamPlayerDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame, Pregovor }
 
