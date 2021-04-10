@@ -9,7 +9,7 @@ import Random from './random.command'
 import Teams from './team.command'
 import Config from './config.command';
 import Sound from "./sound.command";
-import Joke from "./joke.command";
+import SQLJoke from "./jokeSQL.command";
 import Help from './help.command';
 import { MiddlewareFunction } from '../Bot/MiddlewareManager';
 import Urban from './urban.command';
@@ -21,6 +21,7 @@ import Modrost from './modrost.command';
 import Remove from './remove.command';
 import SettingsCommand from './settings.command';
 import Eval from './eval.command';
+import Joke from './joke.command';
 
 const allCommands: Command[] = [
     new Config(),
@@ -30,17 +31,18 @@ const allCommands: Command[] = [
     new Random(),
     new Teams(),
     new Sound(),
-    new Joke(),
     new Help(),
     new Urban(),
     new Qran(),
     new RPS(),
     new Invite(),
+    new Joke(),
     new Modrost()
 ]
 
 
 const devCommands: Command[] = [
+    //new SQLJoke(),
     //new Remove(),
     //new SettingsCommand(),
     //new Eval(),

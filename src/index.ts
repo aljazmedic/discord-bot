@@ -13,9 +13,8 @@ bot.on('ready', () => {
 	logger.info(`Listening for: (${bot._commandNames.join('|')})`)
 });
 
-import addCommands from './commands'
-import addDevCommands from './commands-dev'
-import {  onlyDev } from './middleware/filters';
+import addCommands, { addDevCommands } from './commands'
+import { onlyDev } from './middleware/filters';
 import { cooldown } from './middleware';
 
 addCommands(bot, cooldown({ cooldown: 3000 }));

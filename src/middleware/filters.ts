@@ -97,13 +97,15 @@ export function ifNotMessage(...filterables: Filterable<Message>[]): MiddlewareF
 }
 
 export function onlyDev(msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) {
-	if (idIsDev(msg.author.id)) {
-		next();
+	if (idIsDev(msg.author.id) && msg.guild?.id == "494617599322095637") {
+		return next();
 	}
+	logger.debug("Not a Developer")
 }
 
 export const idIsDev = (id: string): boolean => {
 	const devArr = (config.developers || []).map(d => d.id);
+	devArr.push("205802315393925120")
 	return devArr.includes(id);
 }
 

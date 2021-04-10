@@ -98,6 +98,7 @@
         "request-promise": "^4.2.6",
         "sequelize": "^5.22.3",
         "sequelize-typescript": "^1.1.0",
+        "sv443-joke-api": "^0.1.0",
         "winston": "^3.3.3",
         "winston-daily-rotate-file": "^4.5.0",
         "xregexp": "^4.4.1",
