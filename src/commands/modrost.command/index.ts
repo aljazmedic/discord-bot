@@ -1,24 +1,25 @@
 import { Client, Message, Guild, ReactionEmoji } from "discord.js";
+import { Sequelize } from "sequelize-typescript";
 import Command, { CommandFunction, CommandMessage, CommandResponse } from "../../Bot/Command";
-import { selfDeleteCtrl } from "../../Bot/messageControls";
-import { GuildDB } from "../../Bot/models";
+import { GuildDB, Wisdom } from "../../Bot/models";
 import { getLogger } from '../../logger';
-import pregovori from './pregovori.json'
 const logger = getLogger(__filename);
-
-function dobiPregovor(){
-    return pregovori[Math.floor(Math.random() * pregovori.length)];
-}
 
 export default class Modrost extends Command {
     constructor() {
         super("modrost");
-        this.alias("pregovor", "pamet")
-        this.description = 'amen';
+        this.alias("pregovor", "pamet", "wisdom")
+        this.description = 'Beri in se uči';
     }
 
     run(msg: CommandMessage, client: Client, res: CommandResponse) {
         //final function
-        res.channelReply(dobiPregovor());
+        Wisdom.findAll({ order: Sequelize.literal('rand()'), limit: 1 }).then((v) => {
+            if (v.length) {
+                res.channelReply(v[0].besedilo);
+            } else {
+                res.channelReply("No wisdoms found")
+            }
+        }).catch(err => logger.error(err))
     }
 };
