@@ -14,7 +14,7 @@ import RPSGame from './RPSGame.mode';
 import Wisdom from './Wisdom.model';
 const logger = getLogger("sequelize")
 
-export const sequelize = new Sequelize(config, 
+export const sequelize = new Sequelize(config,
 	{
 		logging: (s,) => {
 			logger.debug(s)
@@ -22,9 +22,9 @@ export const sequelize = new Sequelize(config,
 		//...(config.other || {}),
 		set: 2,
 		models:
-			[TeamPlayerDB, GuildDB, SoundDB, JokeDB, JokeTypeDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame, Wisdom]//'*.model.[tj]s',
+			[TeamPlayerDB, GuildDB, SoundDB, /* JokeDB, JokeTypeDB, JokeReplyDB,*/ TeamDB, RPSPlayerDB, RPSGame, Wisdom]//'*.model.[tj]s',
 	}
 );
 
-export { GuildDB, SoundDB, JokeDB, JokeTypeDB, TeamPlayerDB, JokeReplyDB, TeamDB, RPSPlayerDB, RPSGame, Wisdom }
+export { GuildDB, SoundDB, TeamPlayerDB,/*JokeDB,  JokeTypeDB,  JokeReplyDB,*/ TeamDB, RPSPlayerDB, RPSGame, Wisdom }
 

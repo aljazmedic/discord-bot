@@ -156,7 +156,6 @@ export default class Bot extends Client {
 				.then(() => new Promise((resolve, reject) => {
 					collector.on("collect", (reaction) => {
 						const ans = getAnswer(reaction);
-						console.log(ans)
 						resolve(ans);
 					})
 					collector.on("end", (collected) => {

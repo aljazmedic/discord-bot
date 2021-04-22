@@ -10,16 +10,21 @@ const logger = getLogger(__filename);
 
 
 const addHandler: MethodRun = (msg, bot, res) => {
+    const messageLink = msg.guild ? `https://discord.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}` : "No link."
     if (!msg.args.length) {
-        res.dmReply("Missing the wisdom you want to add");
+        res.dmReply(`Missing the wisdom you want to add in ${messageLink}`);
         return;
     }
     const authorInfo = `[${msg.author.id}] ${msg.author.username}`
     const guildInfo = msg.guild ? `[${msg.guild.id}] ${msg.guild.name}` : "No guild."
-    const messageLink = msg.guild ? `https://discord.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}` : "No link."
 
     const toAdd = msg.args.join(" ");
+
+
+
     const prompt = `${authorInfo}\n${guildInfo}\n${messageLink}\n\`\`\`${msg.content}\`\`\`Wants to add:\n'${toAdd}'`
+
+
     bot.askOwner(prompt).then((v) => {
         if (v)
             return Wisdom.create({
@@ -32,7 +37,7 @@ const addHandler: MethodRun = (msg, bot, res) => {
         } else {
             res.dmReply(`Your wisdom proposal didn't make it`)
         }
-    })
+    }).catch(err=>logger.error(err))
 }
 
 export default class Modrost extends Command {
