@@ -10,4 +10,9 @@ export default class Wisdom extends Model {
     @AllowNull
     @Column(DataType.STRING)
     public author_id: string;
+
+    @AllowNull
+    @Column({ type: DataType.STRING, defaultValue: null })
+    public emoji: string;
+
 }
