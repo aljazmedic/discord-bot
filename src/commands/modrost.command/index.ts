@@ -58,7 +58,7 @@ export default class Modrost extends Command {
         const id = parseInt(<string>msg.args.pop() || "");
         console.log(id);
         const where: WhereAttributeHash = Number.isInteger(id) ? {
-            pregovor_id: id
+            id
         } : {};
         Wisdom.findAll({
             order: Sequelize.literal('rand()'), limit: 1, where
