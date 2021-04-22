@@ -11,7 +11,7 @@ import RPSPlayerDB from './RPSPlayer.model'
 import { sql as config } from '../../config'
 import { getLogger } from '../../logger';
 import RPSGame from './RPSGame.mode';
-import Wisdom from './Pregovor.model';
+import Wisdom from './Wisdom.model';
 const logger = getLogger("sequelize")
 
 export const sequelize = new Sequelize(config, 

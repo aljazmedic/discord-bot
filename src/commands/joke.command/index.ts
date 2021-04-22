@@ -11,7 +11,6 @@ export default class Joke extends Command {
         this.alias('j', 'funny', 'imsad');
     }
     run(msg: CommandMessage, client: Bot, res: CommandResponse) {
-        //res.channelReply("Running joke");
         let blacklistFlags = "";//msg.channel.nsfw ? "" : "nsfw,political,racist,sexist";
 
         axios({
