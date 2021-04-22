@@ -1,4 +1,4 @@
-import { Client, Message, ClientOptions, MessageReaction, DMChannel, TextChannel, NewsChannel } from 'discord.js';
+import { Client, Message, ClientOptions, MessageReaction, DMChannel, TextChannel, NewsChannel, CollectorFilter, Emoji } from 'discord.js';
 import MiddlewareManager, { ErrorHandlingFunction, MiddlewareFunction } from './MiddlewareManager';
 import { addController } from './messageControls';
 import Command, { CommandMessage, CommandTrigger } from './Command';
@@ -8,7 +8,8 @@ export { Command, MiddlewareManager, addController as msgCtrl };
 import { sequelize } from './models';
 import { getLogger } from '../logger';
 import CommandResponse from './Command/response';
-const logger = getLogger(__filename);
+import { resolve } from 'app-root-path';
+const logger = getLogger("Bot/index.ts");
 
 const FORBIDDEN_NAMES = ['help', 'settings']
 
@@ -17,6 +18,7 @@ export default class Bot extends Client {
 	private mm: MiddlewareManager;
 	_commands: Command[]; //commands array
 	_commandNames: string[]; //Checking the names dont overlap
+	ownerId?: string;
 
 	constructor(botOptions: BotOptions) {
 		super(botOptions);
@@ -27,7 +29,7 @@ export default class Bot extends Client {
 
 		this._commands = [];
 		this._commandNames = [];
-
+		this.ownerId = botOptions.ownerId;
 		this.on('error', logger.error)
 		this.on('warn', logger.warn)
 		this.use(logger.logMiddleware!);
@@ -93,14 +95,13 @@ export default class Bot extends Client {
 	}
 
 	messageHandler = (msg: Message) => {
-		if (msg.channel.type == "dm"){
+		if (msg.channel.type == "dm") {
 			return; //Only work in guild texts
 		}
 		const { content } = msg;
 		if (content.startsWith(this.prefix)) {
 			//Alter message, so it does not have the prefix
 			const trigger = this.isBotCommand(msg)
-			logger.debug("Command Trigger:", trigger)
 			if (!trigger) {
 				//It wont match any Layers
 				return;
@@ -113,7 +114,7 @@ export default class Bot extends Client {
 				{
 					trigger,
 					args,
-					channel:msg.channel as TextChannel | NewsChannel
+					channel: msg.channel as TextChannel | NewsChannel
 				})
 			this.mm.handle(cMsg, this, rsp, (err) => {
 				if (err)
@@ -122,6 +123,51 @@ export default class Bot extends Client {
 			return;
 		}
 	}
+
+
+	/*
+	 *	Function asks bot Owner for one of the answers on the DM as a Promise<boolean|number> 
+	 */
+	askOwner(prompt: string, nAnswrts: number): Promise<number>
+	askOwner(prompt: string): Promise<boolean>
+	askOwner(prompt: string, nAnswers?: number): Promise<boolean | number> {
+		if (nAnswers && (nAnswers > 6 || nAnswers < 2)) return Promise.reject(new Error("Invalid number of answers"));
+		let emojis: string[], getAnswer: { (reaction: MessageReaction): boolean | number };
+		if (!nAnswers) {
+			emojis = ['👎', '👍'];
+			getAnswer = (r) => r.emoji.name == '👍'
+		} else {
+			emojis = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠'].slice(0, nAnswers);
+			getAnswer = (r) => emojis.indexOf(r.emoji.name)
+		}
+
+		return Promise.resolve().then(() => {
+			if (!this.ownerId) throw new Error("Owner Id not set");
+			return this.users.fetch(this.ownerId)
+		}).then((u) =>
+			u.createDM()
+		).then((dms) => {
+			return dms.send(prompt)
+		}).then((msg) => {
+			const collector = msg.createReactionCollector((reaction, user) => {
+				return (user.id == this.ownerId) && (emojis.indexOf(reaction.emoji.name) != -1)
+			}, { max: 1, })
+			return Promise.all(emojis.map(emoji => msg.react(emoji)))
+				.then(() => new Promise((resolve, reject) => {
+					collector.on("collect", (reaction) => {
+						const ans = getAnswer(reaction);
+						console.log(ans)
+						resolve(ans);
+					})
+					collector.on("end", (collected) => {
+						if (collected.size == 0) {
+							reject(new Error("Collector timeout"));
+						}
+					})
+				}))
+		})
+	}
+
 
 	start(token: string): Promise<string> {
 		return sequelize.sync().then(() => {
@@ -137,7 +183,8 @@ export default class Bot extends Client {
 
 type BotOptions = {
 	prefix: string;
-	nickname?: string
+	nickname?: string;
+	ownerId?: string;
 } & ClientOptions;
 
 export interface DiscordBotError extends Error {

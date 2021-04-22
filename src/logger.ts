@@ -29,8 +29,7 @@ const myFormat = printf(({ level, message, label, timestamp }) => {
     return `${timestamp} | ${_level} [${_label}]: ${message}`
 })
 
-const logger: BotLogger = createLogger({
-
+const logger: any = createLogger({
     transports: [
         //console logger with colors
         new transports.Console({
@@ -90,27 +89,34 @@ levels.forEach((level) => {
 }) */
 
 export function getLogger(n: string): BotLogger {
-    const label = path.basename(n) || n;
-    const c: BotLogger = logger.child(
-        {
-            label
-        }
+    let label = path.basename(n) || n;
+    if (label === "index.ts") {
+        label = path.dirname(n).split(/[\\\/]/).pop() || n;
+    }
+    const c: any = logger.child(
+        { label }
     );
-    c.logMiddleware = (msg, client, res, next) => {
-        logger.info(msg.content.replace(/[\n\t]+/g, ' '))
+    (<BotLogger>c).logMiddleware = (msg, client, res, next) => {
+        const content = msg.content.replace(/[\n\t]+/g, ' ');
+        const msgLink = msg.guild ? `https://discord.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}` : "DM";
+        const uid = `${msg.author.id}`
+        c.debug(`${content} -- ${msgLink} -- UID:${uid}`);
         next();
     }
-    return c;
+    return <BotLogger>c;
 }
 
-logger.logMiddleware = (msg, client, res, next) => {
-    logger.info(msg.content.replace(/[\n\t]+/g, ' '))
+(<BotLogger>logger).logMiddleware = (msg, client, res, next) => {
+    const content = msg.content.replace(/[\n\t]+/g, ' ');
+    const msgLink = msg.guild ? `https://discord.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}` : "DM";
+    const uid = `${msg.author.id}`
+    logger.debug(`[onMessage] ${content} -- ${msgLink} -- UID:${uid}`);
     next();
 }
 
-export default logger;
+export default <BotLogger> logger;
 
 
 interface BotLogger extends winston.Logger {
-    logMiddleware?: MiddlewareFunction
+    logMiddleware: MiddlewareFunction
 }

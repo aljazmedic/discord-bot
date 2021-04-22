@@ -1,7 +1,7 @@
 import { ArgumentParser } from 'argparse';
 import { RSA_PSS_SALTLEN_MAX_SIGN } from 'constants';
 import { Message, Client, Channel, Role, User, StringResolvable, MessageOptions, MessageAdditions, SplitOptions, APIMessage, MessageAttachment, MessageEmbed, TextChannel, NewsChannel } from 'discord.js';
-import Bot from '..';
+import Bot, { msgCtrl } from '..';
 import { getLogger } from '../../logger';
 import SoundManager from '../../SoundManager';
 import MiddlewareManager, { ErrorHandlingFunction, Layer, MiddlewareFunction, NextFunction } from '../MiddlewareManager';
@@ -17,8 +17,10 @@ export default abstract class Command {
 	description: string;
 	result: number | undefined
 	argumentParser: ArgumentParser | undefined
+	private precompiledRe?: PrecompiledRegex;
 	private mwbefore: MiddlewareFunction[];
 	private mwafter: ErrorHandlingFunction[];
+	methods: MethodsDictionary;
 	constructor(_name: string) {
 		this.description = '';
 		this._name = _name;
@@ -27,6 +29,19 @@ export default abstract class Command {
 		this.mwafter = []
 		this.argumentParser = undefined;
 		this.mm = new MiddlewareManager();
+		this.precompiledRe = undefined;
+		this.methods = {}
+	}
+
+	on(method: string, run: MethodRun) {
+		if (method in this.methods) {
+			throw new Error("Method already exits!");
+		}
+		this.methods[method] = run;
+	}
+
+	init = () => {
+		this.precompiledRe = this.compileRegex();
 	}
 
 	getDispatcher = () => {
@@ -35,7 +50,13 @@ export default abstract class Command {
 			(msg: CommandMessage, client: Client, res: CommandResponse, next: NextFunction) => {
 				let retVal;
 				try {
-					retVal = <any>this.run(msg, client, res);
+					//Try to find specific command method to run
+					const mtd = msg.trigger.method;
+					if (mtd && (mtd in this.methods)) {
+						retVal = <any>this.methods[mtd](msg, client, res)
+					} else {
+						retVal = <any>this.run(msg, client, res);
+					}
 				} catch (e) {
 					next(e);
 					return;
@@ -48,7 +69,7 @@ export default abstract class Command {
 			}
 
 		this.mm.use(...this.mwbefore, nextRun.bind(this), ...this.mwafter);
-		logger.debug("COMMAND STACK: [" + this._name + "] " + this.mm.stack.map(l => l.name || "anon").join("->"))
+		//logger.debug("COMMAND STACK: [" + this._name + "] " + this.mm.stack.map(l => l.name || "anon").join("->"))
 		return (msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) => {
 			return this.mm.handle(msg, client, res, (err?) => {
 				if (err) {
@@ -60,32 +81,38 @@ export default abstract class Command {
 		};
 	}
 
+	compileRegex = (): PrecompiledRegex => {
+		return {
+			main: getMessageMatcher(this.name),
+			aliases: this.aliases.map(v => getMessageMatcher(v))
+		}
+	}
+
 	setDescription = (description: string) => {
 		this.description = description;
 	};
 
 	matches = (_msg: Message): CommandTrigger | false => {
-		if (contentMatchStringRe(_msg, this._name)) {
+		if (!this.precompiledRe) {
+			this.precompiledRe = this.compileRegex();
+		}
+		const nameMatch = this.precompiledRe.main(_msg);
+		if (nameMatch) {
 			return {
 				alias: false,
 				caller: this._name,
-				fn: this
+				fn: this,
+				method: nameMatch[2]
 			}
-			/* const cmsg = this.createCommandMessage(_msg, { alias: false, caller: this.name })
-			return cmsg; */
 		}
-		if (this.aliases && this.aliases.length) {
-			for (let i = 0; i < this.aliases.length; i++) {
-				const alias = this.aliases[i];
-				if (contentMatchStringRe(_msg, alias)) {
-					return {
-						alias: true,
-						caller: alias,
-						fn: this
-					};
-					/* const cmsg = this.createCommandMessage(_msg, { alias: true, caller: alias })
-					return cmsg; */
-				}
+		for (let i = 0; i < this.precompiledRe.aliases.length; i++) {
+			const aliasRe = this.precompiledRe.aliases[i];
+			if (aliasRe(_msg)) {
+				return {
+					alias: true,
+					caller: aliasRe.callerName,
+					fn: this
+				};
 			}
 		}
 		return false;
@@ -131,23 +158,21 @@ export default abstract class Command {
 	}
 }
 
-
-function contentMatchStringRe(msg: Message, s: string) {
-	//Checks wether content starts with \bWORD\b <- \b is for word boundary
+function getMessageMatcher(s: string): MessageMatchFunction {
 	const escapedRegex = s.trim().replace(/[-\/\\^$*+!?.()\|[\]{}]/g, '\\$&');
-	const compiled = new RegExp(`^\\b${escapedRegex}\\b`, 'i');
-	//console.log(msg.content)
-	const match = msg.content.match(compiled)
-	//console.log(compiled)
-	return match;
+	const compiled = new RegExp(`^\\b(${escapedRegex})(?:\\:(\\w+))?\\b`, 'i');
+	const fn = (m: Message) => {
+		return m.content.match(compiled);
+	}
+	fn.callerName = s;
+	return fn;
 }
-
-export type CommandMatch = [CommandMessage, CommandResponse];
 
 export type CommandTrigger = {
 	caller: string,
 	alias: boolean,
 	fn: Command,
+	method?: string
 }
 
 export type CommandMessage = {
@@ -161,7 +186,19 @@ export type CommandMessage = {
 	channel: TextChannel | NewsChannel
 };
 
+type MessageMatchFunction = {
+	(msg: Message): RegExpMatchArray | null,
+	callerName: string
+};
 
+type PrecompiledRegex = {
+	main: MessageMatchFunction,
+	aliases: MessageMatchFunction[]
+}
+type MethodRun = { (msg: CommandMessage, client: Client, res: CommandResponse, next?: NextFunction): void }
+type MethodsDictionary = {
+	[index: string]: MethodRun
+}
 export interface CommandFunction {
 	(msg: CommandMessage, client: Bot, res: CommandResponse): void,
 }
