@@ -7,7 +7,7 @@ import { GuildDB, Wisdom } from "../../Bot/models";
 import { getLogger } from '../../logger';
 const logger = getLogger(__filename);
 
-
+const { fn, col } = Sequelize;
 
 const addHandler: MethodRun = (msg, bot, res) => {
     const messageLink = msg.guild ? `https://discord.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id}` : "No link."
@@ -18,26 +18,32 @@ const addHandler: MethodRun = (msg, bot, res) => {
     const authorInfo = `[${msg.author.id}] ${msg.author.username}`
     const guildInfo = msg.guild ? `[${msg.guild.id}] ${msg.guild.name}` : "No guild."
 
-    const toAdd = msg.args.join(" ");
-
-
+    const toAdd = msg.args.join(" ").replace(/\`\`\`/g, "\n");
 
     const prompt = `${authorInfo}\n${guildInfo}\n${messageLink}\n\`\`\`${msg.content}\`\`\`Wants to add:\n'${toAdd}'`
-
-
-    bot.askOwner(prompt).then((v) => {
-        if (v)
-            return Wisdom.create({
-                text: toAdd
+    const q = toAdd.replace(/[ \n\t\,\.\']+/g, "").toUpperCase();
+    //Count wisdoms matching
+    Wisdom.count({
+        where: Sequelize.where(fn("upper", fn("replace", col("text"), " ", "")), q)
+    }).then((n) => {
+        if (n == 0)
+            return bot.askOwner(prompt).then((v) => {
+                if (v)
+                    return Wisdom.create({
+                        text: toAdd,
+                        author_id: msg.author.id
+                    })
+                return Promise.resolve(null)
+            }).then((createdWisdom) => {
+                if (createdWisdom) {
+                    res.dmReply(`Added YOUR wisdom proposal:'${createdWisdom.text}'. The id is ${createdWisdom.id}`);
+                } else {
+                    res.dmReply(`Your wisdom proposal didn't make it`)
+                }
             })
-        return Promise.resolve(null)
-    }).then((createdWisdom) => {
-        if (createdWisdom) {
-            res.dmReply(`Added YOUR wisdom proposal:'${createdWisdom.text}'. The id is ${createdWisdom.id}`);
-        } else {
-            res.dmReply(`Your wisdom proposal didn't make it`)
-        }
-    }).catch(err=>logger.error(err))
+        res.dmReply(`There already exists wisdom-a-like to\n${toAdd}\nin my database`)
+    })
+        .catch(err => logger.error(err))
 }
 
 export default class Modrost extends Command {
@@ -52,7 +58,7 @@ export default class Modrost extends Command {
         const id = parseInt(<string>msg.args.pop() || "");
         console.log(id);
         const where: WhereAttributeHash = Number.isInteger(id) ? {
-            pregovor_id:id
+            pregovor_id: id
         } : {};
         Wisdom.findAll({
             order: Sequelize.literal('rand()'), limit: 1, where
