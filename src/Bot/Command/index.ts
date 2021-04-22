@@ -47,7 +47,7 @@ export default abstract class Command {
 	getDispatcher = () => {
 		//Assure, the stack is executed after the run
 		const nextRun =
-			(msg: CommandMessage, client: Client, res: CommandResponse, next: NextFunction) => {
+			(msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) => {
 				let retVal;
 				try {
 					//Try to find specific command method to run
@@ -195,7 +195,7 @@ type PrecompiledRegex = {
 	main: MessageMatchFunction,
 	aliases: MessageMatchFunction[]
 }
-type MethodRun = { (msg: CommandMessage, client: Client, res: CommandResponse, next?: NextFunction): void }
+export type MethodRun = { (msg: CommandMessage, client: Bot, res: CommandResponse, next?: NextFunction): void }
 type MethodsDictionary = {
 	[index: string]: MethodRun
 }

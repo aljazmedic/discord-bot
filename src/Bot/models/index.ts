@@ -17,7 +17,7 @@ const logger = getLogger("sequelize")
 export const sequelize = new Sequelize(config, 
 	{
 		logging: (s,) => {
-			//logger.debug(s)
+			logger.debug(s)
 		},
 		//...(config.other || {}),
 		set: 2,
