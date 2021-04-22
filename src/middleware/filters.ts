@@ -96,6 +96,17 @@ export function ifNotMessage(...filterables: Filterable<Message>[]): MiddlewareF
 	};
 }
 
+export function production(msg:CommandMessage, client:Bot, res:CommandResponse, next:NextFunction) {
+	if(process.env.NODE_ENV !== "production"){
+		// N/A to non-production
+		return next();
+	}
+	if(msg.guild?.id == "494617599322095637"){
+		return;
+	}
+	return next();
+}
+
 export function onlyDev(msg: CommandMessage, client: Bot, res: CommandResponse, next: NextFunction) {
 	if (idIsDev(msg.author.id) && msg.guild?.id == "494617599322095637") {
 		return next();

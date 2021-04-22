@@ -14,10 +14,10 @@ bot.on('ready', () => {
 });
 
 import addCommands, { addDevCommands } from './commands'
-import { onlyDev } from './middleware/filters';
+import { onlyDev, production } from './middleware/filters';
 import { cooldown } from './middleware';
 
-addCommands(bot, cooldown({ cooldown: 3000 }));
+addCommands(bot, production, cooldown({ cooldown: 3000 }));
 
 if (process.env.NODE_ENV === "development")
 	addDevCommands(bot, onlyDev)
