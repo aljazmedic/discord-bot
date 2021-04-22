@@ -26,5 +26,5 @@ export const sequelize = new Sequelize(config,
 	}
 );
 
-export { GuildDB, SoundDB, TeamPlayerDB,/*JokeDB,  JokeTypeDB,  JokeReplyDB,*/ TeamDB, RPSPlayerDB, RPSGame, Wisdom }
+export { GuildDB, SoundDB, TeamPlayerDB, JokeDB,  JokeTypeDB,  JokeReplyDB,  TeamDB, RPSPlayerDB, RPSGame, Wisdom }
 
