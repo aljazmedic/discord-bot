@@ -2,21 +2,23 @@ import Bot, { Command } from "../../Bot";
 import axios from 'axios';
 import { CommandMessage, CommandResponse } from "../../Bot/Command";
 import { getLogger } from '../../logger'
-import { throws } from "assert";
 const logger = getLogger(__filename);
 
 export default class Joke extends Command {
     constructor() {
         super('joke');
-        this.description="Made with https://jokeapi.dev."
+        this.description = "Made with https://jokeapi.dev."
         this.alias('j', 'funny', 'imsad');
     }
     run(msg: CommandMessage, client: Bot, res: CommandResponse) {
         //res.channelReply("Running joke");
+        let blacklistFlags = "";//msg.channel.nsfw ? "" : "nsfw,political,racist,sexist";
+
         axios({
             url: "https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Pun",
             params: {
-                type: "any"
+                type: "any",
+                blacklistFlags
             },
             method: "GET"
         })

@@ -6,12 +6,17 @@ import { getLogger } from '../logger';
 import { hasPremission } from "../middleware";
 const logger = getLogger(__filename);
 
+const addMethodHandler = (msg: CommandMessage, client: Client, res: CommandResponse) => {
+	res.dmReply("AddMethod")
+}
+
 export default class Ping extends Command {
 	constructor() {
 		super("ping");
 		this.description = 'replies pong to the sender!';
 		this.alias("testp")
 		this.before(hasPremission([]))
+		this.on("add", addMethodHandler)
 	}
 
 	run(msg: CommandMessage, client: Client, res: CommandResponse) {
