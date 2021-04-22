@@ -19,7 +19,6 @@ export default class Modrost extends Command {
 
     run(msg: CommandMessage, bot: Bot, res: CommandResponse) {
         const id = parseInt(<string>msg.args.pop() || "");
-        console.log(id);
         const where: WhereAttributeHash = Number.isInteger(id) ? {
             id
         } : {};
@@ -98,7 +97,7 @@ const meHandler: MethodRun = (msg, bot, res, next) => {
             res.msgReply("you haven't contributed yet!")
             return;
         }
-        const wisdoms = rows.map((w) => `\`${w.text}\``).join("\n");
+        const wisdoms = rows.map((w) => `(${w.id})\`${w.text}\``).join("\n");
         const respText = `You contributed:\n${wisdoms}`;
         res.channelReply(respText)
     })
