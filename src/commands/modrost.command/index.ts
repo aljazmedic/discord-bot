@@ -1,3 +1,4 @@
+import { join } from "bluebird";
 import { Client, Message, Guild, ReactionEmoji } from "discord.js";
 import { Sequelize } from "sequelize-typescript";
 import { WhereAttributeHash } from "sequelize/types";
@@ -46,12 +47,29 @@ const addHandler: MethodRun = (msg, bot, res) => {
         .catch(err => logger.error(err))
 }
 
+const meHandler: MethodRun = (msg, bot, res, next) => {
+    Wisdom.findAll({
+        where: {
+            author_id: msg.author.id
+        }
+    }).then((rows) => {
+        if (rows.length == 0) {
+            res.msgReply("you haven't contributed yet!")
+            return;
+        }
+        const wisdoms = rows.map((w) => `\`${w.text}\``).join("\n");
+        const respText = `You contributed:\n${wisdoms}`;
+        res.channelReply(respText);
+    })
+}
+
 export default class Modrost extends Command {
     constructor() {
         super("modrost");
         this.alias("pregovor", "pamet", "wisdom")
         this.description = 'Beri in se uči';
         this.on("add", addHandler);
+        this.on("me", meHandler);
     }
 
     run(msg: CommandMessage, bot: Bot, res: CommandResponse) {
