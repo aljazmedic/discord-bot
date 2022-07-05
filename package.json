@@ -76,7 +76,7 @@
         "typescript-eslint": "^0.0.1-alpha.0"
     },
     "dependencies": {
-        "@discordjs/opus": "^0.3.2",
+        "@discordjs/opus": "^0.8.0",
         "@types/cheerio": "^0.22.22",
         "@types/ffmpeg": "^1.0.1",
         "@types/fluent-ffmpeg": "^2.1.16",
