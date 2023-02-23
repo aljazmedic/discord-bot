@@ -96,7 +96,7 @@
         "reflect-metadata": "^0.1.13",
         "request": "^2.88.2",
         "request-promise": "^4.2.6",
-        "sequelize": "^5.22.3",
+        "sequelize": "^6.28.2",
         "sequelize-typescript": "^1.1.0",
         "sv443-joke-api": "^0.1.0",
         "winston": "^3.3.3",
